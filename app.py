@@ -6,7 +6,6 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import calendar
 import time
-import textwrap
 
 # ==========================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -138,25 +137,6 @@ CSS_DASHBOARD = """
     .dot-live { height: 8px; width: 8px; background-color: #00ffa3; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #00ffa3; animation: pulse 1.5s infinite; }
     .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
-
-    /* Tarjetas animadas para el historial detallado */
-    .trade-log-card {
-        background: linear-gradient(145deg, #0b1325, #070d19);
-        border: 1px solid #1e293b;
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    .trade-log-card:hover {
-        border-color: #00d2ff;
-        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
-        transform: translateY(-2px);
-    }
 </style>
 """
 
@@ -641,7 +621,7 @@ else:
                 pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
                 sign_growth = "+" if net_profit >= 0 else ""
                 
-                st.markdown(f'''
+                chart_box_1 = textwrap.dedent(f"""
                 <div class="chart-box">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                         <div>
@@ -652,7 +632,9 @@ else:
                             {sign_growth}${net_profit:.2f} <span style="font-size: 12px;">{sign_growth}{pct_growth:.1f}%</span>
                         </div>
                     </div>
-                ''', unsafe_allow_html=True)
+                </div>
+                """)
+                st.markdown(chart_box_1.strip(), unsafe_allow_html=True)
                 
                 if total_trades > 0:
                     df_trades['Trade #'] = range(1, len(df_trades) + 1)
@@ -667,7 +649,6 @@ else:
                     st.plotly_chart(fig_growth, use_container_width=True, config={'displayModeBar': False})
                 else:
                     st.markdown('<div style="text-align: center; color: #64748b; padding: 40px;">Sin datos de crecimiento disponibles.</div>', unsafe_allow_html=True)
-                st.markdown('</div>', unsafe_allow_html=True)
 
             with col_chart2:
                 green_days_count = 0
@@ -694,7 +675,7 @@ else:
                         worst_day_val = worst_row['pnl']
                         worst_day_date = worst_row['day_only'].strftime('%d de %B de %Y')
 
-                st.markdown(f'''
+                chart_box_2 = textwrap.dedent(f"""
                 <div class="chart-box">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                         <div>
@@ -705,7 +686,9 @@ else:
                             <span style="color: #00ffa3;">🟢 {green_days_count} Días</span> &nbsp; <span style="color: #ff3366;">🔴 {red_days_count} Días</span>
                         </div>
                     </div>
-                ''', unsafe_allow_html=True)
+                </div>
+                """)
+                st.markdown(chart_box_2.strip(), unsafe_allow_html=True)
 
                 if total_trades > 0:
                     fig_daily = px.bar(df_grouped, x='day_only', y='pnl', color='pnl',
@@ -722,23 +705,23 @@ else:
 
                 sub_c1, sub_c2 = st.columns(2)
                 with sub_c1:
-                    st.markdown(f'''
+                    best_card_html = textwrap.dedent(f"""
                     <div class="best-worst-card best-card">
                         <div style="font-size: 10px; font-weight: bold; color: #64748b; letter-spacing: 1px;">MEJOR DÍA</div>
                         <div style="font-size: 16px; font-weight: bold; color: #00ffa3; margin-top: 3px;">+{best_day_val:.2f}$</div>
                         <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">{best_day_date}</div>
                     </div>
-                    ''', unsafe_allow_html=True)
+                    """)
+                    st.markdown(best_card_html.strip(), unsafe_allow_html=True)
                 with sub_c2:
-                    st.markdown(f'''
+                    worst_card_html = textwrap.dedent(f"""
                     <div class="best-worst-card worst-card">
                         <div style="font-size: 10px; font-weight: bold; color: #64748b; letter-spacing: 1px;">PEOR DÍA</div>
                         <div style="font-size: 16px; font-weight: bold; color: #ff3366; margin-top: 3px;">{worst_day_val:.2f}$</div>
                         <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">{worst_day_date}</div>
                     </div>
-                    ''', unsafe_allow_html=True)
-
-                st.markdown('</div>', unsafe_allow_html=True)
+                    """)
+                    st.markdown(worst_card_html.strip(), unsafe_allow_html=True)
 
             # ==========================================
             # REGISTRO DE OPERACIONES Y FORMULARIO FUTURISTA ANIMADO
@@ -796,7 +779,7 @@ else:
                 st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ FILTRADO TEMPORAL Y REGISTRO DE EJECUCIONES</p>', unsafe_allow_html=True)
                 
                 if total_trades > 0:
-                    # Filtro Temporal
+                    # Filtro Temporal (Diario, Esta Semana, Este Mes, Este Año, Todo el Histórico)
                     f_col1, _ = st.columns([2, 2])
                     with f_col1:
                         time_filter = st.selectbox("⏱️ Filtrar Temporalidad", ["Todo el Histórico", "Diario", "Esta Semana", "Este Mes", "Este Año"])
@@ -827,7 +810,7 @@ else:
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # 2. DETALLADO DE TRADES EN TARJETAS (SEGUNDO) - Renderizado de forma limpia con textwrap.dedent
+                    # 2. DETALLADO DE TRADES EN TARJETAS (SEGUNDO)
                     st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 10px;">🔍 Detallado Cuántico de Ejecuciones</div>', unsafe_allow_html=True)
                     if not df_filtered.empty:
                         for idx, row in df_filtered.iterrows():
