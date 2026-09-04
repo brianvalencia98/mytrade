@@ -45,7 +45,7 @@ CSS_DASHBOARD = """
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
     
     /* Paneles Principales estilo Referencia */
-    .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 22px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
+    .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
     
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
     .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
@@ -274,6 +274,8 @@ else:
             total_trades = len(df_trades)
             score_win = score_pf = score_awal = score_rec = score_dd = score_cons = 0
             overall_score = 0
+            total_win_sum = 0.0
+            total_loss_sum = 0.0
             
             if total_trades > 0:
                 df_trades['pnl'] = pd.to_numeric(df_trades['pnl'], errors='coerce').fillna(0.0)
@@ -286,9 +288,12 @@ else:
                 net_profit = float(df_trades['pnl'].sum())
                 current_balance = initial_balance + net_profit
                 
+                total_win_sum = float(df_trades[df_trades['pnl'] > 0]['pnl'].sum())
+                total_loss_sum = float(df_trades[df_trades['pnl'] < 0]['pnl'].sum())
+                
                 score_win = win_rate
-                gross_profit = df_trades[df_trades['pnl'] > 0]['pnl'].sum()
-                gross_loss = abs(df_trades[df_trades['pnl'] < 0]['pnl'].sum())
+                gross_profit = total_win_sum
+                gross_loss = abs(total_loss_sum)
                 pf = gross_profit / gross_loss if gross_loss > 0 else 2.5
                 score_pf = min((pf / 2.0) * 100, 100)
                 
@@ -310,47 +315,62 @@ else:
                 overall_score = int(sum([score_win, score_pf, score_awal, score_rec, score_dd, score_cons]) / 6)
 
             # ==========================================
-            # 4 PANELES SUPERIORES EXACTOS (IMAGEN DE REFERENCIA)
+            # 5 PANELES SUPERIORES EXACTOS (CON AVG WIN/LOSS)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
-            kpi_cols = st.columns(4)
+            kpi_cols = st.columns(5)
             color_pnl = "win" if net_profit >= 0 else "loss"
             signo = "+" if net_profit >= 0 else ""
             
             with kpi_cols[0]:
                 st.markdown(f'''
                 <div class="kpi-card-exact">
-                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">WIN RATE</div>
-                    <div style="color: #00d2ff; font-size: 30px; font-weight: 700; margin: 0;">{win_rate:.1f}%</div>
-                    <div style="color: #94a3b8; font-size: 12px;">{wins} Ganadas / {losses} Perdidas</div>
+                    <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">WIN RATE</div>
+                    <div style="color: #00d2ff; font-size: 26px; font-weight: 700; margin: 0;">{win_rate:.1f}%</div>
+                    <div style="color: #94a3b8; font-size: 11px;">{wins} Ganadas / {losses} Perdidas</div>
                 </div>
                 ''', unsafe_allow_html=True)
                 
             with kpi_cols[1]:
-                pnl_color_hex = "#00ffa3" if net_profit >= 0 else "#ff3366"
                 st.markdown(f'''
                 <div class="kpi-card-exact">
-                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">NET PNL (BENEFICIO)</div>
-                    <div style="color: {pnl_color_hex}; font-size: 30px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(0,255,163,0.2);">{signo}${net_profit:.2f}</div>
-                    <div style="color: #94a3b8; font-size: 12px;">Periodo actual</div>
+                    <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">AVG WIN / LOSS</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
+                        <span style="color: #94a3b8; font-size: 11px; font-weight: 500;">WIN</span>
+                        <span style="color: #00ffa3; font-size: 15px; font-weight: bold;">${total_win_sum:.2f}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
+                        <span style="color: #94a3b8; font-size: 11px; font-weight: 500;">LOSS</span>
+                        <span style="color: #ff3366; font-size: 15px; font-weight: bold;">-${abs(total_loss_sum):.2f}</span>
+                    </div>
                 </div>
                 ''', unsafe_allow_html=True)
 
             with kpi_cols[2]:
+                pnl_color_hex = "#00ffa3" if net_profit >= 0 else "#ff3366"
                 st.markdown(f'''
                 <div class="kpi-card-exact">
-                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">BALANCE TOTAL</div>
-                    <div style="color: #ffffff; font-size: 30px; font-weight: 700; margin: 0;">${current_balance:.2f}</div>
-                    <div style="color: #94a3b8; font-size: 12px;">Capital disponible</div>
+                    <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">NET PNL (BENEFICIO)</div>
+                    <div style="color: {pnl_color_hex}; font-size: 26px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(0,255,163,0.2);">{signo}${net_profit:.2f}</div>
+                    <div style="color: #94a3b8; font-size: 11px;">Periodo actual</div>
                 </div>
                 ''', unsafe_allow_html=True)
-                
+
             with kpi_cols[3]:
                 st.markdown(f'''
                 <div class="kpi-card-exact">
-                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">TRADES EJECUTADOS</div>
-                    <div style="color: #00d2ff; font-size: 30px; font-weight: 700; margin: 0;">{total_trades}</div>
-                    <div style="color: #94a3b8; font-size: 12px;">Volumen total</div>
+                    <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">BALANCE TOTAL</div>
+                    <div style="color: #ffffff; font-size: 26px; font-weight: 700; margin: 0;">${current_balance:.2f}</div>
+                    <div style="color: #94a3b8; font-size: 11px;">Capital disponible</div>
+                </div>
+                ''', unsafe_allow_html=True)
+                
+            with kpi_cols[4]:
+                st.markdown(f'''
+                <div class="kpi-card-exact">
+                    <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">TRADES EJECUTADOS</div>
+                    <div style="color: #00d2ff; font-size: 26px; font-weight: 700; margin: 0;">{total_trades}</div>
+                    <div style="color: #94a3b8; font-size: 11px;">Volumen total</div>
                 </div>
                 ''', unsafe_allow_html=True)
 
