@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / NEON AVANZADO)
+# BLOQUES DE CSS (FUTURISTA / NEON & SELECTBOX BLOQUEADO)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -50,7 +50,14 @@ CSS_DASHBOARD = """
     [data-testid="stSidebar"] .stButton button { background: linear-gradient(135deg, #ff3366, #d22d56) !important; color: #ffffff !important; border: 1px solid #ff3366 !important; border-radius: 12px !important; font-weight: bold !important; letter-spacing: 1px; width: 100% !important; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3) !important; transition: all 0.3s ease !important; }
     [data-testid="stSidebar"] .stButton button:hover { background: linear-gradient(135deg, #ff1948, #ff3366) !important; box-shadow: 0 0 20px rgba(255, 51, 102, 0.6) !important; transform: translateY(-2px); }
 
-    /* Selector de Cuenta */
+    /* ==========================================
+       BLOQUEAR ESCRITURA EN SELECTBOX (SOLO MENÚ)
+       ========================================== */
+    [data-testid="stSelectbox"] div[data-baseweb="select"] input {
+        caret-color: transparent !important;
+        pointer-events: none !important;
+    }
+
     [data-testid="stSelectbox"] > div > div {
         background: linear-gradient(145deg, #0b1325, #070d19) !important;
         border: 1px solid #1e293b !important;
@@ -66,9 +73,7 @@ CSS_DASHBOARD = """
     }
     [data-testid="stSelectbox"] span { color: #00d2ff !important; font-weight: 700 !important; letter-spacing: 0.5px; }
 
-    /* ==========================================
-       EXPANDER Y FORMULARIO FUTURISTA ANIMADO
-       ========================================== */
+    /* Expander y Formulario Animado */
     [data-testid="stExpander"] {
         background: linear-gradient(145deg, #070d19, #0b1325) !important;
         border: 1px solid #1e293b !important;
@@ -81,7 +86,6 @@ CSS_DASHBOARD = """
         box-shadow: 0 0 25px rgba(0, 210, 255, 0.25) !important;
     }
 
-    /* Inputs, Number Inputs y Selectboxes dentro de Forms */
     .stTextInput input, .stNumberInput input, .stDateInput input, .stTimeInput input {
         background-color: #050b14 !important;
         border: 1px solid #1e293b !important;
@@ -95,7 +99,6 @@ CSS_DASHBOARD = """
         background-color: #070d19 !important;
     }
 
-    /* Botón de envío de formulario futurista con animación */
     .stForm [data-testid="stFormSubmitButton"] button {
         background: linear-gradient(135deg, #00d2ff, #0072ff) !important;
         color: #ffffff !important;
@@ -115,7 +118,6 @@ CSS_DASHBOARD = """
     }
 
     .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
-    
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
     .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
@@ -716,11 +718,11 @@ else:
                 st.markdown('</div>', unsafe_allow_html=True)
 
             # ==========================================
-            # REGISTRO DE OPERACIONES Y FORMULARIO FUTURISTA
+            # REGISTRO DE OPERACIONES Y FORMULARIO FUTURISTA ANIMADO
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander("⚡ REGISTRAR NUEVO TRADE", expanded=True):
-                st.markdown('<p style="color: #64748b; font-size: 12px; margin-bottom: 20px; letter-spacing: 1px;">INGRESA LOS PARÁMETROS DE TU EJECUCIÓN EN TIEMPO REAL</p>', unsafe_allow_html=True)
+                st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 20px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ MÓDULO DE EJECUCIÓN CUÁNTICA</p>', unsafe_allow_html=True)
                 with st.form("trade_form", clear_on_submit=True):
                     c1, c2, c3, c4 = st.columns(4)
                     with c1:
@@ -741,7 +743,7 @@ else:
                         observation = st.text_input("📝 Observaciones / Notas")
                     
                     st.markdown("<br>", unsafe_allow_html=True)
-                    guardar_ejecucion = st.form_submit_button("🚀 GUARDAR EJECUCIÓN")
+                    guardar_ejecucion = st.form_submit_button("🚀 EJECUTAR Y REGISTRAR TRADE")
                     
                     if guardar_ejecucion and asset:
                         try:
@@ -757,7 +759,7 @@ else:
                                          VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''', 
                                       (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl_calc, emotion, confidence, session, observation))
                             conn.commit()
-                            st.success(f"✅ Trade guardado con éxito! PnL: {pnl_calc:+.2f}$")
+                            st.success(f"✅ Trade registrado con éxito en la red! PnL: {pnl_calc:+.2f}$")
                             time.sleep(0.5)
                             st.rerun()
                         except Exception as e:
