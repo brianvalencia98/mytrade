@@ -50,12 +50,7 @@ CSS_DASHBOARD = """
     [data-testid="stSidebar"] .stButton button { background: linear-gradient(135deg, #ff3366, #d22d56) !important; color: #ffffff !important; border: 1px solid #ff3366 !important; border-radius: 12px !important; font-weight: bold !important; letter-spacing: 1px; width: 100% !important; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3) !important; transition: all 0.3s ease !important; }
     [data-testid="stSidebar"] .stButton button:hover { background: linear-gradient(135deg, #ff1948, #ff3366) !important; box-shadow: 0 0 20px rgba(255, 51, 102, 0.6) !important; transform: translateY(-2px); }
 
-    .stForm [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
-    .stForm [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
-    
-    /* ==========================================
-       SELECTOR DE CUENTA FUTURISTA CON ANIMACIÓN NEÓN
-       ========================================== */
+    /* Selector de Cuenta */
     [data-testid="stSelectbox"] > div > div {
         background: linear-gradient(145deg, #0b1325, #070d19) !important;
         border: 1px solid #1e293b !important;
@@ -69,10 +64,54 @@ CSS_DASHBOARD = """
         box-shadow: 0 0 20px rgba(0, 210, 255, 0.35) !important;
         transform: translateY(-2px);
     }
-    [data-testid="stSelectbox"] span {
-        color: #00d2ff !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.5px;
+    [data-testid="stSelectbox"] span { color: #00d2ff !important; font-weight: 700 !important; letter-spacing: 0.5px; }
+
+    /* ==========================================
+       EXPANDER Y FORMULARIO FUTURISTA ANIMADO
+       ========================================== */
+    [data-testid="stExpander"] {
+        background: linear-gradient(145deg, #070d19, #0b1325) !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 16px !important;
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+    [data-testid="stExpander"]:hover {
+        border-color: #00d2ff !important;
+        box-shadow: 0 0 25px rgba(0, 210, 255, 0.25) !important;
+    }
+
+    /* Inputs, Number Inputs y Selectboxes dentro de Forms */
+    .stTextInput input, .stNumberInput input, .stDateInput input, .stTimeInput input {
+        background-color: #050b14 !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 12px !important;
+        color: #e2e8f0 !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .stTextInput input:focus, .stNumberInput input:focus, .stDateInput input:focus, .stTimeInput input:focus {
+        border-color: #00d2ff !important;
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.35) !important;
+        background-color: #070d19 !important;
+    }
+
+    /* Botón de envío de formulario futurista con animación */
+    .stForm [data-testid="stFormSubmitButton"] button {
+        background: linear-gradient(135deg, #00d2ff, #0072ff) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 14px !important;
+        font-weight: 800 !important;
+        letter-spacing: 1.5px !important;
+        text-transform: uppercase !important;
+        box-shadow: 0 4px 20px rgba(0, 210, 255, 0.4) !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        padding: 12px 24px !important;
+    }
+    .stForm [data-testid="stFormSubmitButton"] button:hover {
+        background: linear-gradient(135deg, #00ffa3, #00d2ff) !important;
+        box-shadow: 0 0 30px rgba(0, 255, 163, 0.6) !important;
+        transform: translateY(-3px) scale(1.02);
     }
 
     .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
@@ -295,9 +334,6 @@ else:
         if df_accounts.empty:
             st.warning("⚠️ Crea una cuenta en el menú lateral para iniciar.")
         else:
-            # ==========================================
-            # SELECTOR DE CUENTA FUTURISTA CON ENCABEZADO
-            # ==========================================
             st.markdown('<div style="color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px;">⚡ Selector de Cuenta Activa</div>', unsafe_allow_html=True)
             col_sel, _ = st.columns([1, 2])
             with col_sel:
@@ -571,7 +607,7 @@ else:
                 ''', unsafe_allow_html=True)
 
             # ==========================================
-            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO (INDEPENDIENTES Y ORDENADOS)
+            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2 = st.columns(2)
@@ -680,30 +716,32 @@ else:
                 st.markdown('</div>', unsafe_allow_html=True)
 
             # ==========================================
-            # REGISTRO DE OPERACIONES Y FORMULARIO
+            # REGISTRO DE OPERACIONES Y FORMULARIO FUTURISTA
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander("⚡ REGISTRAR NUEVO TRADE", expanded=True):
+                st.markdown('<p style="color: #64748b; font-size: 12px; margin-bottom: 20px; letter-spacing: 1px;">INGRESA LOS PARÁMETROS DE TU EJECUCIÓN EN TIEMPO REAL</p>', unsafe_allow_html=True)
                 with st.form("trade_form", clear_on_submit=True):
                     c1, c2, c3, c4 = st.columns(4)
                     with c1:
-                        market = st.selectbox("Mercado", ["Opciones Binarias", "Forex"])
-                        asset = st.text_input("Activo (Ej. EURUSD)").upper()
-                        session = st.selectbox("Sesión", ["New York", "Londres", "Sídney", "Tokio"])
+                        market = st.selectbox("🌐 Mercado", ["Opciones Binarias", "Forex"])
+                        asset = st.text_input("💎 Activo (Ej. EURUSD)").upper()
+                        session = st.selectbox("🌍 Sesión", ["New York", "Londres", "Sídney", "Tokio"])
                     with c2:
-                        direction = st.selectbox("Dirección", ["CALL / BUY 🟢", "PUT / SELL 🔴"])
-                        amount = st.number_input("Inversión / Lote ($)", min_value=0.1, value=10.0, step=1.0)
-                        confidence = st.selectbox("Nivel de Confianza", ["Alto 🔥", "Medio ⚡", "Bajo ⚠️"])
+                        direction = st.selectbox("📈 Dirección", ["CALL / BUY 🟢", "PUT / SELL 🔴"])
+                        amount = st.number_input("💵 Inversión / Lote ($)", min_value=0.1, value=10.0, step=1.0)
+                        confidence = st.selectbox("🎯 Nivel de Confianza", ["Alto 🔥", "Medio ⚡", "Bajo ⚠️"])
                     with c3:
-                        result = st.selectbox("Resultado", ["WIN 🎉", "LOSS ❌", "EMPATE ➖"])
-                        emotion = st.selectbox("Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
-                        payout_percent = st.number_input("% Retorno (Binarias)", min_value=1, max_value=100, value=85)
+                        result = st.selectbox("🏆 Resultado", ["WIN 🎉", "LOSS ❌", "EMPATE ➖"])
+                        emotion = st.selectbox("🧠 Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
+                        payout_percent = st.number_input("📊 % Retorno (Binarias)", min_value=1, max_value=100, value=85)
                     with c4:
-                        date_time = st.date_input("Fecha", datetime.today())
-                        time_input = st.time_input("Hora", datetime.now().time())
-                        observation = st.text_input("Observaciones / Notas")
+                        date_time = st.date_input("📅 Fecha", datetime.today())
+                        time_input = st.time_input("⏰ Hora", datetime.now().time())
+                        observation = st.text_input("📝 Observaciones / Notas")
                     
-                    guardar_ejecucion = st.form_submit_button("GUARDAR EJECUCIÓN")
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    guardar_ejecucion = st.form_submit_button("🚀 GUARDAR EJECUCIÓN")
                     
                     if guardar_ejecucion and asset:
                         try:
