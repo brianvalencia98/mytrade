@@ -67,9 +67,7 @@ CSS_DASHBOARD = """
     }
     [data-testid="stSelectbox"] span { color: #00d2ff !important; font-weight: 700 !important; letter-spacing: 0.5px; }
 
-    /* ==========================================
-       ESTILO FUTURISTA PARA EL EXPANDER (FORMULARIO)
-       ========================================== */
+    /* Estilo futurista para Expanders (Formularios y Bitácora) */
     [data-testid="stExpander"] {
         background: linear-gradient(145deg, #070d19, #0b1325) !important;
         border: 1px solid #00d2ff !important;
@@ -139,6 +137,25 @@ CSS_DASHBOARD = """
     .dot-live { height: 8px; width: 8px; background-color: #00ffa3; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #00ffa3; animation: pulse 1.5s infinite; }
     .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
+
+    /* Tarjetas animadas para el historial desplegable */
+    .trade-log-card {
+        background: linear-gradient(145deg, #0b1325, #070d19);
+        border: 1px solid #1e293b;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .trade-log-card:hover {
+        border-color: #00d2ff;
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        transform: translateY(-2px);
+    }
 </style>
 """
 
@@ -771,8 +788,39 @@ else:
                             st.error(f"Error guardando en la BD: {e}")
 
             # ==========================================
-            # TABLA DE REGISTROS
+            # HISTORIAL DE OPERACIONES EXPANDIBLE Y FUTURISTA
             # ==========================================
-            st.markdown("<br><h3>📋 Historial de Operaciones</h3>", unsafe_allow_html=True)
-            if total_trades > 0:
-                st.dataframe(df_trades.drop(columns=['id', 'account_id', 'equity', 'peak', 'dd']), use_container_width=True, hide_index=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            with st.expander("📋 HISTORIAL DE OPERACIONES (BITÁCORA CUÁNTICA)", expanded=False):
+                st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ REGISTRO DETALLADO DE EJECUCIONES</p>', unsafe_allow_html=True)
+                
+                if total_trades > 0:
+                    for idx, row in df_trades.iterrows():
+                        pnl_val = float(row['pnl'])
+                        res_color = "#00ffa3" if pnl_val > 0 else "#ff3366" if pnl_val < 0 else "#94a3b8"
+                        sign_pnl = "+" if pnl_val > 0 else ""
+                        
+                        st.markdown(f"""
+                        <div class="trade-log-card">
+                            <div>
+                                <span style="color: #00d2ff; font-weight: bold; font-size: 13px;">#{idx+1} &nbsp;|&nbsp; 💎 {row['asset']}</span>
+                                <span style="color: #64748b; font-size: 11px; margin-left: 10px;">📅 {row['date_time']}</span>
+                                <div style="color: #94a3b8; font-size: 11px; margin-top: 3px;">
+                                    Mercado: <b style="color:#e2e8f0">{row['market']}</b> &nbsp;|&nbsp; 
+                                    Dir: <b style="color:#e2e8f0">{row['direction']}</b> &nbsp;|&nbsp; 
+                                    Sesión: <b style="color:#e2e8f0">{row.get('session', 'N/A')}</b> &nbsp;|&nbsp; 
+                                    Confianza: <b style="color:#e2e8f0">{row.get('confidence', 'N/A')}</b>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: {res_color}; font-size: 16px; font-weight: bold;">{sign_pnl}${pnl_val:.2f}</div>
+                                <div style="color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    # Opción para ver la tabla completa tradicional si se desea
+                    if st.checkbox("Mostrar tabla analítica completa"):
+                        st.dataframe(df_trades.drop(columns=['id', 'account_id', 'equity', 'peak', 'dd']), use_container_width=True, hide_index=True)
+                else:
+                    st.markdown('<div style="text-align: center; color: #64748b; padding: 20px;">No hay operaciones registradas en esta cuenta.</div>', unsafe_allow_html=True)
