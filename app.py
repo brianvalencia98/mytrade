@@ -14,7 +14,7 @@ import textwrap
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / NEON AVANZADO)
+# BLOQUES DE CSS (FUTURISTA / PANELES UNIFICADOS)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -127,8 +127,9 @@ CSS_DASHBOARD = """
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
-    .chart-box { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 24px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 100%; }
-    .best-worst-card { background: rgba(11, 19, 37, 0.8); border-radius: 12px; padding: 14px; border: 1px solid #1e293b; margin-top: 12px; }
+    /* Contenedor Unificado para Gráficos con cabecera fina */
+    .chart-box { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 100%; position: relative; }
+    .best-worst-card { background: rgba(11, 19, 37, 0.8); border-radius: 12px; padding: 12px 14px; border: 1px solid #1e293b; margin-top: 12px; }
     .best-card { border-left: 4px solid #00ffa3 !important; }
     .worst-card { border-left: 4px solid #ff3366 !important; }
 
@@ -139,7 +140,6 @@ CSS_DASHBOARD = """
     .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
-    /* Tarjetas animadas para el historial detallado */
     .trade-log-card {
         background: linear-gradient(145deg, #0b1325, #070d19);
         border: 1px solid #1e293b;
@@ -632,7 +632,7 @@ else:
                 ''', unsafe_allow_html=True)
 
             # ==========================================
-            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO
+            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO (UNIFICADOS EN UN SOLO CUADRO)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2 = st.columns(2)
@@ -641,34 +641,34 @@ else:
                 pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
                 sign_growth = "+" if net_profit >= 0 else ""
                 
-                chart_box_1 = textwrap.dedent(f"""
+                # Panel unificado completo para Crecimiento Acumulado
+                st.markdown(f'''
                 <div class="chart-box">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
                         <div>
-                            <div style="font-size: 18px; font-weight: bold; color: #ffffff;">📁 Crecimiento Acumulado</div>
-                            <div style="font-size: 12px; color: #64748b;">P&L Acumulado Diario</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #ffffff;">📁 Crecimiento Acumulado</div>
+                            <div style="font-size: 11px; color: #64748b;">P&L Acumulado Diario</div>
                         </div>
-                        <div style="text-align: right; font-size: 18px; font-weight: bold; color: #00ffa3;">
-                            {sign_growth}${net_profit:.2f} <span style="font-size: 12px;">{sign_growth}{pct_growth:.1f}%</span>
+                        <div style="text-align: right; font-size: 16px; font-weight: bold; color: #00ffa3;">
+                            {sign_growth}${net_profit:.2f} <span style="font-size: 11px;">{sign_growth}{pct_growth:.1f}%</span>
                         </div>
                     </div>
-                </div>
-                """)
-                st.markdown(chart_box_1.strip(), unsafe_allow_html=True)
+                ''', unsafe_allow_html=True)
                 
                 if total_trades > 0:
                     df_trades['Trade #'] = range(1, len(df_trades) + 1)
                     fig_growth = px.area(df_trades, x='Trade #', y='equity', markers=True)
                     fig_growth.update_layout(
                         plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=10, b=0),
+                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=5, b=0),
                         yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
-                        height=210
+                        height=200
                     )
                     fig_growth.update_traces(line_color='#00d2ff', fillcolor='rgba(0, 210, 255, 0.15)')
                     st.plotly_chart(fig_growth, use_container_width=True, config={'displayModeBar': False})
                 else:
                     st.markdown('<div style="text-align: center; color: #64748b; padding: 40px;">Sin datos de crecimiento disponibles.</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
             with col_chart2:
                 green_days_count = 0
@@ -695,29 +695,28 @@ else:
                         worst_day_val = worst_row['pnl']
                         worst_day_date = worst_row['day_only'].strftime('%d de %B de %Y')
 
-                chart_box_2 = textwrap.dedent(f"""
+                # Panel unificado completo para P&L Diario
+                st.markdown(f'''
                 <div class="chart-box">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
                         <div>
-                            <div style="font-size: 18px; font-weight: bold; color: #ffffff;">📊 P&L Diario</div>
-                            <div style="font-size: 12px; color: #64748b;">Ganancias y pérdidas por día</div>
+                            <div style="font-size: 16px; font-weight: bold; color: #ffffff;">📊 P&L Diario</div>
+                            <div style="font-size: 11px; color: #64748b;">Ganancias y pérdidas por día</div>
                         </div>
-                        <div style="text-align: right; font-size: 12px; color: #94a3b8;">
+                        <div style="text-align: right; font-size: 11px; color: #94a3b8;">
                             <span style="color: #00ffa3;">🟢 {green_days_count} Días</span> &nbsp; <span style="color: #ff3366;">🔴 {red_days_count} Días</span>
                         </div>
                     </div>
-                </div>
-                """)
-                st.markdown(chart_box_2.strip(), unsafe_allow_html=True)
+                ''', unsafe_allow_html=True)
 
                 if total_trades > 0:
                     fig_daily = px.bar(df_grouped, x='day_only', y='pnl', color='pnl',
                                        color_continuous_scale=['#ff3366', '#00ffa3'])
                     fig_daily.update_layout(
                         plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=10, b=0),
+                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=5, b=0),
                         yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
-                        coloraxis_showscale=False, height=120
+                        coloraxis_showscale=False, height=110
                     )
                     st.plotly_chart(fig_daily, use_container_width=True, config={'displayModeBar': False})
                 else:
@@ -727,21 +726,23 @@ else:
                 with sub_c1:
                     best_card_html = textwrap.dedent(f"""
                     <div class="best-worst-card best-card">
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; letter-spacing: 1px;">MEJOR DÍA</div>
-                        <div style="font-size: 16px; font-weight: bold; color: #00ffa3; margin-top: 3px;">+{best_day_val:.2f}$</div>
-                        <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">{best_day_date}</div>
+                        <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">MEJOR DÍA</div>
+                        <div style="font-size: 15px; font-weight: bold; color: #00ffa3; margin-top: 2px;">+{best_day_val:.2f}$</div>
+                        <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">{best_day_date}</div>
                     </div>
                     """)
                     st.markdown(best_card_html.strip(), unsafe_allow_html=True)
                 with sub_c2:
                     worst_card_html = textwrap.dedent(f"""
                     <div class="best-worst-card worst-card">
-                        <div style="font-size: 10px; font-weight: bold; color: #64748b; letter-spacing: 1px;">PEOR DÍA</div>
-                        <div style="font-size: 16px; font-weight: bold; color: #ff3366; margin-top: 3px;">{worst_day_val:.2f}$</div>
-                        <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">{worst_day_date}</div>
+                        <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">PEOR DÍA</div>
+                        <div style="font-size: 15px; font-weight: bold; color: #ff3366; margin-top: 2px;">{worst_day_val:.2f}$</div>
+                        <div style="font-size: 9px; color: #94a3b8; margin-top: 2px;">{worst_day_date}</div>
                     </div>
                     """)
                     st.markdown(worst_card_html.strip(), unsafe_allow_html=True)
+
+                st.markdown('</div>', unsafe_allow_html=True)
 
             # ==========================================
             # REGISTRO DE OPERACIONES Y FORMULARIO FUTURISTA ANIMADO
