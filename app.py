@@ -1048,6 +1048,7 @@ else:
         step_bal = 1000.0 if "COP" in currency else 10.0
         fmt_bal = "%.0f" if "COP" in currency else "%.2f"
 
+        # 1. CREAR NUEVA CUENTA DE TRADING
         with st.container(border=True):
             st.markdown('''<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
 <div style="font-size: 14px; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 8px;">
@@ -1074,10 +1075,13 @@ else:
                     time.sleep(0.5)
                     st.rerun()
 
-        # ==========================================
-        # SECCIÓN: ELIMINAR CUENTA
-        # ==========================================
+        # 2. TABLA DE PORTAFOLIOS Y CUENTAS VINCULADAS (REUBICADA INMEDIATAMENTE DESPUÉS DE CREAR)
         st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
+        st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 12px;">📋 Portafolios y Cuentas Vinculadas</div>', unsafe_allow_html=True)
+        st.markdown(render_accounts_table(df_accounts), unsafe_allow_html=True)
+
+        # 3. ZONA DE PELIGRO: ELIMINAR CUENTA INDIVIDUAL
+        st.markdown("<div style='margin-top: 25px;'></div>", unsafe_allow_html=True)
         with st.container(border=True):
             st.markdown('''<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
 <div style="font-size: 14px; font-weight: 800; color: #ff3366; display: flex; align-items: center; gap: 8px;">
@@ -1109,9 +1113,37 @@ else:
             else:
                 st.markdown('<div style="color: #64748b; font-size: 13px;">No hay cuentas disponibles para eliminar.</div>', unsafe_allow_html=True)
 
+        # 4. ZONA DE PELIGRO: REINICIO DE FÁBRICA / BORRADO TOTAL
         st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
-        st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 12px;">📋 Portafolios y Cuentas Vinculadas</div>', unsafe_allow_html=True)
-        st.markdown(render_accounts_table(df_accounts), unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown('''<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
+<div style="font-size: 14px; font-weight: 800; color: #ff1948; display: flex; align-items: center; gap: 8px;">
+<span>💣</span> REINICIO TOTAL / DEJAR SISTEMA EN BLANCO
+</div>
+<div style="color: #ff3366; font-size: 11px; font-weight: bold; letter-spacing: 1px;">FORMATO COMPLETO</div>
+</div>''', unsafe_allow_html=True)
+
+            st.markdown('<p style="color: #94a3b8; font-size: 12.5px; margin-bottom: 14px;">Esta opción vaciará la base de datos por completo: borrará <b>todas las cuentas</b> y <b>todo el historial de trades</b> para iniciar desde cero.</p>', unsafe_allow_html=True)
+
+            with st.form("reset_all_data_form"):
+                confirm_reset_all = st.checkbox("⚠️ Confirmo que estoy totalmente seguro y deseo eliminar ABSOLUTAMENTE TODOS los datos del sistema.")
+                submit_reset_all = st.form_submit_button("💥 RESTABLECER Y BORRAR TODO EL SISTEMA")
+
+                if submit_reset_all:
+                    if confirm_reset_all:
+                        active_conn = get_active_connection()
+                        with active_conn.cursor() as cur:
+                            try:
+                                cur.execute("TRUNCATE TABLE trades, accounts RESTART IDENTITY CASCADE;")
+                            except Exception:
+                                cur.execute("DELETE FROM trades;")
+                                cur.execute("DELETE FROM accounts;")
+                            active_conn.commit()
+                        st.success("✅ Base de datos formateada con éxito. El sistema ha quedado completamente limpio.")
+                        time.sleep(0.8)
+                        st.rerun()
+                    else:
+                        st.warning("⚠️ Debes marcar la casilla de confirmación para autorizar el borrado total de la plataforma.")
 
     elif menu == "📊 Dashboard Principal":
         df_accounts = get_accounts()
