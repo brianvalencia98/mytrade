@@ -12,7 +12,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (SEPARADOS PARA LOGIN Y DASHBOARD)
+# BLOQUES DE CSS (LOGIN Y DASHBOARD)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -56,33 +56,32 @@ CSS_DASHBOARD = """
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
 
     /* Calendario Avanzado */
-    .cal-container { background-color: #0b1325; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
-    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .cal-title { color: #ffffff; font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+    .cal-container { background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .cal-title { color: #ffffff; font-size: 22px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
     .cal-month { color: #ffffff; font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
     .cal-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .cal-th { color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;}
+    .cal-th { color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;}
     
-    /* Celdas diarias con posicionamiento relativo */
-    .cal-td { border: 1px solid #1e293b; height: 100px; vertical-align: top; padding: 10px; background-color: #070d19; transition: background 0.3s; position: relative; }
-    .cal-td:hover { background-color: #111a2e; }
+    /* Celdas del calendario */
+    .cal-td { border: 1px solid #10192d; height: 105px; vertical-align: top; padding: 10px; background-color: #080f1e; transition: all 0.2s ease; position: relative; }
+    .cal-td:hover { background-color: #111e38; }
     
-    /* Estilos dinámicos para operaciones ganadoras y perdedoras */
-    .cal-td.cal-td-win { border: 1px solid #00ffa3; border-bottom: 3px solid #00ffa3; background-color: rgba(0, 255, 163, 0.05); }
-    .cal-td.cal-td-loss { border: 1px solid #ff3366; border-bottom: 3px solid #ff3366; background-color: rgba(255, 51, 102, 0.05); }
+    /* Celdas con resultados (Ganancias / Pérdidas) */
+    .cal-td.cal-td-win { border: 1px solid #00d284 !important; border-bottom: 3.5px solid #00ffa3 !important; background-color: rgba(0, 255, 163, 0.08) !important; }
+    .cal-td.cal-td-loss { border: 1px solid #d22d56 !important; border-bottom: 3.5px solid #ff3366 !important; background-color: rgba(255, 51, 102, 0.08) !important; }
     
-    /* Celda de Totales */
-    .cal-td-total { border: 1px solid #1e293b; height: 100px; vertical-align: middle; text-align: center; background-color: #0b1325; }
-    .cal-td-total.cal-total-win { border: 1px solid rgba(0, 255, 163, 0.3); background-color: rgba(0, 255, 163, 0.05); }
-    .cal-td-total.cal-total-loss { border: 1px solid rgba(255, 51, 102, 0.3); background-color: rgba(255, 51, 102, 0.05); }
+    /* Celda de Totales Semanales */
+    .cal-td-total { border: 1px solid #10192d; height: 105px; vertical-align: middle; text-align: center; background-color: #060b16; }
+    .cal-td-total.cal-total-win { border: 1px solid #00d284 !important; background-color: rgba(0, 255, 163, 0.06) !important; }
+    .cal-td-total.cal-total-loss { border: 1px solid #d22d56 !important; background-color: rgba(255, 51, 102, 0.06) !important; }
     
     .cal-day { font-size: 14px; color: #94a3b8; font-weight: bold;}
     
-    /* Posicionamiento absoluto para fijar el monto en la esquina */
+    /* Montos dentro de las celdas */
     .cal-pnl-win { color: #00ffa3; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
     .cal-pnl-loss { color: #ff3366; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
     
-    /* Textos para la celda de totales */
     .cal-pnl-win-total { color: #00ffa3; font-weight: bold; font-size: 14px; margin-top: 5px; }
     .cal-pnl-loss-total { color: #ff3366; font-weight: bold; font-size: 14px; margin-top: 5px; }
     .cal-label-total { font-size: 10px; color: #64748b; font-weight: bold; letter-spacing: 1px;}
@@ -101,10 +100,16 @@ def render_calendar(df_trades):
     
     daily_pnl = {}
     if not df_trades.empty:
-        df_trades['date_time'] = pd.to_datetime(df_trades['date_time'])
-        current_month_trades = df_trades[(df_trades['date_time'].dt.year == year) & (df_trades['date_time'].dt.month == month)]
-        grouped = current_month_trades.groupby(current_month_trades['date_time'].dt.day)['pnl'].sum()
-        daily_pnl = grouped.to_dict()
+        df_copy = df_trades.copy()
+        df_copy['date_time'] = pd.to_datetime(df_copy['date_time'])
+        df_copy['pnl'] = pd.to_numeric(df_copy['pnl'], errors='coerce').fillna(0.0)
+        
+        # Filtrar trades del mes y año actual
+        current_month = df_copy[(df_copy['date_time'].dt.year == year) & (df_copy['date_time'].dt.month == month)]
+        
+        if not current_month.empty:
+            grouped = current_month.groupby(current_month['date_time'].dt.day)['pnl'].sum()
+            daily_pnl = grouped.to_dict()
 
     cal = calendar.monthcalendar(year, month)
     
@@ -123,24 +128,29 @@ def render_calendar(df_trades):
     """
     for week in cal:
         html += "<tr>"
-        week_total = 0
+        week_total = 0.0
+        has_trades_in_week = False
+        
         for day in week:
             if day == 0:
                 html += '<td class="cal-td"></td>'
             else:
-                pnl = daily_pnl.get(day, 0)
-                week_total += pnl
+                pnl = float(daily_pnl.get(day, 0.0))
+                if day in daily_pnl:
+                    has_trades_in_week = True
+                    week_total += pnl
                 
-                if pnl > 0:
+                if day in daily_pnl and pnl > 0:
                     html += f'<td class="cal-td cal-td-win"><div class="cal-day">{day}</div><div class="cal-pnl-win">+{pnl:.2f}$</div></td>'
-                elif pnl < 0:
+                elif day in daily_pnl and pnl < 0:
                     html += f'<td class="cal-td cal-td-loss"><div class="cal-day">{day}</div><div class="cal-pnl-loss">{pnl:.2f}$</div></td>'
                 else:
                     html += f'<td class="cal-td"><div class="cal-day">{day}</div></td>'
         
-        if week_total > 0:
+        # Columna de sumatoria semanal
+        if has_trades_in_week and week_total > 0:
             html += f'<td class="cal-td-total cal-total-win"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">+{week_total:.2f}$</div></td>'
-        elif week_total < 0:
+        elif has_trades_in_week and week_total < 0:
             html += f'<td class="cal-td-total cal-total-loss"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-loss-total">{week_total:.2f}$</div></td>'
         else:
             html += f'<td class="cal-td-total"><div class="cal-label-total">TOTAL</div></td>'
@@ -249,7 +259,7 @@ else:
             
             if guardar_cuenta and broker:
                 c.execute("INSERT INTO accounts (broker, account_name, initial_balance) VALUES (%s, %s, %s)", (broker, acc_name, init_balance))
-                conn.commit() # Forzar guardado
+                conn.commit()
                 st.success("✅ Cuenta creada correctamente.")
                 time.sleep(0.5)
                 st.rerun()
@@ -275,7 +285,7 @@ else:
             total_trades = len(df_trades)
             
             if total_trades > 0:
-                df_trades['pnl'] = pd.to_numeric(df_trades['pnl'])
+                df_trades['pnl'] = pd.to_numeric(df_trades['pnl'], errors='coerce').fillna(0.0)
                 wins = len(df_trades[df_trades['result'].str.contains("WIN")])
                 losses = len(df_trades[df_trades['result'].str.contains("LOSS")])
                 ties = len(df_trades[df_trades['result'].str.contains("EMPATE")])
@@ -327,9 +337,9 @@ else:
                         try:
                             dt_string = f"{date_time} {time_input}"
                             c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl))
-                            conn.commit()  # Forzar escritura en base de datos
+                            conn.commit()
                             st.success("✅ Trade registrado exitosamente!")
-                            time.sleep(0.5) # Dar tiempo para que el servidor procese antes de recargar
+                            time.sleep(0.5)
                             st.rerun()
                         except Exception as e:
                             st.error(f"Error guardando en la BD: {e}")
