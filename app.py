@@ -200,7 +200,7 @@ CSS_DASHBOARD = """
         height: 115px;
     }
 
-    /* Botones de navegación de mes del calendario */
+    /* Botones de navegación de mes del calendario numérico */
     div[data-testid="stVerticalBlockBorderWrapper"] div[data-testid="stButton"] > button {
         background: linear-gradient(135deg, #0b162c, #060d1b) !important;
         border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
@@ -460,137 +460,212 @@ CSS_DASHBOARD = """
     }
 
     /* ==========================================
-       TABLA DE CALENDARIO MODERNA Y RESPONSIVA
+       TABLA DE CALENDARIO NUMÉRICO
        ========================================== */
-    .cal-wrapper {
-        width: 100%;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-top: 6px;
+    .cal-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-top: 6px; }
+    .cal-table { width: 100%; border-collapse: collapse; table-layout: fixed; min-width: 330px; }
+    .cal-th { color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: 800; font-size: 12px; letter-spacing: 0.5px; }
+    .cal-td-empty { border: 1px solid #10192d; height: 64px; background-color: #060b16; }
+    .cal-cell { border: 1px solid #10192d; height: 64px; vertical-align: top; padding: 6px 5px; background-color: #080f1e; position: relative; }
+    .cal-cell-win { border: 1px solid #00d284 !important; border-bottom: 3.5px solid #00ffa3 !important; background-color: rgba(0, 255, 163, 0.08) !important; }
+    .cal-cell-loss { border: 1px solid #d22d56 !important; border-bottom: 3.5px solid #ff3366 !important; background-color: rgba(255, 51, 102, 0.08) !important; }
+    .cal-day-num { font-size: 11.5px; color: #cbd5e1; font-weight: 700; line-height: 1; }
+    .cal-pnl { font-weight: 800; font-size: 10px; position: absolute; bottom: 5px; right: 4px; line-height: 1.1; text-align: right; }
+    .cal-win { color: #00ffa3; text-shadow: 0 0 6px rgba(0, 255, 163, 0.4); }
+    .cal-loss { color: #ff3366; text-shadow: 0 0 6px rgba(255, 51, 102, 0.4); }
+    .cal-tie { color: #94a3b8; }
+    .cal-tot-cell { border: 1px solid #10192d; height: 64px; vertical-align: middle; text-align: center; background-color: #060b16; padding: 4px 2px; }
+
+    /* ==========================================
+       ESTILOS PARA EL TRADING HEATMAP DINÁMICO
+       ========================================== */
+    .hm-card {
+        background: linear-gradient(165deg, #0b1120 0%, #060a14 100%);
+        border: 1.5px solid #1e293b;
+        border-radius: 24px;
+        padding: 22px 20px 18px 20px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, 0.55);
+        margin-bottom: 12px;
     }
-    .cal-table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        min-width: 330px;
-    }
-    .cal-th {
-        color: #00d2ff;
-        padding: 8px 0;
+    
+    /* VISTA: THIS MONTH */
+    .hm-weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        margin-bottom: 10px;
         text-align: center;
-        border-bottom: 1px solid #1e293b;
-        font-weight: 800;
+    }
+    .hm-weekday {
+        color: #94a3b8;
         font-size: 12px;
+        font-weight: 700;
         letter-spacing: 0.5px;
     }
-    .cal-td-empty {
-        border: 1px solid #10192d;
-        height: 64px;
-        background-color: #060b16;
+    .hm-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        margin-bottom: 20px;
     }
-    .cal-cell {
-        border: 1px solid #10192d;
-        height: 64px;
-        vertical-align: top;
-        padding: 6px 5px;
-        background-color: #080f1e;
+    .hm-cell {
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13.5px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
         position: relative;
     }
-    .cal-cell-win {
-        border: 1px solid #00d284 !important;
-        border-bottom: 3.5px solid #00ffa3 !important;
-        background-color: rgba(0, 255, 163, 0.08) !important;
+    .hm-cell:hover {
+        transform: translateY(-2px) scale(1.06);
+        z-index: 3;
     }
-    .cal-cell-loss {
-        border: 1px solid #d22d56 !important;
-        border-bottom: 3.5px solid #ff3366 !important;
-        background-color: rgba(255, 51, 102, 0.08) !important;
+    .hm-empty {
+        height: 48px;
     }
-    .cal-day-num {
-        font-size: 11.5px;
-        color: #cbd5e1;
-        font-weight: 700;
-        line-height: 1;
+    
+    /* VISTA: THIS WEEK */
+    .hm-week-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 22px;
     }
-    .cal-pnl {
-        font-weight: 800;
-        font-size: 10px;
-        position: absolute;
-        bottom: 5px;
-        right: 4px;
-        line-height: 1.1;
-        text-align: right;
-    }
-    .cal-win {
-        color: #00ffa3;
-        text-shadow: 0 0 6px rgba(0, 255, 163, 0.4);
-    }
-    .cal-loss {
-        color: #ff3366;
-        text-shadow: 0 0 6px rgba(255, 51, 102, 0.4);
-    }
-    .cal-tie {
-        color: #94a3b8;
-    }
-    .cal-tot-cell {
-        border: 1px solid #10192d;
+    .hm-week-cell {
         height: 64px;
-        vertical-align: middle;
-        text-align: center;
-        background-color: #060b16;
-        padding: 4px 2px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .hm-week-cell:hover {
+        transform: translateY(-2px) scale(1.05);
+    }
+    .hm-week-empty {
+        height: 64px;
+    }
+
+    /* VISTA: THIS YEAR */
+    .hm-year-container {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        max-height: 410px;
+        overflow-y: auto;
+        padding-right: 6px;
+        margin-bottom: 20px;
+    }
+    .hm-year-container::-webkit-scrollbar { width: 5px; }
+    .hm-year-container::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+    .hm-year-month-row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .hm-year-month-label {
+        color: #cbd5e1;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+    .hm-year-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(16, 1fr);
+        gap: 5px;
+        max-width: 100%;
+    }
+    .hm-mini-box {
+        height: 15px;
+        border-radius: 3.5px;
+        transition: transform 0.15s ease;
+        cursor: pointer;
+    }
+    .hm-mini-box:hover {
+        transform: scale(1.35);
+        z-index: 2;
+    }
+
+    /* VISTA: ALL TIME */
+    .hm-no-data-box {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 180px;
+        color: #94a3b8;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 20px;
+    }
+
+    /* RESALTADO DEL DÍA ACTUAL EN PÚRPURA / VIOLETA */
+    .hm-cell-today {
+        border: 2.5px solid #8b5cf6 !important;
+        box-shadow: 0 0 16px rgba(139, 92, 246, 0.75) !important;
+    }
+
+    /* LEYENDA */
+    .hm-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 12px 18px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(30, 41, 59, 0.6);
+    }
+    .hm-leg-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 700;
+    }
+    .hm-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        display: inline-block;
     }
 
     /* ==========================================
        ADAPTACIÓN MÓVIL (PANTALLAS <= 768px)
        ========================================== */
     @media (max-width: 768px) {
-        .cal-wrapper {
-            margin: 0 -4px;
-            padding: 2px 4px;
-        }
-        .cal-cell, .cal-td-empty, .cal-tot-cell {
-            height: 48px !important;
-            padding: 3px 2px !important;
-        }
-        .cal-th {
-            padding: 5px 0 !important;
-            font-size: 10px !important;
-        }
-        .cal-day-num {
-            font-size: 9.5px !important;
-        }
-        .cal-pnl {
-            font-size: 8px !important;
-            bottom: 2px !important;
-            right: 2px !important;
-        }
-        .cal-sym {
-            display: none !important;
-        }
+        .cal-wrapper { margin: 0 -4px; padding: 2px 4px; }
+        .cal-cell, .cal-td-empty, .cal-tot-cell { height: 48px !important; padding: 3px 2px !important; }
+        .cal-th { padding: 5px 0 !important; font-size: 10px !important; }
+        .cal-day-num { font-size: 9.5px !important; }
+        .cal-pnl { font-size: 8px !important; bottom: 2px !important; right: 2px !important; }
+        .cal-sym { display: none !important; }
 
-        .kpi-card-exact {
-            height: auto !important;
-            min-height: 90px !important;
-            padding: 12px 14px !important;
-            margin-bottom: 8px !important;
-        }
-        .kpi-card-exact div[style*="font-size: 26px"] {
-            font-size: 20px !important;
-        }
+        .hm-card { padding: 16px 12px; }
+        .hm-grid, .hm-weekdays { gap: 4px !important; }
+        .hm-cell, .hm-empty { height: 38px !important; font-size: 11px !important; border-radius: 8px !important; }
+        .hm-weekday { font-size: 10px !important; }
+        
+        .hm-week-grid { gap: 6px !important; }
+        .hm-week-cell, .hm-week-empty { height: 48px !important; font-size: 12px !important; border-radius: 10px !important; }
+        
+        .hm-year-mini-grid { gap: 3.5px !important; }
+        .hm-mini-box { height: 11px !important; border-radius: 2px !important; }
 
-        .trade-quantum-card {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 10px !important;
-        }
-        .trade-quantum-card > div:last-child {
-            width: 100% !important;
-            text-align: left !important;
-            margin-left: 0 !important;
-            border-top: 1px solid rgba(30, 41, 59, 0.4);
-            padding-top: 6px;
-        }
+        .hm-legend { gap: 8px 12px !important; font-size: 10px !important; }
+
+        .kpi-card-exact { height: auto !important; min-height: 90px !important; padding: 12px 14px !important; margin-bottom: 8px !important; }
+        .kpi-card-exact div[style*="font-size: 26px"] { font-size: 20px !important; }
+
+        .trade-quantum-card { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
+        .trade-quantum-card > div:last-child { width: 100% !important; text-align: left !important; margin-left: 0 !important; border-top: 1px solid rgba(30, 41, 59, 0.4); padding-top: 6px; }
     }
 </style>
 """
@@ -615,7 +690,7 @@ def get_currency_symbol(curr_str):
     return "$"
 
 # ==========================================
-# GENERADOR DEL CALENDARIO DINÁMICO Y RESPONSIVO
+# GENERADOR DEL CALENDARIO NUMÉRICO
 # ==========================================
 def render_calendar(df_trades, curr_symbol, year, month):
     daily_pnl = {}
@@ -691,6 +766,182 @@ def render_calendar(df_trades, curr_symbol, year, month):
         
     html += "</table></div>"
     return html
+
+# ==========================================
+# GENERADOR DEL TRADING HEATMAP CON TEMPORALIDADES EXACTAS
+# ==========================================
+def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance):
+    now = datetime.now()
+    year = now.year
+    month = now.month
+    today_day = now.day
+    today_weekday = now.weekday() # 0 = Lunes, 6 = Domingo
+    
+    daily_pnl_by_date = {}
+    period_stats = {"net_pnl": 0.0, "green_days": 0, "red_days": 0, "total_trades": 0}
+    
+    threshold = 50000.0 if ("COP" in curr_symbol or "COL$" in curr_symbol) else 25.0
+    if initial_balance > 0:
+        threshold = max(initial_balance * 0.02, threshold)
+
+    if not df_trades.empty:
+        df_copy = df_trades.copy()
+        df_copy['date_time'] = pd.to_datetime(df_copy['date_time'])
+        df_copy['pnl'] = pd.to_numeric(df_copy['pnl'], errors='coerce').fillna(0.0)
+        df_copy['date_only'] = df_copy['date_time'].dt.date
+        
+        # Filtro para estadísticas del panel lateral
+        if time_filter == "This Week":
+            start_of_week = now.date() - timedelta(days=now.weekday())
+            df_period = df_copy[df_copy['date_only'] >= start_of_week]
+        elif time_filter == "This Month":
+            df_period = df_copy[(df_copy['date_time'].dt.year == year) & (df_copy['date_time'].dt.month == month)]
+        elif time_filter == "This Year":
+            df_period = df_copy[df_copy['date_time'].dt.year == year]
+        else: # All Time
+            df_period = df_copy
+            
+        period_stats["total_trades"] = len(df_period)
+        period_stats["net_pnl"] = float(df_period['pnl'].sum()) if not df_period.empty else 0.0
+        
+        # Mapeo global fecha -> pnl
+        grouped_global = df_copy.groupby('date_only')['pnl'].sum()
+        daily_pnl_by_date = {k: float(v) for k, v in grouped_global.items()}
+        
+        if not df_period.empty:
+            grouped_period = df_period.groupby('date_only')['pnl'].sum()
+            period_stats["green_days"] = len([v for v in grouped_period.values if v > 0])
+            period_stats["red_days"] = len([v for v in grouped_period.values if v < 0])
+
+    def get_color_details(pnl_val):
+        if pnl_val is None:
+            return "#1e2533", "#64748b", "No Trade"
+        if pnl_val > threshold:
+            return "#00e676", "#050a14", f"+{pnl_val:,.2f} {curr_symbol} (Profitable)"
+        elif 0 < pnl_val <= threshold:
+            return "#0d9488", "#ffffff", f"+{pnl_val:,.2f} {curr_symbol} (Small Profit)"
+        elif pnl_val == 0:
+            return "#7c3aed", "#ffffff", f"0.00 {curr_symbol} (Break-even)"
+        elif -threshold <= pnl_val < 0:
+            return "#be123c", "#ffffff", f"{pnl_val:,.2f} {curr_symbol} (Loss)"
+        else:
+            return "#ff1744", "#ffffff", f"{pnl_val:,.2f} {curr_symbol} (Heavy Loss)"
+
+    content_html = ""
+
+    # 1. TEMPORALIDAD: THIS WEEK (Lunes a Viernes arriba, Sábado y Domingo abajo)
+    if time_filter == "This Week":
+        start_of_week = now.date() - timedelta(days=now.weekday())
+        week_days_info = [
+            ("Mon", start_of_week + timedelta(days=0), 0),
+            ("Tue", start_of_week + timedelta(days=1), 1),
+            ("Wed", start_of_week + timedelta(days=2), 2),
+            ("Thu", start_of_week + timedelta(days=3), 3),
+            ("Fri", start_of_week + timedelta(days=4), 4),
+            ("Sat", start_of_week + timedelta(days=5), 5),
+            ("Sun", start_of_week + timedelta(days=6), 6),
+        ]
+        
+        grid_html = '<div class="hm-week-grid">'
+        # Fila 1: Mon a Fri (5 items)
+        for label, d_date, idx in week_days_info[:5]:
+            pnl_val = daily_pnl_by_date.get(d_date, None)
+            bg, text_color, tip = get_color_details(pnl_val)
+            today_cls = " hm-cell-today" if idx == today_weekday else ""
+            grid_html += f'<div class="hm-week-cell{today_cls}" style="background-color:{bg}; color:{text_color};" title="{label} ({d_date}): {tip}">{label}</div>'
+        
+        # Fila 2: Sat y Sun (2 items) + 3 espacios vacíos
+        for label, d_date, idx in week_days_info[5:]:
+            pnl_val = daily_pnl_by_date.get(d_date, None)
+            bg, text_color, tip = get_color_details(pnl_val)
+            today_cls = " hm-cell-today" if idx == today_weekday else ""
+            grid_html += f'<div class="hm-week-cell{today_cls}" style="background-color:{bg}; color:{text_color};" title="{label} ({d_date}): {tip}">{label}</div>'
+            
+        for _ in range(3):
+            grid_html += '<div class="hm-week-empty"></div>'
+            
+        grid_html += '</div>'
+        content_html = grid_html
+
+    # 2. TEMPORALIDAD: THIS MONTH (Calendario completo del mes actual)
+    elif time_filter == "This Month":
+        cal = calendar.monthcalendar(year, month)
+        grid_html = '''<div class="hm-weekdays">
+<div class="hm-weekday">Mon</div><div class="hm-weekday">Tue</div><div class="hm-weekday">Wed</div>
+<div class="hm-weekday">Thu</div><div class="hm-weekday">Fri</div><div class="hm-weekday">Sat</div><div class="hm-weekday">Sun</div>
+</div><div class="hm-grid">'''
+        for week in cal:
+            for day in week:
+                if day == 0:
+                    grid_html += '<div class="hm-empty"></div>'
+                else:
+                    d_date = datetime(year, month, day).date()
+                    pnl_val = daily_pnl_by_date.get(d_date, None)
+                    bg, text_color, tip = get_color_details(pnl_val)
+                    today_cls = " hm-cell-today" if day == today_day else ""
+                    grid_html += f'<div class="hm-cell{today_cls}" style="background-color:{bg}; color:{text_color};" title="Día {day}: {tip}">{day}</div>'
+        grid_html += '</div>'
+        content_html = grid_html
+
+    # 3. TEMPORALIDAD: THIS YEAR (Filas de meses con bloques de días)
+    elif time_filter == "This Year":
+        months_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        year_html = '<div class="hm-year-container">'
+        
+        for m_idx, m_name in enumerate(months_short, start=1):
+            num_days = calendar.monthrange(year, m_idx)[1]
+            year_html += f'<div class="hm-year-month-row"><div class="hm-year-month-label">{m_name}</div><div class="hm-year-mini-grid">'
+            
+            for day in range(1, num_days + 1):
+                d_date = datetime(year, m_idx, day).date()
+                pnl_val = daily_pnl_by_date.get(d_date, None)
+                bg, _, tip = get_color_details(pnl_val)
+                today_cls = " hm-cell-today" if (m_idx == month and day == today_day) else ""
+                year_html += f'<div class="hm-mini-box{today_cls}" style="background-color:{bg};" title="{m_name} {day}: {tip}"></div>'
+                
+            year_html += '</div></div>'
+            
+        year_html += '</div>'
+        content_html = year_html
+
+    # 4. TEMPORALIDAD: ALL TIME (Si no hay datos, muestra exactamente "No trading data available")
+    else:
+        if df_trades.empty:
+            content_html = '<div class="hm-no-data-box">No trading data available</div>'
+        else:
+            years_present = sorted(df_trades['date_time'].dt.year.unique(), reverse=True)
+            months_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+            all_html = '<div class="hm-year-container">'
+            
+            for y in years_present:
+                all_html += f'<div style="color:#00d2ff; font-weight:800; font-size:13px; margin: 4px 0 6px 0;">{y}</div>'
+                for m_idx, m_name in enumerate(months_short, start=1):
+                    num_days = calendar.monthrange(y, m_idx)[1]
+                    all_html += f'<div class="hm-year-month-row"><div class="hm-year-month-label">{m_name}</div><div class="hm-year-mini-grid">'
+                    for day in range(1, num_days + 1):
+                        d_date = datetime(y, m_idx, day).date()
+                        pnl_val = daily_pnl_by_date.get(d_date, None)
+                        bg, _, tip = get_color_details(pnl_val)
+                        today_cls = " hm-cell-today" if (y == year and m_idx == month and day == today_day) else ""
+                        all_html += f'<div class="hm-mini-box{today_cls}" style="background-color:{bg};" title="{d_date}: {tip}"></div>'
+                    all_html += '</div></div>'
+                    
+            all_html += '</div>'
+            content_html = all_html
+
+    # Estructura del Card con la leyenda
+    full_html = f"""<div class="hm-card">
+{content_html}
+<div class="hm-legend">
+<div class="hm-leg-item"><span class="hm-dot" style="background:#00e676;"></span> Profitable</div>
+<div class="hm-leg-item"><span class="hm-dot" style="background:#0d9488;"></span> Small Profit</div>
+<div class="hm-leg-item"><span class="hm-dot" style="background:#7c3aed;"></span> Break-even</div>
+<div class="hm-leg-item"><span class="hm-dot" style="background:#be123c;"></span> Loss</div>
+<div class="hm-leg-item"><span class="hm-dot" style="background:#ff1744;"></span> Heavy Loss</div>
+<div class="hm-leg-item"><span class="hm-dot" style="background:#1e2533;"></span> No Trade</div>
+</div>
+</div>"""
+    return full_html, period_stats
 
 # ==========================================
 # GENERADOR DE TABLA ANALÍTICA ULTRA ESTILIZADA
@@ -1075,7 +1326,7 @@ else:
                     time.sleep(0.5)
                     st.rerun()
 
-        # 2. TABLA DE PORTAFOLIOS Y CUENTAS VINCULADAS (REUBICADA INMEDIATAMENTE DESPUÉS DE CREAR)
+        # 2. TABLA DE PORTAFOLIOS Y CUENTAS VINCULADAS
         st.markdown("<div style='margin-top: 20px;'></div>", unsafe_allow_html=True)
         st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 12px;">📋 Portafolios y Cuentas Vinculadas</div>', unsafe_allow_html=True)
         st.markdown(render_accounts_table(df_accounts), unsafe_allow_html=True)
@@ -1358,6 +1609,58 @@ else:
 </div>''', unsafe_allow_html=True)
 
             # ==========================================
+            # SECCIÓN: TRADING HEATMAP CON INTERACTIVIDAD TOTAL
+            # ==========================================
+            st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
+            col_hm_main, col_hm_stats = st.columns([1.25, 0.75])
+            
+            with col_hm_main:
+                h_col_t, h_col_s = st.columns([1.55, 1.45])
+                with h_col_t:
+                    st.markdown('<div style="font-size: 19px; font-weight: 800; color: #ffffff; padding-top: 5px; display: flex; align-items: center; gap: 8px;"><span>🔥</span> Trading Heatmap</div>', unsafe_allow_html=True)
+                with h_col_s:
+                    # Selector con las opciones exactas
+                    hm_filter = st.selectbox("TEMPORALIDAD HEATMAP:", ["This Month", "This Week", "This Year", "All Time"], label_visibility="collapsed", key="hm_view_filter")
+                
+                hm_html, p_stats = render_trading_heatmap(df_trades, curr_symbol, hm_filter, initial_balance)
+                st.markdown(hm_html, unsafe_allow_html=True)
+
+            with col_hm_stats:
+                with st.container(border=True):
+                    st.markdown(f'''<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 8px; margin-bottom: 12px;">
+<div>
+<div style="font-size: 13px; font-weight: 800; color: #ffffff;">⚡ Resumen del Periodo</div>
+<div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Filtro: {hm_filter}</div>
+</div>
+<span style="font-size: 16px;">📊</span>
+</div>''', unsafe_allow_html=True)
+                    
+                    hm_net = p_stats["net_pnl"]
+                    hm_sign = "+" if hm_net >= 0 else ""
+                    hm_color = "#00ffa3" if hm_net >= 0 else "#ff3366"
+                    
+                    st.markdown(f'''<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;">
+<div style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">P&L Neto ({hm_filter})</div>
+<div style="font-size: 22px; font-weight: 800; color: {hm_color}; margin-top: 2px;">{hm_sign}{curr_symbol}{hm_net:,.2f}</div>
+</div>''', unsafe_allow_html=True)
+
+                    st.markdown(f'''<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px;">
+<div style="font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase;">Días Ganadores</div>
+<div style="font-size: 18px; font-weight: 800; color: #00ffa3; margin-top: 2px;">🟢 {p_stats["green_days"]}D</div>
+</div>
+<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px;">
+<div style="font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase;">Días Perdedores</div>
+<div style="font-size: 18px; font-weight: 800; color: #ff3366; margin-top: 2px;">🔴 {p_stats["red_days"]}D</div>
+</div>
+</div>''', unsafe_allow_html=True)
+
+                    st.markdown(f'''<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px;">
+<div style="font-size: 9.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Trades Ejecutados en Periodo</div>
+<div style="font-size: 17px; font-weight: 800; color: #00d2ff; margin-top: 2px;">{p_stats["total_trades"]} operaciones</div>
+</div>''', unsafe_allow_html=True)
+
+            # ==========================================
             # SECCIÓN 2: 4 PANELES DE ESTADO
             # ==========================================
             st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
@@ -1547,7 +1850,7 @@ PSICO-TRADING SCORE
                             if not df_negative.empty:
                                 worst_row = df_negative.loc[df_negative['pnl'].idxmin()]
                                 worst_day_val = worst_row['pnl']
-                                worst_day_date = worst_row['day_date'].strftime('%d %b, %Y')
+                                worst_day_date = driver_worst_date = worst_row['day_date'].strftime('%d %b, %Y')
                             else:
                                 worst_day_val = 0.0
                                 worst_day_date = "Sin pérdidas"
