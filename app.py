@@ -795,16 +795,18 @@ else:
                 st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ FILTRADO TEMPORAL Y REGISTRO DE EJECUCIONES</p>', unsafe_allow_html=True)
                 
                 if total_trades > 0:
-                    # Filtro Temporal
+                    # Filtro Temporal (Incluyendo opción Diario)
                     f_col1, _ = st.columns([2, 2])
                     with f_col1:
-                        time_filter = st.selectbox("⏱️ Filtrar Temporalidad", ["Todo el Histórico", "Esta Semana", "Este Mes", "Este Año"])
+                        time_filter = st.selectbox("⏱️ Filtrar Temporalidad", ["Todo el Histórico", "Diario", "Esta Semana", "Este Mes", "Este Año"])
                     
                     df_filtered = df_trades.copy()
                     df_filtered['date_time'] = pd.to_datetime(df_filtered['date_time'])
                     now = datetime.now()
                     
-                    if time_filter == "Esta Semana":
+                    if time_filter == "Diario":
+                        df_filtered = df_filtered[df_filtered['date_time'].dt.date == now.date()]
+                    elif time_filter == "Esta Semana":
                         start_of_week = now - timedelta(days=now.weekday())
                         df_filtered = df_filtered[df_filtered['date_time'] >= pd.to_datetime(start_of_week.date())]
                     elif time_filter == "Este Mes":
@@ -831,6 +833,8 @@ else:
                             pnl_val = float(row['pnl'])
                             res_color = "#00ffa3" if pnl_val > 0 else "#ff3366" if pnl_val < 0 else "#94a3b8"
                             sign_pnl = "+" if pnl_val > 0 else ""
+                            obs_text = row.get('observation', '')
+                            obs_html = f"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: {obs_text}</div>" if obs_text else ""
                             
                             st.markdown(f"""
                             <div class="trade-log-card">
@@ -843,7 +847,7 @@ else:
                                         Confianza: <b style="color:#e2e8f0">{row.get('confidence', 'N/A')}</b> &nbsp;|&nbsp; 
                                         Emoción: <b style="color:#e2e8f0">{row.get('emotion', 'N/A')}</b>
                                     </div>
-                                    {"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: " + row.get('observation', '') + "</div>" if row.get('observation') else ""}
+                                    {obs_html}
                                 </div>
                                 <div style="text-align: right;">
                                     <div style="color: {res_color}; font-size: 16px; font-weight: bold;">{sign_pnl}${pnl_val:.2f}</div>
