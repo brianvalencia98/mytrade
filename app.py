@@ -56,9 +56,9 @@ CSS_DASHBOARD = """
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
 
     /* Calendario Avanzado */
-    .cal-container { background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
-    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .cal-title { color: #ffffff; font-size: 22px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+    .cal-container { background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 10px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .cal-title { color: #ffffff; font-size: 22px; font-weight: bold; }
     .cal-month { color: #ffffff; font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
     .cal-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     .cal-th { color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;}
@@ -67,7 +67,7 @@ CSS_DASHBOARD = """
     .cal-td { border: 1px solid #10192d; height: 105px; vertical-align: top; padding: 10px; background-color: #080f1e; transition: all 0.2s ease; position: relative; }
     .cal-td:hover { background-color: #111e38; }
     
-    /* Celdas con resultados (Ganancias / Pérdidas) */
+    /* Celdas con resultados */
     .cal-td.cal-td-win { border: 1px solid #00d284 !important; border-bottom: 3.5px solid #00ffa3 !important; background-color: rgba(0, 255, 163, 0.08) !important; }
     .cal-td.cal-td-loss { border: 1px solid #d22d56 !important; border-bottom: 3.5px solid #ff3366 !important; background-color: rgba(255, 51, 102, 0.08) !important; }
     
@@ -91,33 +91,31 @@ CSS_DASHBOARD = """
 # ==========================================
 # GENERADOR DEL CALENDARIO
 # ==========================================
-def render_calendar(df_trades):
+def render_calendar(df_trades, target_year, target_month):
     meses = {1:"ENE", 2:"FEB", 3:"MAR", 4:"ABR", 5:"MAY", 6:"JUN", 7:"JUL", 8:"AGO", 9:"SEP", 10:"OCT", 11:"NOV", 12:"DIC"}
-    now = datetime.now()
-    year = now.year
-    month = now.month
-    month_name = f"{meses[month]} {year}"
+    month_name = f"{meses[target_month]} {target_year}"
     
     daily_pnl = {}
     if not df_trades.empty:
         df_copy = df_trades.copy()
-        df_copy['date_time'] = pd.to_datetime(df_copy['date_time'])
+        df_copy['date_time'] = pd.to_datetime(df_copy['date_time'].astype(str))
         df_copy['pnl'] = pd.to_numeric(df_copy['pnl'], errors='coerce').fillna(0.0)
         
-        # Filtrar trades del mes y año actual
-        current_month = df_copy[(df_copy['date_time'].dt.year == year) & (df_copy['date_time'].dt.month == month)]
+        # Filtro por año y mes seleccionado
+        mask = (df_copy['date_time'].dt.year == target_year) & (df_copy['date_time'].dt.month == target_month)
+        current_month = df_copy[mask]
         
         if not current_month.empty:
             grouped = current_month.groupby(current_month['date_time'].dt.day)['pnl'].sum()
-            daily_pnl = grouped.to_dict()
+            daily_pnl = {int(k): float(v) for k, v in grouped.to_dict().items()}
 
-    cal = calendar.monthcalendar(year, month)
+    cal = calendar.monthcalendar(target_year, target_month)
     
     html = f"""
     <div class="cal-container">
         <div class="cal-header">
             <div class="cal-title">📅 Calendario</div>
-            <div class="cal-month">&lt; &nbsp; {month_name} &nbsp; &gt;</div>
+            <div class="cal-month">{month_name}</div>
         </div>
         <table class="cal-table">
             <tr>
@@ -135,23 +133,26 @@ def render_calendar(df_trades):
             if day == 0:
                 html += '<td class="cal-td"></td>'
             else:
-                pnl = float(daily_pnl.get(day, 0.0))
                 if day in daily_pnl:
+                    pnl = daily_pnl[day]
                     has_trades_in_week = True
                     week_total += pnl
-                
-                if day in daily_pnl and pnl > 0:
-                    html += f'<td class="cal-td cal-td-win"><div class="cal-day">{day}</div><div class="cal-pnl-win">+{pnl:.2f}$</div></td>'
-                elif day in daily_pnl and pnl < 0:
-                    html += f'<td class="cal-td cal-td-loss"><div class="cal-day">{day}</div><div class="cal-pnl-loss">{pnl:.2f}$</div></td>'
+                    if pnl > 0:
+                        html += f'<td class="cal-td cal-td-win"><div class="cal-day">{day}</div><div class="cal-pnl-win">+{pnl:.2f}$</div></td>'
+                    elif pnl < 0:
+                        html += f'<td class="cal-td cal-td-loss"><div class="cal-day">{day}</div><div class="cal-pnl-loss">{pnl:.2f}$</div></td>'
+                    else:
+                        html += f'<td class="cal-td"><div class="cal-day">{day}</div><div class="cal-pnl-win">0.00$</div></td>'
                 else:
                     html += f'<td class="cal-td"><div class="cal-day">{day}</div></td>'
         
-        # Columna de sumatoria semanal
-        if has_trades_in_week and week_total > 0:
-            html += f'<td class="cal-td-total cal-total-win"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">+{week_total:.2f}$</div></td>'
-        elif has_trades_in_week and week_total < 0:
-            html += f'<td class="cal-td-total cal-total-loss"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-loss-total">{week_total:.2f}$</div></td>'
+        if has_trades_in_week:
+            if week_total > 0:
+                html += f'<td class="cal-td-total cal-total-win"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">+{week_total:.2f}$</div></td>'
+            elif week_total < 0:
+                html += f'<td class="cal-td-total cal-total-loss"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-loss-total">{week_total:.2f}$</div></td>'
+            else:
+                html += f'<td class="cal-td-total"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">0.00$</div></td>'
         else:
             html += f'<td class="cal-td-total"><div class="cal-label-total">TOTAL</div></td>'
             
@@ -235,6 +236,12 @@ else:
     def get_accounts(): return pd.read_sql_query("SELECT * FROM accounts", conn)
     def get_trades(account_id): return pd.read_sql_query(f"SELECT * FROM trades WHERE account_id = {account_id} ORDER BY date_time ASC", conn)
 
+    # Variables de sesión para el mes/año del calendario
+    if "cal_year" not in st.session_state:
+        st.session_state.cal_year = datetime.now().year
+    if "cal_month" not in st.session_state:
+        st.session_state.cal_month = datetime.now().month
+
     # ==========================================
     # BARRA LATERAL
     # ==========================================
@@ -307,9 +314,29 @@ else:
             with kpi_cols[3]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">TRADES EJECUTADOS</div><div class="kpi-value" style="color: #00d2ff;">{total_trades}</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">Volumen total</div></div>', unsafe_allow_html=True)
 
             # ==========================================
-            # CALENDARIO DE TRADING
+            # CONTROLES Y RENDER DEL CALENDARIO
             # ==========================================
-            st.markdown(render_calendar(df_trades), unsafe_allow_html=True)
+            def prev_month():
+                if st.session_state.cal_month == 1:
+                    st.session_state.cal_month = 12
+                    st.session_state.cal_year -= 1
+                else:
+                    st.session_state.cal_month -= 1
+
+            def next_month():
+                if st.session_state.cal_month == 12:
+                    st.session_state.cal_month = 1
+                    st.session_state.cal_year += 1
+                else:
+                    st.session_state.cal_month += 1
+
+            c_prev, _, c_next = st.columns([0.08, 0.84, 0.08])
+            with c_prev:
+                st.button("◀ Mes", on_click=prev_month, use_container_width=True)
+            with c_next:
+                st.button("Mes ▶", on_click=next_month, use_container_width=True)
+
+            st.markdown(render_calendar(df_trades, st.session_state.cal_year, st.session_state.cal_month), unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
 
             # ==========================================
