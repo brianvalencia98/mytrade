@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 import calendar
+import time
 
 # ==========================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -62,7 +63,7 @@ CSS_DASHBOARD = """
     .cal-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     .cal-th { color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;}
     
-    /* Celdas diarias con posicionamiento relativo para anclar el texto abajo a la derecha */
+    /* Celdas diarias con posicionamiento relativo */
     .cal-td { border: 1px solid #1e293b; height: 100px; vertical-align: top; padding: 10px; background-color: #070d19; transition: background 0.3s; position: relative; }
     .cal-td:hover { background-color: #111a2e; }
     
@@ -77,7 +78,7 @@ CSS_DASHBOARD = """
     
     .cal-day { font-size: 14px; color: #94a3b8; font-weight: bold;}
     
-    /* Posicionamiento absoluto para fijar el monto en la esquina inferior derecha */
+    /* Posicionamiento absoluto para fijar el monto en la esquina */
     .cal-pnl-win { color: #00ffa3; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
     .cal-pnl-loss { color: #ff3366; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
     
@@ -130,7 +131,6 @@ def render_calendar(df_trades):
                 pnl = daily_pnl.get(day, 0)
                 week_total += pnl
                 
-                # Lógica para inyectar clases y texto según ganancia o pérdida
                 if pnl > 0:
                     html += f'<td class="cal-td cal-td-win"><div class="cal-day">{day}</div><div class="cal-pnl-win">+{pnl:.2f}$</div></td>'
                 elif pnl < 0:
@@ -138,7 +138,6 @@ def render_calendar(df_trades):
                 else:
                     html += f'<td class="cal-td"><div class="cal-day">{day}</div></td>'
         
-        # Columna de sumatoria semanal con estilo condicional
         if week_total > 0:
             html += f'<td class="cal-td-total cal-total-win"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">+{week_total:.2f}$</div></td>'
         elif week_total < 0:
@@ -221,6 +220,7 @@ else:
 
     c.execute('''CREATE TABLE IF NOT EXISTS accounts (id SERIAL PRIMARY KEY, broker VARCHAR(100), account_name VARCHAR(100), initial_balance NUMERIC)''')
     c.execute('''CREATE TABLE IF NOT EXISTS trades (id SERIAL PRIMARY KEY, account_id INTEGER REFERENCES accounts(id), date_time TIMESTAMP, market VARCHAR(50), asset VARCHAR(50), direction VARCHAR(50), amount NUMERIC, result VARCHAR(50), pnl NUMERIC)''')
+    conn.commit()
 
     def get_accounts(): return pd.read_sql_query("SELECT * FROM accounts", conn)
     def get_trades(account_id): return pd.read_sql_query(f"SELECT * FROM trades WHERE account_id = {account_id} ORDER BY date_time ASC", conn)
@@ -244,10 +244,16 @@ else:
             with col1: broker = st.text_input("Bróker (Ej. Quotex)")
             with col2: acc_name = st.text_input("Nombre de Cuenta")
             with col3: init_balance = st.number_input("Balance Inicial ($)", min_value=0.0, value=100.0)
-            if st.form_submit_button("Crear Cuenta") and broker:
+            
+            guardar_cuenta = st.form_submit_button("Crear Cuenta")
+            
+            if guardar_cuenta and broker:
                 c.execute("INSERT INTO accounts (broker, account_name, initial_balance) VALUES (%s, %s, %s)", (broker, acc_name, init_balance))
-                st.success("Cuenta creada.")
+                conn.commit() # Forzar guardado
+                st.success("✅ Cuenta creada correctamente.")
+                time.sleep(0.5)
                 st.rerun()
+                
         st.dataframe(get_accounts(), use_container_width=True, hide_index=True)
 
     elif menu == "📊 Dashboard Principal":
@@ -315,10 +321,18 @@ else:
                         date_time = st.date_input("Fecha", datetime.today())
                         time_input = st.time_input("Hora", datetime.now().time())
                     
-                    if st.form_submit_button("GUARDAR EJECUCIÓN") and asset:
-                        dt_string = f"{date_time} {time_input}"
-                        c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl))
-                        st.rerun()
+                    guardar_ejecucion = st.form_submit_button("GUARDAR EJECUCIÓN")
+                    
+                    if guardar_ejecucion and asset:
+                        try:
+                            dt_string = f"{date_time} {time_input}"
+                            c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl))
+                            conn.commit()  # Forzar escritura en base de datos
+                            st.success("✅ Trade registrado exitosamente!")
+                            time.sleep(0.5) # Dar tiempo para que el servidor procese antes de recargar
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Error guardando en la BD: {e}")
 
             # ==========================================
             # GRÁFICA HISTÓRICA
