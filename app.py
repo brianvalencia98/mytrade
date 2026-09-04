@@ -18,10 +18,8 @@ CSS_LOGIN = """
     [data-testid="stAppViewContainer"] { background-color: #070d19; color: #e2e8f0; }
     [data-testid="stHeader"] { background-color: transparent; }
     
-    /* Alinear las columnas del teclado en el centro */
     div[data-testid="column"] { display: flex; justify-content: center; align-items: center; }
     
-    /* Forzar diseño circular solo para los botones del teclado */
     [data-testid="stButton"] button {
         width: 70px !important;
         height: 70px !important;
@@ -53,15 +51,7 @@ CSS_DASHBOARD = """
     .kpi-value.loss { color: #ff3366; }
     .kpi-value.win { color: #00ffa3; }
     
-    /* Botones generales del Dashboard */
-    [data-testid="stButton"] button {
-        background-color: #00d2ff !important;
-        color: #000000 !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: bold !important;
-        width: 100% !important;
-    }
+    [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
 
     /* Calendario Avanzado */
@@ -70,14 +60,31 @@ CSS_DASHBOARD = """
     .cal-title { color: #ffffff; font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
     .cal-month { color: #ffffff; font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
     .cal-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .cal-th { color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; }
-    .cal-td { border: 1px solid #1e293b; height: 100px; vertical-align: top; padding: 8px; background-color: #070d19; transition: background 0.3s; }
+    .cal-th { color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;}
+    
+    /* Celdas diarias con posicionamiento relativo para anclar el texto abajo a la derecha */
+    .cal-td { border: 1px solid #1e293b; height: 100px; vertical-align: top; padding: 10px; background-color: #070d19; transition: background 0.3s; position: relative; }
     .cal-td:hover { background-color: #111a2e; }
+    
+    /* Estilos dinámicos para operaciones ganadoras y perdedoras */
+    .cal-td.cal-td-win { border: 1px solid #00ffa3; border-bottom: 3px solid #00ffa3; background-color: rgba(0, 255, 163, 0.05); }
+    .cal-td.cal-td-loss { border: 1px solid #ff3366; border-bottom: 3px solid #ff3366; background-color: rgba(255, 51, 102, 0.05); }
+    
+    /* Celda de Totales */
     .cal-td-total { border: 1px solid #1e293b; height: 100px; vertical-align: middle; text-align: center; background-color: #0b1325; }
+    .cal-td-total.cal-total-win { border: 1px solid rgba(0, 255, 163, 0.3); background-color: rgba(0, 255, 163, 0.05); }
+    .cal-td-total.cal-total-loss { border: 1px solid rgba(255, 51, 102, 0.3); background-color: rgba(255, 51, 102, 0.05); }
+    
     .cal-day { font-size: 14px; color: #94a3b8; font-weight: bold;}
-    .cal-pnl-win { color: #00ffa3; font-weight: bold; font-size: 14px; text-align: center; margin-top: 20px;}
-    .cal-pnl-loss { color: #ff3366; font-weight: bold; font-size: 14px; text-align: center; margin-top: 20px;}
-    .cal-label-total { font-size: 10px; color: #64748b; font-weight: bold; margin-bottom: 5px; letter-spacing: 1px;}
+    
+    /* Posicionamiento absoluto para fijar el monto en la esquina inferior derecha */
+    .cal-pnl-win { color: #00ffa3; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
+    .cal-pnl-loss { color: #ff3366; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
+    
+    /* Textos para la celda de totales */
+    .cal-pnl-win-total { color: #00ffa3; font-weight: bold; font-size: 14px; margin-top: 5px; }
+    .cal-pnl-loss-total { color: #ff3366; font-weight: bold; font-size: 14px; margin-top: 5px; }
+    .cal-label-total { font-size: 10px; color: #64748b; font-weight: bold; letter-spacing: 1px;}
 </style>
 """
 
@@ -85,7 +92,6 @@ CSS_DASHBOARD = """
 # GENERADOR DEL CALENDARIO
 # ==========================================
 def render_calendar(df_trades):
-    # Traducción de meses manual para asegurar el idioma
     meses = {1:"ENE", 2:"FEB", 3:"MAR", 4:"ABR", 5:"MAY", 6:"JUN", 7:"JUL", 8:"AGO", 9:"SEP", 10:"OCT", 11:"NOV", 12:"DIC"}
     now = datetime.now()
     year = now.year
@@ -123,25 +129,30 @@ def render_calendar(df_trades):
             else:
                 pnl = daily_pnl.get(day, 0)
                 week_total += pnl
-                pnl_html = ""
+                
+                # Lógica para inyectar clases y texto según ganancia o pérdida
                 if pnl > 0:
-                    pnl_html = f'<div class="cal-pnl-win">+{pnl:.2f}</div>'
+                    html += f'<td class="cal-td cal-td-win"><div class="cal-day">{day}</div><div class="cal-pnl-win">+{pnl:.2f}$</div></td>'
                 elif pnl < 0:
-                    pnl_html = f'<div class="cal-pnl-loss">{pnl:.2f}</div>'
-                    
-                html += f'<td class="cal-td"><div class="cal-day">{day}</div>{pnl_html}</td>'
+                    html += f'<td class="cal-td cal-td-loss"><div class="cal-day">{day}</div><div class="cal-pnl-loss">{pnl:.2f}$</div></td>'
+                else:
+                    html += f'<td class="cal-td"><div class="cal-day">{day}</div></td>'
         
-        # Columna de sumatoria semanal
-        t_color = "cal-pnl-win" if week_total > 0 else "cal-pnl-loss" if week_total < 0 else ""
-        t_text = f"+{week_total:.2f}" if week_total > 0 else f"{week_total:.2f}" if week_total < 0 else ""
-        html += f'<td class="cal-td-total"><div class="cal-label-total">TOTAL</div><div class="{t_color}" style="margin-top:0;">{t_text}</div></td>'
+        # Columna de sumatoria semanal con estilo condicional
+        if week_total > 0:
+            html += f'<td class="cal-td-total cal-total-win"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">+{week_total:.2f}$</div></td>'
+        elif week_total < 0:
+            html += f'<td class="cal-td-total cal-total-loss"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-loss-total">{week_total:.2f}$</div></td>'
+        else:
+            html += f'<td class="cal-td-total"><div class="cal-label-total">TOTAL</div></td>'
+            
         html += "</tr>"
         
     html += "</table></div>"
     return html
 
 # ==========================================
-# SISTEMA DE LOGIN: TECLADO NUMÉRICO ESTRICTO
+# SISTEMA DE LOGIN
 # ==========================================
 def custom_pin_pad():
     st.markdown(CSS_LOGIN, unsafe_allow_html=True)
@@ -155,13 +166,10 @@ def custom_pin_pad():
     pin_display = "● " * len(st.session_state.pin_input) + "○ " * (4 - len(st.session_state.pin_input))
     st.markdown(f"<h1 style='text-align: center; letter-spacing: 15px; color: #fff;'>{pin_display}</h1><br>", unsafe_allow_html=True)
     
-    # Proporciones ajustadas para que los botones queden juntos en el centro
     _, col1, col2, col3, _ = st.columns([1.5, 0.4, 0.4, 0.4, 1.5])
     
     def add_digit(digit):
-        if len(st.session_state.pin_input) < 4:
-            st.session_state.pin_input += str(digit)
-            
+        if len(st.session_state.pin_input) < 4: st.session_state.pin_input += str(digit)
     def clear_pin():
         st.session_state.pin_input = ""
 
@@ -192,12 +200,11 @@ def custom_pin_pad():
     return False
 
 # ==========================================
-# RUTEO DE PANTALLAS
+# RUTEO DE PANTALLAS Y BASE DE DATOS
 # ==========================================
 if "password_correct" not in st.session_state or not st.session_state["password_correct"]:
     custom_pin_pad()
 else:
-    # Inyectar estilos principales
     st.markdown(CSS_DASHBOARD, unsafe_allow_html=True)
     
     @st.cache_resource(ttl=3600)
