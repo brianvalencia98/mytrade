@@ -3,7 +3,7 @@ import psycopg2
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import datetime
+from datetime import datetime, timedelta
 import calendar
 import time
 
@@ -50,11 +50,23 @@ CSS_DASHBOARD = """
     [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
     
-    /* Panel de Perfil de Trading */
+    /* Panel de Perfil y Emocional */
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 15px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); margin-top: 20px; height: 96%;}
     .profile-title { color: #ffffff; font-size: 22px; font-weight: bold; margin-bottom: 0px;}
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
+
+    /* Panel Estado Emocional Exacto */
+    .emotion-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 22px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 96%; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+    .emotion-header-title { color: #ffffff; font-size: 15px; font-weight: bold; letter-spacing: 1px; }
+    .emotion-header-sub { color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-top: 2px; }
+    .emotion-brain-icon { position: absolute; top: 20px; right: 20px; background: rgba(0, 210, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: #00d2ff; font-size: 18px; }
+    .emotion-content { text-align: center; padding: 15px 0; }
+    .emotion-emoji { font-size: 55px; margin-bottom: 8px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
+    .emotion-status { color: #ffffff; font-size: 26px; font-weight: bold; margin-bottom: 2px; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
+    .emotion-subtext { color: #94a3b8; font-size: 13px; font-weight: 500; }
+    .emotion-btn { background: transparent !important; border: 1px solid #1e293b !important; color: #94a3b8 !important; border-radius: 10px !important; padding: 10px !important; font-size: 14px !important; font-weight: 500 !important; width: 100% !important; text-align: center !important; transition: all 0.3s ease !important; }
+    .emotion-btn:hover { border-color: #00d2ff !important; color: #00d2ff !important; background: rgba(0, 210, 255, 0.05) !important; }
 </style>
 """
 
@@ -81,7 +93,7 @@ def render_calendar(df_trades):
     cal = calendar.monthcalendar(year, month)
     
     html = f"""
-    <div style="background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); height: 96%;">
+    <div style="background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); height: 100%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <div style="color: #ffffff; font-size: 22px; font-weight: bold; display: flex; align-items: center; gap: 10px;">📅 Calendario</div>
             <div style="color: #ffffff; font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">&lt; &nbsp; {month_name} &nbsp; &gt;</div>
@@ -204,6 +216,11 @@ else:
 
     c.execute('''CREATE TABLE IF NOT EXISTS accounts (id SERIAL PRIMARY KEY, broker VARCHAR(100), account_name VARCHAR(100), initial_balance NUMERIC)''')
     c.execute('''CREATE TABLE IF NOT EXISTS trades (id SERIAL PRIMARY KEY, account_id INTEGER REFERENCES accounts(id), date_time TIMESTAMP, market VARCHAR(50), asset VARCHAR(50), direction VARCHAR(50), amount NUMERIC, result VARCHAR(50), pnl NUMERIC)''')
+    # Añadir columna de emoción si no existe
+    try:
+        c.execute('''ALTER TABLE trades ADD COLUMN IF NOT EXISTS emotion VARCHAR(50) DEFAULT 'Neutral 😐';''')
+    except:
+        pass
     conn.commit()
 
     def get_accounts(): return pd.read_sql_query("SELECT * FROM accounts", conn)
@@ -267,9 +284,7 @@ else:
                 net_profit = float(df_trades['pnl'].sum())
                 current_balance = initial_balance + net_profit
                 
-                # CÁLCULOS PARA PERFIL DE TRADING
                 score_win = win_rate
-                
                 gross_profit = df_trades[df_trades['pnl'] > 0]['pnl'].sum()
                 gross_loss = abs(df_trades[df_trades['pnl'] < 0]['pnl'].sum())
                 pf = gross_profit / gross_loss if gross_loss > 0 else 2.5
@@ -289,9 +304,7 @@ else:
                 df_trades['dd'] = (df_trades['peak'] - df_trades['equity']) / df_trades['peak']
                 max_dd = df_trades['dd'].max()
                 score_dd = max(100 - (max_dd * 500), 0)
-                
                 score_rec = (score_win * 0.7) + (score_pf * 0.3)
-                
                 overall_score = int(sum([score_win, score_pf, score_awal, score_rec, score_dd, score_cons]) / 6)
 
             # ==========================================
@@ -308,58 +321,84 @@ else:
             with kpi_cols[3]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">TRADES EJECUTADOS</div><div class="kpi-value" style="color: #00d2ff;">{total_trades}</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">Volumen total</div></div>', unsafe_allow_html=True)
 
             # ==========================================
-            # LAYOUT: CALENDARIO (60%) Y PERFIL (40%)
+            # LAYOUT: CALENDARIO, PERFIL Y ESTADO EMOCIONAL
             # ==========================================
-            col_cal, col_prof = st.columns([2.3, 1.4])
+            col_cal, col_prof, col_emo = st.columns([2.0, 1.2, 1.2])
             
             with col_cal:
                 st.markdown(render_calendar(df_trades), unsafe_allow_html=True)
                 
             with col_prof:
-                # CREACIÓN DEL GRÁFICO TIPO RADAR (ARAÑA)
                 categories = ['Win %', 'Profit Factor', 'Avg Win/Loss', 'Recovery', 'Drawdown', 'Consistency']
                 values = [score_win, score_pf, score_awal, score_rec, score_dd, score_cons]
                 values_loop = values + [values[0]]
                 categories_loop = categories + [categories[0]]
                 
                 fig_radar = go.Figure(data=go.Scatterpolar(
-                    r=values_loop,
-                    theta=categories_loop,
-                    fill='toself',
-                    fillcolor='rgba(0, 255, 163, 0.25)',
-                    line=dict(color='#00ffa3', width=2),
-                    marker=dict(size=1)
+                    r=values_loop, theta=categories_loop, fill='toself',
+                    fillcolor='rgba(0, 255, 163, 0.25)', line=dict(color='#00ffa3', width=2), marker=dict(size=1)
                 ))
                 fig_radar.update_layout(
-                    polar=dict(
-                        radialaxis=dict(visible=False, range=[0, 100]),
-                        angularaxis=dict(color='#94a3b8', gridcolor='#1e293b', linecolor='#1e293b', gridwidth=1),
-                        bgcolor='rgba(0,0,0,0)'
-                    ),
+                    polar=dict(radialaxis=dict(visible=False, range=[0, 100]), angularaxis=dict(color='#94a3b8', gridcolor='#1e293b', linecolor='#1e293b', gridwidth=1), bgcolor='rgba(0,0,0,0)'),
                     showlegend=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                    margin=dict(l=40, r=40, t=10, b=10), height=230
+                    margin=dict(l=30, r=30, t=10, b=10), height=200
                 )
 
                 st.markdown('<div class="profile-card">', unsafe_allow_html=True)
-                st.markdown('<div class="profile-title">Perfil de Trading <span style="float:right; color:#64748b; font-size: 18px; font-weight:normal;">ⓘ</span></div>', unsafe_allow_html=True)
+                st.markdown('<div class="profile-title">Perfil de Trading <span style="float:right; color:#64748b; font-size: 16px; font-weight:normal;">ⓘ</span></div>', unsafe_allow_html=True)
                 st.plotly_chart(fig_radar, use_container_width=True, config={'displayModeBar': False})
-                
                 st.markdown(f'''
-                    <div style="margin-top: -10px;">
+                    <div style="margin-top: -5px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                            <div style="color: #94a3b8; font-size: 14px;">Trading Score</div>
-                            <div><span style="color: #00ffa3; font-size: 28px; font-weight: bold;">{overall_score}</span><span style="color: #64748b; font-size: 14px;"> / 100</span></div>
+                            <div style="color: #94a3b8; font-size: 13px;">Trading Score</div>
+                            <div><span style="color: #00ffa3; font-size: 24px; font-weight: bold;">{overall_score}</span><span style="color: #64748b; font-size: 12px;"> / 100</span></div>
                         </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill" style="width: {overall_score}%;"></div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 5px;">
-                            <div style="color: #64748b; font-size: 10px; font-weight: bold;">NOVATO</div>
-                            <div style="color: #64748b; font-size: 10px; font-weight: bold;">PRO</div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {overall_score}%;"></div></div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
+                            <div style="color: #64748b; font-size: 9px; font-weight: bold;">NOVATO</div>
+                            <div style="color: #64748b; font-size: 9px; font-weight: bold;">PRO</div>
                         </div>
                     </div>
                 </div>
                 ''', unsafe_allow_html=True)
+
+            with col_emo:
+                # Calcular promedio emocional de los últimos 7 días
+                emoji_res = "😐"
+                label_res = "Desconocido"
+                if not df_trades.empty and 'emotion' in df_trades.columns:
+                    seven_days_ago = datetime.now() - timedelta(days=7)
+                    recent_trades = df_trades[df_trades['date_time'] >= seven_days_ago]
+                    if not recent_trades.empty and 'emotion' in recent_trades.columns:
+                        top_emotion = recent_trades['emotion'].mode()
+                        if not top_emotion.empty:
+                            full_emo = top_emotion[0]
+                            if " " in full_emo:
+                                parts = full_emo.split(" ")
+                                label_res = parts[0]
+                                emoji_res = parts[1]
+                            else:
+                                label_res = full_emo
+
+                st.markdown(f'''
+                <div class="emotion-card">
+                    <div>
+                        <div class="emotion-header-title">ESTADO EMOCIONAL</div>
+                        <div class="emotion-header-sub">BIOMETRÍA & SENTIMIENTO</div>
+                        <div class="emotion-brain-icon">🧠</div>
+                    </div>
+                    <div class="emotion-content">
+                        <div class="emotion-emoji">{emoji_res}</div>
+                        <div class="emotion-status">{label_res}</div>
+                        <div class="emotion-subtext">Promedio 7 días</div>
+                    </div>
+                    <div>
+                ''', unsafe_allow_html=True)
+                
+                if st.button("Ver detalles >", key="btn_details"):
+                    st.info("💡 Consejo: Mantén tus emociones neutrales y evita operar bajo frustración o euforia para proteger tu cuenta.")
+                    
+                st.markdown('</div></div>', unsafe_allow_html=True)
 
             # ==========================================
             # REGISTRO DE OPERACIONES
@@ -376,8 +415,9 @@ else:
                         amount = st.number_input("Inversión / Lote ($)", min_value=0.1, value=10.0, step=1.0)
                     with c3:
                         result = st.selectbox("Resultado", ["WIN 🎉", "LOSS ❌", "EMPATE ➖"])
-                        payout_percent = st.number_input("% Retorno (Binarias)", min_value=1, max_value=100, value=85, help="Solo aplica si ganaste en binarias")
+                        emotion = st.selectbox("Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
                     with c4:
+                        payout_percent = st.number_input("% Retorno (Binarias)", min_value=1, max_value=100, value=85)
                         date_time = st.date_input("Fecha", datetime.today())
                         time_input = st.time_input("Hora", datetime.now().time())
                     
@@ -393,9 +433,11 @@ else:
                                 pnl_calc = 0.0
 
                             dt_string = f"{date_time} {time_input}"
-                            c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl_calc))
+                            c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl, emotion) 
+                                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''', 
+                                      (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl_calc, emotion))
                             conn.commit()
-                            st.success(f"✅ Trade guardado con PnL: {pnl_calc:+.2f}$")
+                            st.success(f"✅ Trade guardado con PnL: {pnl_calc:+.2f}$ y Estado: {emotion}")
                             time.sleep(0.5)
                             st.rerun()
                         except Exception as e:
