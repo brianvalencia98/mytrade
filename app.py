@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / NEON CORREGIDO)
+# BLOQUES DE CSS (FUTURISTA / NEON AVANZADO)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -53,6 +53,28 @@ CSS_DASHBOARD = """
     .stForm [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
     .stForm [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
     
+    /* ==========================================
+       SELECTOR DE CUENTA FUTURISTA CON ANIMACIÓN NEÓN
+       ========================================== */
+    [data-testid="stSelectbox"] > div > div {
+        background: linear-gradient(145deg, #0b1325, #070d19) !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 14px !important;
+        color: #00d2ff !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    [data-testid="stSelectbox"] > div > div:hover {
+        border-color: #00d2ff !important;
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.35) !important;
+        transform: translateY(-2px);
+    }
+    [data-testid="stSelectbox"] span {
+        color: #00d2ff !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px;
+    }
+
     .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
     
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
@@ -60,7 +82,6 @@ CSS_DASHBOARD = """
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
-    /* Contenedores de gráficos limpios y perfectamente independientes */
     .chart-box { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 24px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 100%; }
     .best-worst-card { background: rgba(11, 19, 37, 0.8); border-radius: 12px; padding: 14px; border: 1px solid #1e293b; margin-top: 12px; }
     .best-card { border-left: 4px solid #00ffa3 !important; }
@@ -274,9 +295,13 @@ else:
         if df_accounts.empty:
             st.warning("⚠️ Crea una cuenta en el menú lateral para iniciar.")
         else:
+            # ==========================================
+            # SELECTOR DE CUENTA FUTURISTA CON ENCABEZADO
+            # ==========================================
+            st.markdown('<div style="color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px;">⚡ Selector de Cuenta Activa</div>', unsafe_allow_html=True)
             col_sel, _ = st.columns([1, 2])
             with col_sel:
-                account_options = df_accounts.apply(lambda x: f"{x['broker']} - {x['account_name']} (ID:{x['id']})", axis=1).tolist()
+                account_options = df_accounts.apply(lambda x: f"🌐 {x['broker']} — {x['account_name']} (ID:{x['id']})", axis=1).tolist()
                 selected_account_str = st.selectbox("CUENTA ACTIVA:", account_options, label_visibility="collapsed")
             
             selected_acc_id = int(selected_account_str.split("ID:")[1].replace(")", ""))
@@ -546,7 +571,7 @@ else:
                 ''', unsafe_allow_html=True)
 
             # ==========================================
-            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO (UNIFICADOS EN CONTENEDORES AISLADOS)
+            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO (INDEPENDIENTES Y ORDENADOS)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2 = st.columns(2)
@@ -555,7 +580,6 @@ else:
                 pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
                 sign_growth = "+" if net_profit >= 0 else ""
                 
-                # Todo el contenido visual se renderiza dentro del contenedor con la clase chart-box
                 st.markdown(f'''
                 <div class="chart-box">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
@@ -567,10 +591,8 @@ else:
                             {sign_growth}${net_profit:.2f} <span style="font-size: 12px;">{sign_growth}{pct_growth:.1f}%</span>
                         </div>
                     </div>
-                </div>
                 ''', unsafe_allow_html=True)
                 
-                # Gráfico Plotly integrado independientemente
                 if total_trades > 0:
                     df_trades['Trade #'] = range(1, len(df_trades) + 1)
                     fig_growth = px.area(df_trades, x='Trade #', y='equity', markers=True)
@@ -584,6 +606,7 @@ else:
                     st.plotly_chart(fig_growth, use_container_width=True, config={'displayModeBar': False})
                 else:
                     st.markdown('<div style="text-align: center; color: #64748b; padding: 40px;">Sin datos de crecimiento disponibles.</div>', unsafe_allow_html=True)
+                st.markdown('</div>', unsafe_allow_html=True)
 
             with col_chart2:
                 green_days_count = 0
@@ -621,7 +644,6 @@ else:
                             <span style="color: #00ffa3;">🟢 {green_days_count} Días</span> &nbsp; <span style="color: #ff3366;">🔴 {red_days_count} Días</span>
                         </div>
                     </div>
-                </div>
                 ''', unsafe_allow_html=True)
 
                 if total_trades > 0:
@@ -637,7 +659,6 @@ else:
                 else:
                     st.markdown('<div style="text-align: center; color: #64748b; padding: 40px;">Sin datos diarios disponibles.</div>', unsafe_allow_html=True)
 
-                # Tarjetas Inferiores perfectamente acopladas
                 sub_c1, sub_c2 = st.columns(2)
                 with sub_c1:
                     st.markdown(f'''
@@ -655,6 +676,8 @@ else:
                         <div style="font-size: 10px; color: #94a3b8; margin-top: 2px;">{worst_day_date}</div>
                     </div>
                     ''', unsafe_allow_html=True)
+
+                st.markdown('</div>', unsafe_allow_html=True)
 
             # ==========================================
             # REGISTRO DE OPERACIONES Y FORMULARIO
