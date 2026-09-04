@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / NEON)
+# BLOQUES DE CSS (FUTURISTA / NEON EXACTO)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -41,28 +41,22 @@ CSS_DASHBOARD = """
     [data-testid="stSidebar"] { background-color: #0b1325; border-right: 1px solid #1e293b; }
     [data-testid="stHeader"] { background-color: transparent; }
     
-    .kpi-card { background: linear-gradient(145deg, #111a2e, #0b1221); border-radius: 15px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); margin-bottom: 20px;}
-    .kpi-title { color: #64748b; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; margin-bottom: 5px;}
-    .kpi-value { color: #00d2ff; font-size: 32px; font-weight: 700; margin: 0;}
-    .kpi-value.loss { color: #ff3366; }
-    .kpi-value.win { color: #00ffa3; }
-    
     [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
     
-    /* Paneles Principales */
+    /* Paneles Principales estilo Referencia */
+    .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 22px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
+    
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
     .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
-    /* Paneles de Gráficos Nuevos */
     .chart-panel { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; }
     .best-worst-card { background: rgba(11, 19, 37, 0.6); border-radius: 12px; padding: 15px; border: 1px solid #1e293b; margin-top: 15px; }
     .best-card { border-left: 4px solid #00ffa3 !important; }
     .worst-card { border-left: 4px solid #ff3366 !important; }
 
-    /* Estilos Futuristas para Sesiones, Confianza y Observaciones */
     .futuristic-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
     .session-badge { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #1e293b; background: rgba(17, 26, 46, 0.5); }
     .session-badge.active { border-color: #00ffa3; background: rgba(0, 255, 163, 0.08); box-shadow: 0 0 10px rgba(0, 255, 163, 0.15); }
@@ -219,7 +213,6 @@ else:
     c.execute('''CREATE TABLE IF NOT EXISTS accounts (id SERIAL PRIMARY KEY, broker VARCHAR(100), account_name VARCHAR(100), initial_balance NUMERIC)''')
     c.execute('''CREATE TABLE IF NOT EXISTS trades (id SERIAL PRIMARY KEY, account_id INTEGER REFERENCES accounts(id), date_time TIMESTAMP, market VARCHAR(50), asset VARCHAR(50), direction VARCHAR(50), amount NUMERIC, result VARCHAR(50), pnl NUMERIC)''')
     
-    # Migración de columnas adicionales seguras
     for col_query in [
         "ALTER TABLE trades ADD COLUMN IF NOT EXISTS emotion VARCHAR(50) DEFAULT 'Neutral 😐';",
         "ALTER TABLE trades ADD COLUMN IF NOT EXISTS confidence VARCHAR(50) DEFAULT 'Alto 🔥';",
@@ -317,17 +310,49 @@ else:
                 overall_score = int(sum([score_win, score_pf, score_awal, score_rec, score_dd, score_cons]) / 6)
 
             # ==========================================
-            # TARJETAS KPI
+            # 4 PANELES SUPERIORES EXACTOS (IMAGEN DE REFERENCIA)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             kpi_cols = st.columns(4)
             color_pnl = "win" if net_profit >= 0 else "loss"
             signo = "+" if net_profit >= 0 else ""
             
-            with kpi_cols[0]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">WIN RATE</div><div class="kpi-value">{win_rate:.1f}%</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">{wins} Ganadas / {losses} Perdidas</div></div>', unsafe_allow_html=True)
-            with kpi_cols[1]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">NET PNL (BENEFICIO)</div><div class="kpi-value {color_pnl}">{signo}${net_profit:.2f}</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">Periodo actual</div></div>', unsafe_allow_html=True)
-            with kpi_cols[2]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">BALANCE TOTAL</div><div class="kpi-value" style="color: #ffffff;">${current_balance:.2f}</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">Capital disponible</div></div>', unsafe_allow_html=True)
-            with kpi_cols[3]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">TRADES EJECUTADOS</div><div class="kpi-value" style="color: #00d2ff;">{total_trades}</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">Volumen total</div></div>', unsafe_allow_html=True)
+            with kpi_cols[0]:
+                st.markdown(f'''
+                <div class="kpi-card-exact">
+                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">WIN RATE</div>
+                    <div style="color: #00d2ff; font-size: 30px; font-weight: 700; margin: 0;">{win_rate:.1f}%</div>
+                    <div style="color: #94a3b8; font-size: 12px;">{wins} Ganadas / {losses} Perdidas</div>
+                </div>
+                ''', unsafe_allow_html=True)
+                
+            with kpi_cols[1]:
+                pnl_color_hex = "#00ffa3" if net_profit >= 0 else "#ff3366"
+                st.markdown(f'''
+                <div class="kpi-card-exact">
+                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">NET PNL (BENEFICIO)</div>
+                    <div style="color: {pnl_color_hex}; font-size: 30px; font-weight: 700; margin: 0; text-shadow: 0 0 10px rgba(0,255,163,0.2);">{signo}${net_profit:.2f}</div>
+                    <div style="color: #94a3b8; font-size: 12px;">Periodo actual</div>
+                </div>
+                ''', unsafe_allow_html=True)
+
+            with kpi_cols[2]:
+                st.markdown(f'''
+                <div class="kpi-card-exact">
+                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">BALANCE TOTAL</div>
+                    <div style="color: #ffffff; font-size: 30px; font-weight: 700; margin: 0;">${current_balance:.2f}</div>
+                    <div style="color: #94a3b8; font-size: 12px;">Capital disponible</div>
+                </div>
+                ''', unsafe_allow_html=True)
+                
+            with kpi_cols[3]:
+                st.markdown(f'''
+                <div class="kpi-card-exact">
+                    <div style="color: #64748b; font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">TRADES EJECUTADOS</div>
+                    <div style="color: #00d2ff; font-size: 30px; font-weight: 700; margin: 0;">{total_trades}</div>
+                    <div style="color: #94a3b8; font-size: 12px;">Volumen total</div>
+                </div>
+                ''', unsafe_allow_html=True)
 
             # ==========================================
             # LAYOUT SUPERIOR: CALENDARIO, PERFIL, EMOCIÓN, CONFIANZA, SESIONES, OBSERVACIONES
@@ -405,7 +430,6 @@ else:
                 ''', unsafe_allow_html=True)
 
             with col_conf:
-                # Nivel de Confianza
                 conf_label = "Sin datos"
                 conf_color = "#64748b"
                 if not df_trades.empty and 'confidence' in df_trades.columns:
@@ -436,9 +460,7 @@ else:
                 ''', unsafe_allow_html=True)
 
             with col_sess:
-                # Detección de Sesión Activa en tiempo real (UTC)
                 utc_hour = datetime.utcnow().hour
-                # Sydney: 22-07, Tokyo: 00-09, London: 08-16, New York: 13-22
                 sydney_active = 22 <= utc_hour or utc_hour < 7
                 tokyo_active = 0 <= utc_hour < 9
                 london_active = 8 <= utc_hour < 16
@@ -468,7 +490,6 @@ else:
                 ''', unsafe_allow_html=True)
 
             with col_obs:
-                # Observaciones recientes
                 last_obs = "Sin notas recientes."
                 if not df_trades.empty and 'observation' in df_trades.columns:
                     valid_obs = df_trades[df_trades['observation'].notnull() & (df_trades['observation'] != '')]
@@ -496,7 +517,6 @@ else:
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2 = st.columns(2)
 
-            # 1. Crecimiento Acumulado
             with col_chart1:
                 st.markdown('<div class="chart-panel">', unsafe_allow_html=True)
                 pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
@@ -524,7 +544,6 @@ else:
                     st.info("Sin datos para mostrar gráfico.")
                 st.markdown('</div>', unsafe_allow_html=True)
 
-            # 2. P&L Diario y Métricas de Días
             with col_chart2:
                 st.markdown('<div class="chart-panel">', unsafe_allow_html=True)
                 
