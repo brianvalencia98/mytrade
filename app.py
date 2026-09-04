@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / PANELES UNIFICADOS)
+# BLOQUES DE CSS (FUTURISTA / PANELES ENCADENADOS PERFECTOS)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -89,16 +89,6 @@ CSS_DASHBOARD = """
         color: #ffffff !important;
     }
 
-    /* Contenedores de gráficos con borde nativo estilizado */
-    [data-testid="stContainer"] {
-        background: linear-gradient(145deg, #070d19, #0b1325) !important;
-        border: 1px solid #1e293b !important;
-        border-radius: 18px !important;
-        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4) !important;
-        padding: 15px !important;
-        margin-top: 15px !important;
-    }
-
     .stTextInput input, .stNumberInput input, .stDateInput input, .stTimeInput input {
         background-color: #050b14 !important;
         border: 1px solid #1e293b !important;
@@ -131,8 +121,12 @@ CSS_DASHBOARD = """
     }
 
     .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
-    .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
-    .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
+    
+    /* Panel Maestro unificado (Perfil, Gráficos, etc.) */
+    .master-panel { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; overflow: hidden; display: flex; flex-direction: column; height: 100%; }
+    .master-header { background: rgba(11, 19, 37, 0.9); padding: 14px 20px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
+    .master-body { padding: 15px 20px; flex-grow: 1; }
+
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
@@ -146,6 +140,24 @@ CSS_DASHBOARD = """
     .dot-live { height: 8px; width: 8px; background-color: #00ffa3; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #00ffa3; animation: pulse 1.5s infinite; }
     .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
+
+    .trade-log-card {
+        background: linear-gradient(145deg, #0b1325, #070d19);
+        border: 1px solid #1e293b;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .trade-log-card:hover {
+        border-color: #00d2ff;
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        transform: translateY(-2px);
+    }
 </style>
 """
 
@@ -487,8 +499,7 @@ else:
                     margin=dict(l=25, r=25, t=10, b=10), height=170
                 )
 
-                st.markdown('<div class="profile-card">', unsafe_allow_html=True)
-                st.markdown('<div class="profile-title">Perfil de Trading <span style="float:right; color:#64748b; font-size: 14px; font-weight:normal;">ⓘ</span></div>', unsafe_allow_html=True)
+                st.markdown('<div class="master-panel"><div class="master-header"><div style="font-size: 15px; font-weight: bold; color: #ffffff;">Perfil de Trading</div><div style="color:#64748b; font-size: 14px;">ⓘ</div></div><div class="master-body" style="padding-top: 0px;">', unsafe_allow_html=True)
                 st.plotly_chart(fig_radar, use_container_width=True, config={'displayModeBar': False})
                 st.markdown(f'''
                     <div style="margin-top: -10px;">
@@ -502,7 +513,7 @@ else:
                             <div style="color: #64748b; font-size: 8px; font-weight: bold;">PRO</div>
                         </div>
                     </div>
-                </div>
+                </div></div>
                 ''', unsafe_allow_html=True)
 
             with col_emo:
@@ -523,18 +534,22 @@ else:
                                 label_res = full_emo
 
                 st.markdown(f'''
-                <div class="futuristic-card">
-                    <div>
-                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">ESTADO EMOCIONAL</div>
-                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">BIOMETRÍA & SENTIMIENTO</div>
-                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(0, 210, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #00d2ff; font-size: 14px;">🧠</div>
+                <div class="master-panel">
+                    <div class="master-header">
+                        <div>
+                            <div style="font-size: 13px; font-weight: bold; color: #ffffff;">ESTADO EMOCIONAL</div>
+                            <div style="font-size: 9px; color: #64748b;">BIOMETRÍA</div>
+                        </div>
+                        <div style="color: #00d2ff; font-size: 14px;">🧠</div>
                     </div>
-                    <div style="text-align: center; padding: 10px 0;">
-                        <div style="font-size: 45px; margin-bottom: 5px;">{emoji_res}</div>
-                        <div style="color: #ffffff; font-size: 22px; font-weight: bold; margin-bottom: 2px;">{label_res}</div>
-                        <div style="color: #94a3b8; font-size: 11px; font-weight: 500;">Promedio 7 días</div>
+                    <div class="master-body" style="text-align: center; padding: 10px 0; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                        <div>
+                            <div style="font-size: 40px; margin-bottom: 2px;">{emoji_res}</div>
+                            <div style="color: #ffffff; font-size: 18px; font-weight: bold; margin-bottom: 2px;">{label_res}</div>
+                            <div style="color: #94a3b8; font-size: 10px;">Promedio 7 días</div>
+                        </div>
+                        <div style="color: #00d2ff; font-size: 11px; font-weight: bold; padding: 5px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(0,210,255,0.05); margin-top: 10px;">Biometría Activa</div>
                     </div>
-                    <div style="text-align: center; color: #00d2ff; font-size: 12px; font-weight: bold; padding: 6px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(0,210,255,0.05);">Biometría Activa</div>
                 </div>
                 ''', unsafe_allow_html=True)
 
@@ -553,18 +568,22 @@ else:
                             else: conf_color = "#ff3366"
 
                 st.markdown(f'''
-                <div class="futuristic-card">
-                    <div>
-                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">NIVEL DE CONFIANZA</div>
-                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">SEGURIDAD OPERATIVA</div>
-                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(255, 184, 0, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #ffb800; font-size: 14px;">🎯</div>
+                <div class="master-panel">
+                    <div class="master-header">
+                        <div>
+                            <div style="font-size: 13px; font-weight: bold; color: #ffffff;">NIVEL CONFIANZA</div>
+                            <div style="font-size: 9px; color: #64748b;">SEGURIDAD</div>
+                        </div>
+                        <div style="color: #ffb800; font-size: 14px;">🎯</div>
                     </div>
-                    <div style="text-align: center; padding: 10px 0;">
-                        <div style="font-size: 45px; margin-bottom: 5px;">🛡️</div>
-                        <div style="color: {conf_color}; font-size: 22px; font-weight: bold; margin-bottom: 2px;">{conf_label}</div>
-                        <div style="color: #94a3b8; font-size: 11px; font-weight: 500;">Promedio 7 días</div>
+                    <div class="master-body" style="text-align: center; padding: 10px 0; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                        <div>
+                            <div style="font-size: 40px; margin-bottom: 2px;">🛡️</div>
+                            <div style="color: {conf_color}; font-size: 18px; font-weight: bold; margin-bottom: 2px;">{conf_label}</div>
+                            <div style="color: #94a3b8; font-size: 10px;">Promedio 7 días</div>
+                        </div>
+                        <div style="color: {conf_color}; font-size: 11px; font-weight: bold; padding: 5px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(255,255,255,0.02); margin-top: 10px;">Psico-Trading</div>
                     </div>
-                    <div style="text-align: center; color: {conf_color}; font-size: 12px; font-weight: bold; padding: 6px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(255,255,255,0.02);">Psico-Trading</div>
                 </div>
                 ''', unsafe_allow_html=True)
 
@@ -582,19 +601,23 @@ else:
                     return f'<div class="session-badge {cls}"><span style="color: #ffffff; font-size: 11px; font-weight: bold;">{name}</span><span><span class="{dot}"></span> <span style="color: {color}; font-size: 10px; font-weight: bold;">{"ACTIVA" if is_active else "CERRADA"}</span></span></div>'
 
                 st.markdown(f'''
-                <div class="futuristic-card">
-                    <div>
-                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">SESIÓN DE TRADING</div>
-                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">MERCADOS GLOBALES</div>
-                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(0, 255, 163, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #00ffa3; font-size: 14px;">🌐</div>
+                <div class="master-panel">
+                    <div class="master-header">
+                        <div>
+                            <div style="font-size: 13px; font-weight: bold; color: #ffffff;">SESIONES</div>
+                            <div style="font-size: 9px; color: #64748b;">MERCADOS</div>
+                        </div>
+                        <div style="color: #00ffa3; font-size: 14px;">🌐</div>
                     </div>
-                    <div style="padding: 5px 0;">
-                        {badge_html("Londres", london_active)}
-                        {badge_html("New York", ny_active)}
-                        {badge_html("Sídney", sydney_active)}
-                        {badge_html("Tokio", tokyo_active)}
+                    <div class="master-body" style="padding: 10px 5px; display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                        <div>
+                            {badge_html("Londres", london_active)}
+                            {badge_html("New York", ny_active)}
+                            {badge_html("Sídney", sydney_active)}
+                            {badge_html("Tokio", tokyo_active)}
+                        </div>
+                        <div style="text-align: center; color: #00d2ff; font-size: 9px; font-weight: bold; margin-top: 5px;">Reloj Mundial UTC</div>
                     </div>
-                    <div style="text-align: center; color: #00d2ff; font-size: 10px; font-weight: bold;">Reloj Mundial UTC</div>
                 </div>
                 ''', unsafe_allow_html=True)
 
@@ -604,24 +627,28 @@ else:
                     valid_obs = df_trades[df_trades['observation'].notnull() & (df_trades['observation'] != '')]
                     if not valid_obs.empty:
                         last_obs = valid_obs.iloc[-1]['observation']
-                        if len(last_obs) > 60: last_obs = last_obs[:57] + "..."
+                        if len(last_obs) > 50: last_obs = last_obs[:47] + "..."
 
                 st.markdown(f'''
-                <div class="futuristic-card">
-                    <div>
-                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">OBSERVACIONES</div>
-                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">NOTAS & BITÁCORA</div>
-                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(210, 0, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #d200ff; font-size: 14px;">📝</div>
+                <div class="master-panel">
+                    <div class="master-header">
+                        <div>
+                            <div style="font-size: 13px; font-weight: bold; color: #ffffff;">OBSERVACIONES</div>
+                            <div style="font-size: 9px; color: #64748b;">NOTAS</div>
+                        </div>
+                        <div style="color: #d200ff; font-size: 14px;">📝</div>
                     </div>
-                    <div style="background: rgba(11, 19, 37, 0.8); border: 1px solid #1e293b; border-radius: 10px; padding: 12px; margin: 10px 0; min-height: 80px; max-height: 90px; overflow-y: auto;">
-                        <div style="color: #94a3b8; font-size: 11px; font-style: italic; line-height: 1.4;">"{last_obs}"</div>
+                    <div class="master-body" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding: 12px 10px;">
+                        <div style="background: rgba(11, 19, 37, 0.8); border: 1px solid #1e293b; border-radius: 10px; padding: 10px; min-height: 70px; max-height: 80px; overflow-y: auto;">
+                            <div style="color: #94a3b8; font-size: 11px; font-style: italic; line-height: 1.4;">"{last_obs}"</div>
+                        </div>
+                        <div style="text-align: center; color: #d200ff; font-size: 10px; font-weight: bold; padding: 5px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(210, 0, 255, 0.05); margin-top: 10px;">Bitácora Activa</div>
                     </div>
-                    <div style="text-align: center; color: #d200ff; font-size: 11px; font-weight: bold; padding: 6px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(210, 0, 255, 0.05);">Bitácora Activa</div>
                 </div>
                 ''', unsafe_allow_html=True)
 
             # ==========================================
-            # 3 PANELES MAESTROS EN CONTENEDORES NATIVOS INDEPENDIENTES (3 COLUMNAS)
+            # 3 PANELES MAESTROS DE GRÁFICOS (ESTILO REFERENCIA EXACTO)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2, col_chart3 = st.columns(3)
@@ -631,32 +658,34 @@ else:
                 pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
                 sign_growth = "+" if net_profit >= 0 else ""
                 
-                with st.container(border=True):
-                    st.markdown(f'''
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
+                st.markdown(f'''
+                <div class="master-panel">
+                    <div class="master-header">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">📁 Crecimiento Acumulado</div>
+                            <div style="font-size: 15px; font-weight: bold; color: #ffffff;">📁 Crecimiento Acumulado</div>
                             <div style="font-size: 10px; color: #64748b;">P&L Acumulado Diario</div>
                         </div>
-                        <div style="text-align: right; font-size: 14px; font-weight: bold; color: #00ffa3;">
+                        <div style="text-align: right; font-size: 15px; font-weight: bold; color: #00ffa3;">
                             {sign_growth}${net_profit:.2f} <span style="font-size: 10px;">{sign_growth}{pct_growth:.1f}%</span>
                         </div>
                     </div>
-                    ''', unsafe_allow_html=True)
-                    
-                    if total_trades > 0:
-                        df_trades['Trade #'] = range(1, len(df_trades) + 1)
-                        fig_growth = px.area(df_trades, x='Trade #', y='equity', markers=True)
-                        fig_growth.update_layout(
-                            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-                            font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=5, b=0),
-                            yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
-                            height=200
-                        )
-                        fig_growth.update_traces(line_color='#00d2ff', fillcolor='rgba(0, 210, 255, 0.15)')
-                        st.plotly_chart(fig_growth, use_container_width=True, config={'displayModeBar': False})
-                    else:
-                        st.markdown('<div style="text-align: center; color: #64748b; padding: 60px;">Sin datos de crecimiento disponibles.</div>', unsafe_allow_html=True)
+                    <div class="master-body">
+                ''', unsafe_allow_html=True)
+                
+                if total_trades > 0:
+                    df_trades['Trade #'] = range(1, len(df_trades) + 1)
+                    fig_growth = px.area(df_trades, x='Trade #', y='equity', markers=True)
+                    fig_growth.update_layout(
+                        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=5, b=0),
+                        yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
+                        height=200
+                    )
+                    fig_growth.update_traces(line_color='#00d2ff', fillcolor='rgba(0, 210, 255, 0.15)')
+                    st.plotly_chart(fig_growth, use_container_width=True, config={'displayModeBar': False})
+                else:
+                    st.markdown('<div style="text-align: center; color: #64748b; padding: 60px;">Sin datos de crecimiento disponibles.</div>', unsafe_allow_html=True)
+                st.markdown('</div></div>', unsafe_allow_html=True)
 
             # 2. P&L Diario
             with col_chart2:
@@ -684,96 +713,101 @@ else:
                         worst_day_val = worst_row['pnl']
                         worst_day_date = worst_row['day_only'].strftime('%d de %B de %Y')
 
-                with st.container(border=True):
-                    st.markdown(f'''
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
+                st.markdown(f'''
+                <div class="master-panel">
+                    <div class="master-header">
                         <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">📊 P&L Diario</div>
+                            <div style="font-size: 15px; font-weight: bold; color: #ffffff;">📊 P&L Diario</div>
                             <div style="font-size: 10px; color: #64748b;">Ganancias y pérdidas por día</div>
                         </div>
                         <div style="text-align: right; font-size: 10px; color: #94a3b8;">
                             <span style="color: #00ffa3;">🟢 {green_days_count}D</span> &nbsp; <span style="color: #ff3366;">🔴 {red_days_count}D</span>
                         </div>
                     </div>
+                    <div class="master-body">
+                ''', unsafe_allow_html=True)
+
+                if total_trades > 0:
+                    fig_daily = px.bar(df_grouped, x='day_only', y='pnl', color='pnl',
+                                       color_continuous_scale=['#ff3366', '#00ffa3'])
+                    fig_daily.update_layout(
+                        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=5, b=0),
+                        yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
+                        coloraxis_showscale=False, height=105
+                    )
+                    st.plotly_chart(fig_daily, use_container_width=True, config={'displayModeBar': False})
+                else:
+                    st.markdown('<div style="text-align: center; color: #64748b; padding: 40px;">Sin datos diarios disponibles.</div>', unsafe_allow_html=True)
+
+                sub_c1, sub_c2 = st.columns(2)
+                with sub_c1:
+                    st.markdown(f'''
+                    <div class="best-worst-card best-card">
+                        <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">MEJOR DÍA</div>
+                        <div style="font-size: 13px; font-weight: bold; color: #00ffa3; margin-top: 2px;">+{best_day_val:.2f}$</div>
+                        <div style="font-size: 8px; color: #94a3b8; margin-top: 1px;">{best_day_date}</div>
+                    </div>
                     ''', unsafe_allow_html=True)
-
-                    if total_trades > 0:
-                        fig_daily = px.bar(df_grouped, x='day_only', y='pnl', color='pnl',
-                                           color_continuous_scale=['#ff3366', '#00ffa3'])
-                        fig_daily.update_layout(
-                            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
-                            font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=5, b=0),
-                            yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
-                            coloraxis_showscale=False, height=105
-                        )
-                        st.plotly_chart(fig_daily, use_container_width=True, config={'displayModeBar': False})
-                    else:
-                        st.markdown('<div style="text-align: center; color: #64748b; padding: 40px;">Sin datos diarios disponibles.</div>', unsafe_allow_html=True)
-
-                    sub_c1, sub_c2 = st.columns(2)
-                    with sub_c1:
-                        st.markdown(f'''
-                        <div class="best-worst-card best-card">
-                            <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">MEJOR DÍA</div>
-                            <div style="font-size: 13px; font-weight: bold; color: #00ffa3; margin-top: 2px;">+{best_day_val:.2f}$</div>
-                            <div style="font-size: 8px; color: #94a3b8; margin-top: 1px;">{best_day_date}</div>
-                        </div>
-                        ''', unsafe_allow_html=True)
-                    with sub_c2:
-                        st.markdown(f'''
-                        <div class="best-worst-card worst-card">
-                            <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">PEOR DÍA</div>
-                            <div style="font-size: 13px; font-weight: bold; color: #ff3366; margin-top: 2px;">{worst_day_val:.2f}$</div>
-                            <div style="font-size: 8px; color: #94a3b8; margin-top: 1px;">{worst_day_date}</div>
-                        </div>
-                        ''', unsafe_allow_html=True)
-
-            # 3. Ratio de Impacto P&L (Donut Chart)
-            with col_chart3:
-                with st.container(border=True):
-                    st.markdown('''
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
-                        <div>
-                            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">🍩 Ratio de Impacto P&L</div>
-                            <div style="font-size: 10px; color: #64748b;">Ganadas vs Pérdidas ($)</div>
-                        </div>
+                with sub_c2:
+                    st.markdown(f'''
+                    <div class="best-worst-card worst-card">
+                        <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">PEOR DÍA</div>
+                        <div style="font-size: 13px; font-weight: bold; color: #ff3366; margin-top: 2px;">{worst_day_val:.2f}$</div>
+                        <div style="font-size: 8px; color: #94a3b8; margin-top: 1px;">{worst_day_date}</div>
                     </div>
                     ''', unsafe_allow_html=True)
 
-                    if total_trades > 0:
-                        gross_win = float(df_trades[df_trades['pnl'] > 0]['pnl'].sum())
-                        gross_loss = float(abs(df_trades[df_trades['pnl'] < 0]['pnl'].sum()))
-                        if gross_win == 0 and gross_loss == 0:
-                            gross_win = 1.0
+                st.markdown('</div></div>', unsafe_allow_html=True)
 
-                        fig_donut = go.Figure(data=[go.Pie(
-                            labels=['Ganadas', 'Pérdidas'],
-                            values=[gross_win, gross_loss],
-                            hole=0.68,
-                            marker_colors=['#00ffa3', '#ff3366'],
-                            textinfo='percent',
-                            textfont=dict(color='#ffffff', size=11),
-                            hoverinfo='label+value+percent'
-                        )])
+            # 3. Ratio de Impacto P&L (Donut Chart)
+            with col_chart3:
+                st.markdown('''
+                <div class="master-panel">
+                    <div class="master-header">
+                        <div>
+                            <div style="font-size: 15px; font-weight: bold; color: #ffffff;">🍩 Ratio de Impacto P&L</div>
+                            <div style="font-size: 10px; color: #64748b;">Ganadas vs Pérdidas ($)</div>
+                        </div>
+                    </div>
+                    <div class="master-body">
+                ''', unsafe_allow_html=True)
 
-                        net_color = "#00ffa3" if net_profit >= 0 else "#ff3366"
-                        sign_net = "+" if net_profit >= 0 else ""
+                if total_trades > 0:
+                    gross_win = float(df_trades[df_trades['pnl'] > 0]['pnl'].sum())
+                    gross_loss = float(abs(df_trades[df_trades['pnl'] < 0]['pnl'].sum()))
+                    if gross_win == 0 and gross_loss == 0:
+                        gross_win = 1.0
 
-                        fig_donut.update_layout(
-                            showlegend=True,
-                            legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5, font=dict(color="#94a3b8", size=10)),
-                            paper_bgcolor='rgba(0,0,0,0)',
-                            plot_bgcolor='rgba(0,0,0,0)',
-                            margin=dict(l=5, r=5, t=5, b=5),
-                            height=175,
-                            annotations=[dict(
-                                text=f"<b style='color:{net_color}; font-size:13px;'>{sign_net}${net_profit:.2f}</b><br><span style='color:#64748b; font-size:8px;'>NETO</span>",
-                                x=0.5, y=0.5, showarrow=False, font=dict(size=11, color="#ffffff")
-                            )]
-                        )
-                        st.plotly_chart(fig_donut, use_container_width=True, config={'displayModeBar': False})
-                    else:
-                        st.markdown('<div style="text-align: center; color: #64748b; padding: 60px;">Sin datos de ratio disponibles.</div>', unsafe_allow_html=True)
+                    fig_donut = go.Figure(data=[go.Pie(
+                        labels=['Ganadas', 'Pérdidas'],
+                        values=[gross_win, gross_loss],
+                        hole=0.68,
+                        marker_colors=['#00ffa3', '#ff3366'],
+                        textinfo='percent',
+                        textfont=dict(color='#ffffff', size=11),
+                        hoverinfo='label+value+percent'
+                    )])
+
+                    net_color = "#00ffa3" if net_profit >= 0 else "#ff3366"
+                    sign_net = "+" if net_profit >= 0 else ""
+
+                    fig_donut.update_layout(
+                        showlegend=True,
+                        legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5, font=dict(color="#94a3b8", size=10)),
+                        paper_bgcolor='rgba(0,0,0,0)',
+                        plot_bgcolor='rgba(0,0,0,0)',
+                        margin=dict(l=5, r=5, t=5, b=5),
+                        height=175,
+                        annotations=[dict(
+                            text=f"<b style='color:{net_color}; font-size:13px;'>{sign_net}${net_profit:.2f}</b><br><span style='color:#64748b; font-size:8px;'>NETO</span>",
+                            x=0.5, y=0.5, showarrow=False, font=dict(size=11, color="#ffffff")
+                        )]
+                    )
+                    st.plotly_chart(fig_donut, use_container_width=True, config={'displayModeBar': False})
+                else:
+                    st.markdown('<div style="text-align: center; color: #64748b; padding: 60px;">Sin datos de ratio disponibles.</div>', unsafe_allow_html=True)
+                st.markdown('</div></div>', unsafe_allow_html=True)
 
             # ==========================================
             # REGISTRO DE OPERACIONES Y FORMULARIO FUTURISTA ANIMADO
@@ -887,7 +921,7 @@ else:
                                         st.markdown(f"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: {obs_text}</div>", unsafe_allow_html=True)
                                 with col_card2:
                                     st.markdown(f"<div style='text-align: right; color: {res_color}; font-size: 16px; font-weight: bold;'>{sign_pnl}${pnl_val:.2f}</div>", unsafe_allow_html=True)
-                                    st.markdown(f"<div style='text-align: right; color: #64748b; font-size: 11px; margin-top: 2px;'>Inv: ${row['amount']} | {row['result']}</div>", unsafe_allow_html=True)
+                                    st.markdown(f"<div style='text-align: right; color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>", unsafe_allow_html=True)
                     else:
                         st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
