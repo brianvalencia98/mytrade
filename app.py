@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (LOGIN Y DASHBOARD)
+# BLOQUES DE CSS (FUTURISTA / NEON)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -51,8 +51,8 @@ CSS_DASHBOARD = """
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
     
     /* Paneles Principales */
-    .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 15px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); margin-top: 20px; height: 96%;}
-    .profile-title { color: #ffffff; font-size: 22px; font-weight: bold; margin-bottom: 0px;}
+    .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
+    .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
@@ -61,6 +61,14 @@ CSS_DASHBOARD = """
     .best-worst-card { background: rgba(11, 19, 37, 0.6); border-radius: 12px; padding: 15px; border: 1px solid #1e293b; margin-top: 15px; }
     .best-card { border-left: 4px solid #00ffa3 !important; }
     .worst-card { border-left: 4px solid #ff3366 !important; }
+
+    /* Estilos Futuristas para Sesiones, Confianza y Observaciones */
+    .futuristic-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .session-badge { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #1e293b; background: rgba(17, 26, 46, 0.5); }
+    .session-badge.active { border-color: #00ffa3; background: rgba(0, 255, 163, 0.08); box-shadow: 0 0 10px rgba(0, 255, 163, 0.15); }
+    .dot-live { height: 8px; width: 8px; background-color: #00ffa3; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #00ffa3; animation: pulse 1.5s infinite; }
+    .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
+    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
 </style>
 """
 
@@ -87,21 +95,21 @@ def render_calendar(df_trades):
     cal = calendar.monthcalendar(year, month)
     
     html = f"""
-    <div style="background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); height: 100%;">
+    <div style="background-color: #070d19; padding: 20px; border-radius: 16px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="color: #ffffff; font-size: 22px; font-weight: bold; display: flex; align-items: center; gap: 10px;">📅 Calendario</div>
-            <div style="color: #ffffff; font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">&lt; &nbsp; {month_name} &nbsp; &gt;</div>
+            <div style="color: #ffffff; font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 10px;">📅 Calendario</div>
+            <div style="color: #ffffff; font-size: 14px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">&lt; &nbsp; {month_name} &nbsp; &gt;</div>
         </div>
         <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
             <tr>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">L</th>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">M</th>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">M</th>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">J</th>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">V</th>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">S</th>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">D</th>
-                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">∑</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">L</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">M</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">M</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">J</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">V</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">S</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">D</th>
+                <th style="color: #00d2ff; padding: 8px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 12px;">∑</th>
             </tr>
     """
     for week in cal:
@@ -111,38 +119,38 @@ def render_calendar(df_trades):
         
         for day in week:
             if day == 0:
-                html += '<td style="border: 1px solid #10192d; height: 75px; background-color: #080f1e;"></td>'
+                html += '<td style="border: 1px solid #10192d; height: 70px; background-color: #080f1e;"></td>'
             else:
                 pnl = daily_pnl.get(day, None)
-                td_style = "border: 1px solid #10192d; height: 75px; vertical-align: top; padding: 8px; background-color: #080f1e; position: relative;"
+                td_style = "border: 1px solid #10192d; height: 70px; vertical-align: top; padding: 6px; background-color: #080f1e; position: relative;"
                 pnl_html = ""
                 
                 if pnl is not None:
                     has_trades = True
                     week_total += pnl
                     if pnl > 0:
-                        td_style = "border: 1px solid #00d284; border-bottom: 3.5px solid #00ffa3; height: 75px; vertical-align: top; padding: 8px; background-color: rgba(0, 255, 163, 0.08); position: relative;"
-                        pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 11px; position: absolute; bottom: 6px; right: 6px;">+{pnl:.2f}$</div>'
+                        td_style = "border: 1px solid #00d284; border-bottom: 3.5px solid #00ffa3; height: 70px; vertical-align: top; padding: 6px; background-color: rgba(0, 255, 163, 0.08); position: relative;"
+                        pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 10px; position: absolute; bottom: 5px; right: 5px;">+{pnl:.2f}$</div>'
                     elif pnl < 0:
-                        td_style = "border: 1px solid #d22d56; border-bottom: 3.5px solid #ff3366; height: 75px; vertical-align: top; padding: 8px; background-color: rgba(255, 51, 102, 0.08); position: relative;"
-                        pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 11px; position: absolute; bottom: 6px; right: 6px;">{pnl:.2f}$</div>'
+                        td_style = "border: 1px solid #d22d56; border-bottom: 3.5px solid #ff3366; height: 70px; vertical-align: top; padding: 6px; background-color: rgba(255, 51, 102, 0.08); position: relative;"
+                        pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 10px; position: absolute; bottom: 5px; right: 5px;">{pnl:.2f}$</div>'
                     else:
-                        pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 11px; position: absolute; bottom: 6px; right: 6px;">0.00$</div>'
+                        pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 10px; position: absolute; bottom: 5px; right: 5px;">0.00$</div>'
                 
-                html += f'<td style="{td_style}"><div style="font-size: 13px; color: #94a3b8; font-weight: bold;">{day}</div>{pnl_html}</td>'
+                html += f'<td style="{td_style}"><div style="font-size: 12px; color: #94a3b8; font-weight: bold;">{day}</div>{pnl_html}</td>'
         
-        total_style = "border: 1px solid #10192d; height: 75px; vertical-align: middle; text-align: center; background-color: #060b16;"
+        total_style = "border: 1px solid #10192d; height: 70px; vertical-align: middle; text-align: center; background-color: #060b16;"
         total_pnl_html = ""
         
         if has_trades:
             if week_total > 0:
-                total_style = "border: 1px solid #00d284; height: 75px; vertical-align: middle; text-align: center; background-color: rgba(0, 255, 163, 0.06);"
-                total_pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 12px; margin-top: 5px;">+{week_total:.2f}$</div>'
+                total_style = "border: 1px solid #00d284; height: 70px; vertical-align: middle; text-align: center; background-color: rgba(0, 255, 163, 0.06);"
+                total_pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 11px; margin-top: 4px;">+{week_total:.2f}$</div>'
             elif week_total < 0:
-                total_style = "border: 1px solid #d22d56; height: 75px; vertical-align: middle; text-align: center; background-color: rgba(255, 51, 102, 0.06);"
-                total_pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 12px; margin-top: 5px;">{week_total:.2f}$</div>'
+                total_style = "border: 1px solid #d22d56; height: 70px; vertical-align: middle; text-align: center; background-color: rgba(255, 51, 102, 0.06);"
+                total_pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 11px; margin-top: 4px;">{week_total:.2f}$</div>'
             else:
-                total_pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 12px; margin-top: 5px;">0.00$</div>'
+                total_pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 11px; margin-top: 4px;">0.00$</div>'
         
         html += f'<td style="{total_style}"><div style="font-size: 9px; color: #64748b; font-weight: bold; letter-spacing: 1px;">TOTAL</div>{total_pnl_html}</td>'
         html += "</tr>"
@@ -210,10 +218,18 @@ else:
 
     c.execute('''CREATE TABLE IF NOT EXISTS accounts (id SERIAL PRIMARY KEY, broker VARCHAR(100), account_name VARCHAR(100), initial_balance NUMERIC)''')
     c.execute('''CREATE TABLE IF NOT EXISTS trades (id SERIAL PRIMARY KEY, account_id INTEGER REFERENCES accounts(id), date_time TIMESTAMP, market VARCHAR(50), asset VARCHAR(50), direction VARCHAR(50), amount NUMERIC, result VARCHAR(50), pnl NUMERIC)''')
-    try:
-        c.execute('''ALTER TABLE trades ADD COLUMN IF NOT EXISTS emotion VARCHAR(50) DEFAULT 'Neutral 😐';''')
-    except:
-        pass
+    
+    # Migración de columnas adicionales seguras
+    for col_query in [
+        "ALTER TABLE trades ADD COLUMN IF NOT EXISTS emotion VARCHAR(50) DEFAULT 'Neutral 😐';",
+        "ALTER TABLE trades ADD COLUMN IF NOT EXISTS confidence VARCHAR(50) DEFAULT 'Alto 🔥';",
+        "ALTER TABLE trades ADD COLUMN IF NOT EXISTS session VARCHAR(50) DEFAULT 'New York';",
+        "ALTER TABLE trades ADD COLUMN IF NOT EXISTS observation TEXT DEFAULT '';"
+    ]:
+        try:
+            c.execute(col_query)
+        except:
+            pass
     conn.commit()
 
     def get_accounts(): return pd.read_sql_query("SELECT * FROM accounts", conn)
@@ -314,9 +330,9 @@ else:
             with kpi_cols[3]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">TRADES EJECUTADOS</div><div class="kpi-value" style="color: #00d2ff;">{total_trades}</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">Volumen total</div></div>', unsafe_allow_html=True)
 
             # ==========================================
-            # LAYOUT: CALENDARIO, PERFIL Y ESTADO EMOCIONAL
+            # LAYOUT SUPERIOR: CALENDARIO, PERFIL, EMOCIÓN, CONFIANZA, SESIONES, OBSERVACIONES
             # ==========================================
-            col_cal, col_prof, col_emo = st.columns([2.0, 1.2, 1.2])
+            col_cal, col_prof, col_emo, col_conf, col_sess, col_obs = st.columns([2.0, 1.2, 1.2, 1.2, 1.2, 1.2])
             
             with col_cal:
                 st.markdown(render_calendar(df_trades), unsafe_allow_html=True)
@@ -334,22 +350,22 @@ else:
                 fig_radar.update_layout(
                     polar=dict(radialaxis=dict(visible=False, range=[0, 100]), angularaxis=dict(color='#94a3b8', gridcolor='#1e293b', linecolor='#1e293b', gridwidth=1), bgcolor='rgba(0,0,0,0)'),
                     showlegend=False, paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                    margin=dict(l=30, r=30, t=10, b=10), height=200
+                    margin=dict(l=25, r=25, t=10, b=10), height=170
                 )
 
                 st.markdown('<div class="profile-card">', unsafe_allow_html=True)
-                st.markdown('<div class="profile-title">Perfil de Trading <span style="float:right; color:#64748b; font-size: 16px; font-weight:normal;">ⓘ</span></div>', unsafe_allow_html=True)
+                st.markdown('<div class="profile-title">Perfil de Trading <span style="float:right; color:#64748b; font-size: 14px; font-weight:normal;">ⓘ</span></div>', unsafe_allow_html=True)
                 st.plotly_chart(fig_radar, use_container_width=True, config={'displayModeBar': False})
                 st.markdown(f'''
-                    <div style="margin-top: -5px;">
+                    <div style="margin-top: -10px;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-                            <div style="color: #94a3b8; font-size: 13px;">Trading Score</div>
-                            <div><span style="color: #00ffa3; font-size: 24px; font-weight: bold;">{overall_score}</span><span style="color: #64748b; font-size: 12px;"> / 100</span></div>
+                            <div style="color: #94a3b8; font-size: 11px;">Trading Score</div>
+                            <div><span style="color: #00ffa3; font-size: 20px; font-weight: bold;">{overall_score}</span><span style="color: #64748b; font-size: 10px;"> / 100</span></div>
                         </div>
                         <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {overall_score}%;"></div></div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 4px;">
-                            <div style="color: #64748b; font-size: 9px; font-weight: bold;">NOVATO</div>
-                            <div style="color: #64748b; font-size: 9px; font-weight: bold;">PRO</div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 3px;">
+                            <div style="color: #64748b; font-size: 8px; font-weight: bold;">NOVATO</div>
+                            <div style="color: #64748b; font-size: 8px; font-weight: bold;">PRO</div>
                         </div>
                     </div>
                 </div>
@@ -373,27 +389,109 @@ else:
                                 label_res = full_emo
 
                 st.markdown(f'''
-                <div class="emotion-card" style="background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 22px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 100%; position: relative; display: flex; flex-direction: column; justify-content: space-between;">
+                <div class="futuristic-card">
                     <div>
-                        <div style="color: #ffffff; font-size: 15px; font-weight: bold; letter-spacing: 1px;">ESTADO EMOCIONAL</div>
-                        <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-top: 2px;">BIOMETRÍA & SENTIMIENTO</div>
-                        <div style="position: absolute; top: 20px; right: 20px; background: rgba(0, 210, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: #00d2ff; font-size: 18px;">🧠</div>
+                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">ESTADO EMOCIONAL</div>
+                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">BIOMETRÍA & SENTIMIENTO</div>
+                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(0, 210, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #00d2ff; font-size: 14px;">🧠</div>
                     </div>
-                    <div style="text-align: center; padding: 15px 0;">
-                        <div style="font-size: 55px; margin-bottom: 8px;">{emoji_res}</div>
-                        <div style="color: #ffffff; font-size: 26px; font-weight: bold; margin-bottom: 2px;">{label_res}</div>
-                        <div style="color: #94a3b8; font-size: 13px; font-weight: 500;">Promedio 7 días</div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 45px; margin-bottom: 5px;">{emoji_res}</div>
+                        <div style="color: #ffffff; font-size: 22px; font-weight: bold; margin-bottom: 2px;">{label_res}</div>
+                        <div style="color: #94a3b8; font-size: 11px; font-weight: 500;">Promedio 7 días</div>
                     </div>
-                    <div>
+                    <div style="text-align: center; color: #00d2ff; font-size: 12px; font-weight: bold; padding: 6px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(0,210,255,0.05);">Biometría Activa</div>
+                </div>
                 ''', unsafe_allow_html=True)
-                
-                if st.button("Ver detalles >", key="btn_details"):
-                    st.info("💡 Consejo: Mantén tus emociones neutrales y evita operar bajo frustración o euforia.")
-                    
-                st.markdown('</div></div>', unsafe_allow_html=True)
+
+            with col_conf:
+                # Nivel de Confianza
+                conf_label = "Sin datos"
+                conf_color = "#64748b"
+                if not df_trades.empty and 'confidence' in df_trades.columns:
+                    seven_days_ago = datetime.now() - timedelta(days=7)
+                    recent_trades = df_trades[df_trades['date_time'] >= seven_days_ago]
+                    if not recent_trades.empty:
+                        top_conf = recent_trades['confidence'].mode()
+                        if not top_conf.empty:
+                            conf_label = top_conf[0]
+                            if "Alto" in conf_label or "🔥" in conf_label: conf_color = "#00ffa3"
+                            elif "Medio" in conf_label or "⚡" in conf_label: conf_color = "#ffb800"
+                            else: conf_color = "#ff3366"
+
+                st.markdown(f'''
+                <div class="futuristic-card">
+                    <div>
+                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">NIVEL DE CONFIANZA</div>
+                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">SEGURIDAD OPERATIVA</div>
+                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(255, 184, 0, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #ffb800; font-size: 14px;">🎯</div>
+                    </div>
+                    <div style="text-align: center; padding: 10px 0;">
+                        <div style="font-size: 45px; margin-bottom: 5px;">🛡️</div>
+                        <div style="color: {conf_color}; font-size: 22px; font-weight: bold; margin-bottom: 2px;">{conf_label}</div>
+                        <div style="color: #94a3b8; font-size: 11px; font-weight: 500;">Promedio 7 días</div>
+                    </div>
+                    <div style="text-align: center; color: {conf_color}; font-size: 12px; font-weight: bold; padding: 6px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(255,255,255,0.02);">Psico-Trading</div>
+                </div>
+                ''', unsafe_allow_html=True)
+
+            with col_sess:
+                # Detección de Sesión Activa en tiempo real (UTC)
+                utc_hour = datetime.utcnow().hour
+                # Sydney: 22-07, Tokyo: 00-09, London: 08-16, New York: 13-22
+                sydney_active = 22 <= utc_hour or utc_hour < 7
+                tokyo_active = 0 <= utc_hour < 9
+                london_active = 8 <= utc_hour < 16
+                ny_active = 13 <= utc_hour < 22
+
+                def badge_html(name, is_active):
+                    cls = "active" if is_active else ""
+                    dot = "dot-live" if is_active else "dot-closed"
+                    color = "#00ffa3" if is_active else "#64748b"
+                    return f'<div class="session-badge {cls}"><span style="color: #ffffff; font-size: 11px; font-weight: bold;">{name}</span><span><span class="{dot}"></span> <span style="color: {color}; font-size: 10px; font-weight: bold;">{"ACTIVA" if is_active else "CERRADA"}</span></span></div>'
+
+                st.markdown(f'''
+                <div class="futuristic-card">
+                    <div>
+                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">SESIÓN DE TRADING</div>
+                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">MERCADOS GLOBALES</div>
+                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(0, 255, 163, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #00ffa3; font-size: 14px;">🌐</div>
+                    </div>
+                    <div style="padding: 5px 0;">
+                        {badge_html("Londres", london_active)}
+                        {badge_html("New York", ny_active)}
+                        {badge_html("Sídney", sydney_active)}
+                        {badge_html("Tokio", tokyo_active)}
+                    </div>
+                    <div style="text-align: center; color: #00d2ff; font-size: 10px; font-weight: bold;">Reloj Mundial UTC</div>
+                </div>
+                ''', unsafe_allow_html=True)
+
+            with col_obs:
+                # Observaciones recientes
+                last_obs = "Sin notas recientes."
+                if not df_trades.empty and 'observation' in df_trades.columns:
+                    valid_obs = df_trades[df_trades['observation'].notnull() & (df_trades['observation'] != '')]
+                    if not valid_obs.empty:
+                        last_obs = valid_obs.iloc[-1]['observation']
+                        if len(last_obs) > 60: last_obs = last_obs[:57] + "..."
+
+                st.markdown(f'''
+                <div class="futuristic-card">
+                    <div>
+                        <div style="color: #ffffff; font-size: 13px; font-weight: bold; letter-spacing: 1px;">OBSERVACIONES</div>
+                        <div style="color: #64748b; font-size: 10px; font-weight: 600; letter-spacing: 1px;">NOTAS & BITÁCORA</div>
+                        <div style="position: absolute; top: 15px; right: 15px; background: rgba(210, 0, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #d200ff; font-size: 14px;">📝</div>
+                    </div>
+                    <div style="background: rgba(11, 19, 37, 0.8); border: 1px solid #1e293b; border-radius: 10px; padding: 12px; margin: 10px 0; min-height: 80px; max-height: 90px; overflow-y: auto;">
+                        <div style="color: #94a3b8; font-size: 11px; font-style: italic; line-height: 1.4;">"{last_obs}"</div>
+                    </div>
+                    <div style="text-align: center; color: #d200ff; font-size: 11px; font-weight: bold; padding: 6px; border: 1px solid #1e293b; border-radius: 8px; background: rgba(210, 0, 255, 0.05);">Bitácora Activa</div>
+                </div>
+                ''', unsafe_allow_html=True)
 
             # ==========================================
-            # NUEVOS PANELES: CRECIMIENTO ACUMULADO Y P&L DIARIO
+            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2 = st.columns(2)
@@ -474,7 +572,6 @@ else:
                 else:
                     st.markdown('<div style="height: 130px; display: flex; align-items: center; justify-content: center; color: #64748b;">Sin datos diarios</div>', unsafe_allow_html=True)
 
-                # Tarjetas Inferiores: Mejor Día y Peor Día
                 sub_c1, sub_c2 = st.columns(2)
                 with sub_c1:
                     st.markdown(f'''
@@ -496,7 +593,7 @@ else:
                 st.markdown('</div>', unsafe_allow_html=True)
 
             # ==========================================
-            # REGISTRO DE OPERACIONES Y TABLA
+            # REGISTRO DE OPERACIONES Y FORMULARIO
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander("⚡ REGISTRAR NUEVO TRADE", expanded=True):
@@ -505,16 +602,19 @@ else:
                     with c1:
                         market = st.selectbox("Mercado", ["Opciones Binarias", "Forex"])
                         asset = st.text_input("Activo (Ej. EURUSD)").upper()
+                        session = st.selectbox("Sesión", ["New York", "Londres", "Sídney", "Tokio"])
                     with c2:
                         direction = st.selectbox("Dirección", ["CALL / BUY 🟢", "PUT / SELL 🔴"])
                         amount = st.number_input("Inversión / Lote ($)", min_value=0.1, value=10.0, step=1.0)
+                        confidence = st.selectbox("Nivel de Confianza", ["Alto 🔥", "Medio ⚡", "Bajo ⚠️"])
                     with c3:
                         result = st.selectbox("Resultado", ["WIN 🎉", "LOSS ❌", "EMPATE ➖"])
                         emotion = st.selectbox("Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
-                    with c4:
                         payout_percent = st.number_input("% Retorno (Binarias)", min_value=1, max_value=100, value=85)
+                    with c4:
                         date_time = st.date_input("Fecha", datetime.today())
                         time_input = st.time_input("Hora", datetime.now().time())
+                        observation = st.text_input("Observaciones / Notas")
                     
                     guardar_ejecucion = st.form_submit_button("GUARDAR EJECUCIÓN")
                     
@@ -528,11 +628,11 @@ else:
                                 pnl_calc = 0.0
 
                             dt_string = f"{date_time} {time_input}"
-                            c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl, emotion) 
-                                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''', 
-                                      (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl_calc, emotion))
+                            c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl, emotion, confidence, session, observation) 
+                                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''', 
+                                      (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl_calc, emotion, confidence, session, observation))
                             conn.commit()
-                            st.success(f"✅ Trade guardado con PnL: {pnl_calc:+.2f}$ y Estado: {emotion}")
+                            st.success(f"✅ Trade guardado con éxito! PnL: {pnl_calc:+.2f}$")
                             time.sleep(0.5)
                             st.rerun()
                         except Exception as e:
