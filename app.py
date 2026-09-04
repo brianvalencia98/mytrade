@@ -50,23 +50,17 @@ CSS_DASHBOARD = """
     [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
     
-    /* Panel de Perfil y Emocional */
+    /* Paneles Principales */
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 15px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); margin-top: 20px; height: 96%;}
     .profile-title { color: #ffffff; font-size: 22px; font-weight: bold; margin-bottom: 0px;}
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
-    /* Panel Estado Emocional Exacto */
-    .emotion-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 22px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 96%; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-    .emotion-header-title { color: #ffffff; font-size: 15px; font-weight: bold; letter-spacing: 1px; }
-    .emotion-header-sub { color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-top: 2px; }
-    .emotion-brain-icon { position: absolute; top: 20px; right: 20px; background: rgba(0, 210, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: #00d2ff; font-size: 18px; }
-    .emotion-content { text-align: center; padding: 15px 0; }
-    .emotion-emoji { font-size: 55px; margin-bottom: 8px; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
-    .emotion-status { color: #ffffff; font-size: 26px; font-weight: bold; margin-bottom: 2px; text-shadow: 0 0 15px rgba(255,255,255,0.2); }
-    .emotion-subtext { color: #94a3b8; font-size: 13px; font-weight: 500; }
-    .emotion-btn { background: transparent !important; border: 1px solid #1e293b !important; color: #94a3b8 !important; border-radius: 10px !important; padding: 10px !important; font-size: 14px !important; font-weight: 500 !important; width: 100% !important; text-align: center !important; transition: all 0.3s ease !important; }
-    .emotion-btn:hover { border-color: #00d2ff !important; color: #00d2ff !important; background: rgba(0, 210, 255, 0.05) !important; }
+    /* Paneles de Gráficos Nuevos */
+    .chart-panel { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; }
+    .best-worst-card { background: rgba(11, 19, 37, 0.6); border-radius: 12px; padding: 15px; border: 1px solid #1e293b; margin-top: 15px; }
+    .best-card { border-left: 4px solid #00ffa3 !important; }
+    .worst-card { border-left: 4px solid #ff3366 !important; }
 </style>
 """
 
@@ -216,7 +210,6 @@ else:
 
     c.execute('''CREATE TABLE IF NOT EXISTS accounts (id SERIAL PRIMARY KEY, broker VARCHAR(100), account_name VARCHAR(100), initial_balance NUMERIC)''')
     c.execute('''CREATE TABLE IF NOT EXISTS trades (id SERIAL PRIMARY KEY, account_id INTEGER REFERENCES accounts(id), date_time TIMESTAMP, market VARCHAR(50), asset VARCHAR(50), direction VARCHAR(50), amount NUMERIC, result VARCHAR(50), pnl NUMERIC)''')
-    # Añadir columna de emoción si no existe
     try:
         c.execute('''ALTER TABLE trades ADD COLUMN IF NOT EXISTS emotion VARCHAR(50) DEFAULT 'Neutral 😐';''')
     except:
@@ -363,7 +356,6 @@ else:
                 ''', unsafe_allow_html=True)
 
             with col_emo:
-                # Calcular promedio emocional de los últimos 7 días
                 emoji_res = "😐"
                 label_res = "Desconocido"
                 if not df_trades.empty and 'emotion' in df_trades.columns:
@@ -381,27 +373,130 @@ else:
                                 label_res = full_emo
 
                 st.markdown(f'''
-                <div class="emotion-card">
+                <div class="emotion-card" style="background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 22px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 100%; position: relative; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <div class="emotion-header-title">ESTADO EMOCIONAL</div>
-                        <div class="emotion-header-sub">BIOMETRÍA & SENTIMIENTO</div>
-                        <div class="emotion-brain-icon">🧠</div>
+                        <div style="color: #ffffff; font-size: 15px; font-weight: bold; letter-spacing: 1px;">ESTADO EMOCIONAL</div>
+                        <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1px; margin-top: 2px;">BIOMETRÍA & SENTIMIENTO</div>
+                        <div style="position: absolute; top: 20px; right: 20px; background: rgba(0, 210, 255, 0.1); border: 1px solid #1e293b; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; color: #00d2ff; font-size: 18px;">🧠</div>
                     </div>
-                    <div class="emotion-content">
-                        <div class="emotion-emoji">{emoji_res}</div>
-                        <div class="emotion-status">{label_res}</div>
-                        <div class="emotion-subtext">Promedio 7 días</div>
+                    <div style="text-align: center; padding: 15px 0;">
+                        <div style="font-size: 55px; margin-bottom: 8px;">{emoji_res}</div>
+                        <div style="color: #ffffff; font-size: 26px; font-weight: bold; margin-bottom: 2px;">{label_res}</div>
+                        <div style="color: #94a3b8; font-size: 13px; font-weight: 500;">Promedio 7 días</div>
                     </div>
                     <div>
                 ''', unsafe_allow_html=True)
                 
                 if st.button("Ver detalles >", key="btn_details"):
-                    st.info("💡 Consejo: Mantén tus emociones neutrales y evita operar bajo frustración o euforia para proteger tu cuenta.")
+                    st.info("💡 Consejo: Mantén tus emociones neutrales y evita operar bajo frustración o euforia.")
                     
                 st.markdown('</div></div>', unsafe_allow_html=True)
 
             # ==========================================
-            # REGISTRO DE OPERACIONES
+            # NUEVOS PANELES: CRECIMIENTO ACUMULADO Y P&L DIARIO
+            # ==========================================
+            st.markdown("<br>", unsafe_allow_html=True)
+            col_chart1, col_chart2 = st.columns(2)
+
+            # 1. Crecimiento Acumulado
+            with col_chart1:
+                st.markdown('<div class="chart-panel">', unsafe_allow_html=True)
+                pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
+                sign_growth = "+" if net_profit >= 0 else ""
+                
+                col_h1, col_h2 = st.columns([2, 1])
+                with col_h1:
+                    st.markdown('<div style="font-size: 18px; font-weight: bold; color: #ffffff;">📁 Crecimiento Acumulado</div>', unsafe_allow_html=True)
+                    st.markdown('<div style="font-size: 12px; color: #64748b;">P&L Acumulado Diario</div>', unsafe_allow_html=True)
+                with col_h2:
+                    st.markdown(f'<div style="text-align: right; font-size: 18px; font-weight: bold; color: #00ffa3;">{sign_growth}${net_profit:.2f} <span style="font-size: 12px;">{sign_growth}{pct_growth:.1f}%</span></div>', unsafe_allow_html=True)
+
+                if total_trades > 0:
+                    df_trades['Trade #'] = range(1, len(df_trades) + 1)
+                    fig_growth = px.area(df_trades, x='Trade #', y='equity', markers=True)
+                    fig_growth.update_layout(
+                        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=20, b=0),
+                        yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
+                        height=220
+                    )
+                    fig_growth.update_traces(line_color='#00d2ff', fillcolor='rgba(0, 210, 255, 0.15)')
+                    st.plotly_chart(fig_growth, use_container_width=True, config={'displayModeBar': False})
+                else:
+                    st.info("Sin datos para mostrar gráfico.")
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            # 2. P&L Diario y Métricas de Días
+            with col_chart2:
+                st.markdown('<div class="chart-panel">', unsafe_allow_html=True)
+                
+                green_days_count = 0
+                red_days_count = 0
+                best_day_val = 0.0
+                best_day_date = "N/A"
+                worst_day_val = 0.0
+                worst_day_date = "N/A"
+
+                if total_trades > 0:
+                    df_daily = df_trades.copy()
+                    df_daily['day_only'] = df_daily['date_time'].dt.date
+                    df_grouped = df_daily.groupby('day_only')['pnl'].sum().reset_index()
+                    
+                    green_days_count = len(df_grouped[df_grouped['pnl'] > 0])
+                    red_days_count = len(df_grouped[df_grouped['pnl'] < 0])
+                    
+                    if not df_grouped.empty:
+                        best_row = df_grouped.loc[df_grouped['pnl'].idxmax()]
+                        best_day_val = best_row['pnl']
+                        best_day_date = best_row['day_only'].strftime('%d de %B de %Y')
+                        
+                        worst_row = df_grouped.loc[df_grouped['pnl'].idxmin()]
+                        worst_day_val = worst_row['pnl']
+                        worst_day_date = worst_row['day_only'].strftime('%d de %B de %Y')
+
+                col_d1, col_d2 = st.columns([2, 1])
+                with col_d1:
+                    st.markdown('<div style="font-size: 18px; font-weight: bold; color: #ffffff;">📊 P&L Diario</div>', unsafe_allow_html=True)
+                    st.markdown('<div style="font-size: 12px; color: #64748b;">Ganancias y pérdidas por día</div>', unsafe_allow_html=True)
+                with col_d2:
+                    st.markdown(f'<div style="text-align: right; font-size: 12px; color: #94a3b8;"><span style="color: #00ffa3;">🟢 {green_days_count} Días</span> &nbsp; <span style="color: #ff3366;">🔴 {red_days_count} Días</span></div>', unsafe_allow_html=True)
+
+                if total_trades > 0:
+                    fig_daily = px.bar(df_grouped, x='day_only', y='pnl', color='pnl',
+                                       color_continuous_scale=['#ff3366', '#00ffa3'])
+                    fig_daily.update_layout(
+                        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
+                        font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=20, b=0),
+                        yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
+                        coloraxis_showscale=False, height=130
+                    )
+                    st.plotly_chart(fig_daily, use_container_width=True, config={'displayModeBar': False})
+                else:
+                    st.markdown('<div style="height: 130px; display: flex; align-items: center; justify-content: center; color: #64748b;">Sin datos diarios</div>', unsafe_allow_html=True)
+
+                # Tarjetas Inferiores: Mejor Día y Peor Día
+                sub_c1, sub_c2 = st.columns(2)
+                with sub_c1:
+                    st.markdown(f'''
+                    <div class="best-worst-card best-card">
+                        <div style="font-size: 11px; font-weight: bold; color: #64748b; letter-spacing: 1px;">MEJOR DÍA</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #00ffa3; margin-top: 4px;">+{best_day_val:.2f}$</div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">{best_day_date}</div>
+                    </div>
+                    ''', unsafe_allow_html=True)
+                with sub_c2:
+                    st.markdown(f'''
+                    <div class="best-worst-card worst-card">
+                        <div style="font-size: 11px; font-weight: bold; color: #64748b; letter-spacing: 1px;">PEOR DÍA</div>
+                        <div style="font-size: 18px; font-weight: bold; color: #ff3366; margin-top: 4px;">{worst_day_val:.2f}$</div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 2px;">{worst_day_date}</div>
+                    </div>
+                    ''', unsafe_allow_html=True)
+
+                st.markdown('</div>', unsafe_allow_html=True)
+
+            # ==========================================
+            # REGISTRO DE OPERACIONES Y TABLA
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             with st.expander("⚡ REGISTRAR NUEVO TRADE", expanded=True):
@@ -444,13 +539,8 @@ else:
                             st.error(f"Error guardando en la BD: {e}")
 
             # ==========================================
-            # GRÁFICA HISTÓRICA
+            # TABLA DE REGISTROS
             # ==========================================
-            st.markdown("<br><h3>📈 Histórico de Equidad</h3>", unsafe_allow_html=True)
+            st.markdown("<br><h3>📋 Historial de Operaciones</h3>", unsafe_allow_html=True)
             if total_trades > 0:
-                df_trades['Trade #'] = range(1, len(df_trades) + 1)
-                fig = px.area(df_trades, x='Trade #', y='equity', markers=True)
-                fig.update_layout(plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=10, b=0), yaxis=dict(gridcolor='#1e293b', title='Balance ($)'))
-                fig.update_traces(line_color='#00d2ff', fillcolor='rgba(0, 210, 255, 0.1)')
-                st.plotly_chart(fig, use_container_width=True)
                 st.dataframe(df_trades.drop(columns=['id', 'account_id', 'equity', 'peak', 'dd']), use_container_width=True, hide_index=True)
