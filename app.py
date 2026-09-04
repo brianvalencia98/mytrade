@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import calendar
 import time
+import textwrap
 
 # ==========================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -137,6 +138,25 @@ CSS_DASHBOARD = """
     .dot-live { height: 8px; width: 8px; background-color: #00ffa3; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #00ffa3; animation: pulse 1.5s infinite; }
     .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
+
+    /* Tarjetas animadas para el historial detallado */
+    .trade-log-card {
+        background: linear-gradient(145deg, #0b1325, #070d19);
+        border: 1px solid #1e293b;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .trade-log-card:hover {
+        border-color: #00d2ff;
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+        transform: translateY(-2px);
+    }
 </style>
 """
 
@@ -779,7 +799,7 @@ else:
                 st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ FILTRADO TEMPORAL Y REGISTRO DE EJECUCIONES</p>', unsafe_allow_html=True)
                 
                 if total_trades > 0:
-                    # Filtro Temporal (Diario, Esta Semana, Este Mes, Este Año, Todo el Histórico)
+                    # Filtro Temporal
                     f_col1, _ = st.columns([2, 2])
                     with f_col1:
                         time_filter = st.selectbox("⏱️ Filtrar Temporalidad", ["Todo el Histórico", "Diario", "Esta Semana", "Este Mes", "Este Año"])
@@ -810,7 +830,7 @@ else:
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # 2. DETALLADO DE TRADES EN TARJETAS (SEGUNDO)
+                    # 2. DETALLADO DE TRADES CON CONTENEDORES NATIVOS (SEGUNDO)
                     st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 10px;">🔍 Detallado Cuántico de Ejecuciones</div>', unsafe_allow_html=True)
                     if not df_filtered.empty:
                         for idx, row in df_filtered.iterrows():
@@ -818,28 +838,25 @@ else:
                             res_color = "#00ffa3" if pnl_val > 0 else "#ff3366" if pnl_val < 0 else "#94a3b8"
                             sign_pnl = "+" if pnl_val > 0 else ""
                             obs_text = row.get('observation', '')
-                            obs_html = f"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: {obs_text}</div>" if obs_text else ""
                             
-                            card_html = textwrap.dedent(f"""
-                            <div class="trade-log-card">
-                                <div>
-                                    <span style="color: #00d2ff; font-weight: bold; font-size: 13px;">💎 {row['asset']} &nbsp;|&nbsp; <b style="color:#e2e8f0">{row['market']}</b></span>
-                                    <span style="color: #64748b; font-size: 11px; margin-left: 10px;">📅 {row['date_time']}</span>
+                            with st.container(border=True):
+                                col_card1, col_card2 = st.columns([3, 1])
+                                with col_card1:
+                                    st.markdown(f"<span style='color: #00d2ff; font-weight: bold; font-size: 13px;'>💎 {row['asset']} &nbsp;|&nbsp; <b style='color:#e2e8f0'>{row['market']}</b></span>", unsafe_allow_html=True)
+                                    st.markdown(f"<span style='color: #64748b; font-size: 11px;'>📅 {row['date_time']}</span>", unsafe_allow_html=True)
+                                    st.markdown(f"""
                                     <div style="color: #94a3b8; font-size: 11px; margin-top: 4px;">
                                         Dir: <b style="color:#e2e8f0">{row['direction']}</b> &nbsp;|&nbsp; 
                                         Sesión: <b style="color:#e2e8f0">{row.get('session', 'N/A')}</b> &nbsp;|&nbsp; 
                                         Confianza: <b style="color:#e2e8f0">{row.get('confidence', 'N/A')}</b> &nbsp;|&nbsp; 
                                         Emoción: <b style="color:#e2e8f0">{row.get('emotion', 'N/A')}</b>
                                     </div>
-                                    {obs_html}
-                                </div>
-                                <div style="text-align: right;">
-                                    <div style="color: {res_color}; font-size: 16px; font-weight: bold;">{sign_pnl}${pnl_val:.2f}</div>
-                                    <div style="color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>
-                                </div>
-                            </div>
-                            """)
-                            st.markdown(card_html.strip(), unsafe_allow_html=True)
+                                    """, unsafe_allow_html=True)
+                                    if obs_text:
+                                        st.markdown(f"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: {obs_text}</div>", unsafe_allow_html=True)
+                                with col_card2:
+                                    st.markdown(f"<div style='text-align: right; color: {res_color}; font-size: 16px; font-weight: bold;'>{sign_pnl}${pnl_val:.2f}</div>", unsafe_allow_html=True)
+                                    st.markdown(f"<div style='text-align: right; color: #64748b; font-size: 11px; margin-top: 2px;'>Inv: ${row['amount']} | {row['result']}</div>", unsafe_allow_html=True)
                     else:
                         st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
