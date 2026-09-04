@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (SIDEBAR CYBERPUNK Y UI)
+# BLOQUES DE CSS (FUTURISTA / NEON CORREGIDO)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -38,90 +38,31 @@ CSS_LOGIN = """
 CSS_DASHBOARD = """
 <style>
     [data-testid="stAppViewContainer"] { background-color: #070d19; color: #e2e8f0; }
+    [data-testid="stSidebar"] { background: linear-gradient(180deg, #050b14 0%, #0b1325 100%); border-right: 1px solid #1e293b; box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5); }
     [data-testid="stHeader"] { background-color: transparent; }
     
-    /* ==========================================
-       SIDEBAR FUTURISTA CYBERPUNK
-       ========================================== */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #050b14 0%, #0b1325 100%);
-        border-right: 1px solid #1e293b;
-        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
-    }
-    
-    /* Título del Sidebar con brillo neón */
-    .sidebar-title {
-        color: #00d2ff;
-        font-size: 20px;
-        font-weight: 800;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        text-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
-        margin-bottom: 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+    .sidebar-title { color: #00d2ff; font-size: 20px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px rgba(0, 210, 255, 0.4); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    [data-testid="stSidebar"] .stRadio > label { color: #94a3b8 !important; font-weight: 600 !important; letter-spacing: 1px; }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] { gap: 10px; }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label { background: rgba(17, 26, 46, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 12px 15px; transition: all 0.3s ease; }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover { border-color: #00d2ff; background: rgba(0, 210, 255, 0.08); box-shadow: 0 0 15px rgba(0, 210, 255, 0.2); transform: translateX(4px); }
 
-    /* Animación de selección en Radio Buttons del Sidebar */
-    [data-testid="stSidebar"] .stRadio > label {
-        color: #94a3b8 !important;
-        font-weight: 600 !important;
-        letter-spacing: 1px;
-    }
-    
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] {
-        gap: 10px;
-    }
+    [data-testid="stSidebar"] .stButton button { background: linear-gradient(135deg, #ff3366, #d22d56) !important; color: #ffffff !important; border: 1px solid #ff3366 !important; border-radius: 12px !important; font-weight: bold !important; letter-spacing: 1px; width: 100% !important; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3) !important; transition: all 0.3s ease !important; }
+    [data-testid="stSidebar"] .stButton button:hover { background: linear-gradient(135deg, #ff1948, #ff3366) !important; box-shadow: 0 0 20px rgba(255, 51, 102, 0.6) !important; transform: translateY(-2px); }
 
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
-        background: rgba(17, 26, 46, 0.6);
-        border: 1px solid #1e293b;
-        border-radius: 12px;
-        padding: 12px 15px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover {
-        border-color: #00d2ff;
-        background: rgba(0, 210, 255, 0.08);
-        box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
-        transform: translateX(4px);
-    }
-
-    /* Botón de Cerrar Sesión Estilo Neón Pulsante */
-    [data-testid="stSidebar"] .stButton button {
-        background: linear-gradient(135deg, #ff3366, #d22d56) !important;
-        color: #ffffff !important;
-        border: 1px solid #ff3366 !important;
-        border-radius: 12px !important;
-        font-weight: bold !important;
-        letter-spacing: 1px;
-        width: 100% !important;
-        box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3) !important;
-        transition: all 0.3s ease !important;
-    }
-    
-    [data-testid="stSidebar"] .stButton button:hover {
-        background: linear-gradient(135deg, #ff1948, #ff3366) !important;
-        box-shadow: 0 0 20px rgba(255, 51, 102, 0.6) !important;
-        transform: translateY(-2px);
-    }
-
-    /* Botones generales del Dashboard */
     .stForm [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
     .stForm [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
-
-    /* Paneles Principales */
+    
     .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
+    
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
     .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
     .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
-    .chart-panel { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; }
-    .best-worst-card { background: rgba(11, 19, 37, 0.6); border-radius: 12px; padding: 15px; border: 1px solid #1e293b; margin-top: 15px; }
+    /* Paneles de Gráficos perfectamente alineados y estructurados */
+    .chart-panel { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 22px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .best-worst-card { background: rgba(11, 19, 37, 0.8); border-radius: 12px; padding: 14px; border: 1px solid #1e293b; margin-top: 12px; }
     .best-card { border-left: 4px solid #00ffa3 !important; }
     .worst-card { border-left: 4px solid #ff3366 !important; }
 
@@ -605,7 +546,7 @@ else:
                 ''', unsafe_allow_html=True)
 
             # ==========================================
-            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO
+            # PANELES DE GRÁFICOS: CRECIMIENTO Y P&L DIARIO (ESTRUCTURA CORREGIDA)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2 = st.columns(2)
@@ -634,7 +575,7 @@ else:
                     fig_growth.update_traces(line_color='#00d2ff', fillcolor='rgba(0, 210, 255, 0.15)')
                     st.plotly_chart(fig_growth, use_container_width=True, config={'displayModeBar': False})
                 else:
-                    st.info("Sin datos para mostrar gráfico.")
+                    st.markdown('<div style="height: 220px; display: flex; align-items: center; justify-content: center; color: #64748b;">Sin datos para mostrar gráfico.</div>', unsafe_allow_html=True)
                 st.markdown('</div>', unsafe_allow_html=True)
 
             with col_chart2:
