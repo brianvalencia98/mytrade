@@ -566,7 +566,7 @@ CSS_DASHBOARD = """
             right: 2px !important;
         }
         .cal-sym {
-            display: none !important; /* Oculta símbolo para ahorrar espacio crítico en móvil */
+            display: none !important;
         }
 
         .kpi-card-exact {
@@ -1236,7 +1236,6 @@ else:
             col_cal, col_prof = st.columns([1.18, 0.82])
             
             with col_cal:
-                # Inicialización de estado de navegación del mes
                 if "cal_year" not in st.session_state:
                     st.session_state["cal_year"] = datetime.now().year
                 if "cal_month" not in st.session_state:
@@ -1436,7 +1435,7 @@ PSICO-TRADING SCORE
 </div>''', unsafe_allow_html=True)
 
             # ==========================================
-            # SECCIÓN 3: GRÁFICOS INFERIORES
+            # SECCIÓN 3: GRÁFICOS INFERIORES (BLOQUEADOS Y ESTÁTICOS)
             # ==========================================
             st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
             col_chart1, col_chart2, col_chart3 = st.columns(3)
@@ -1479,11 +1478,12 @@ PSICO-TRADING SCORE
                             font=dict(color='#94a3b8', size=10),
                             margin=dict(l=5, r=5, t=5, b=5),
                             height=205,
-                            xaxis=dict(showgrid=True, gridcolor='#101d36', zeroline=False, showline=True, linecolor='#1e293b'),
-                            yaxis=dict(showgrid=True, gridcolor='#101d36', zeroline=False, showline=True, linecolor='#1e293b', tickprefix=curr_symbol),
+                            dragmode=False,
+                            xaxis=dict(showgrid=True, gridcolor='#101d36', zeroline=False, showline=True, linecolor='#1e293b', fixedrange=True),
+                            yaxis=dict(showgrid=True, gridcolor='#101d36', zeroline=False, showline=True, linecolor='#1e293b', tickprefix=curr_symbol, fixedrange=True),
                             hovermode='x unified'
                         )
-                        st.plotly_chart(fig_growth, width='stretch', config={'displayModeBar': False})
+                        st.plotly_chart(fig_growth, width='stretch', config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False})
                     else:
                         st.markdown('<div style="text-align: center; color: #64748b; padding: 60px;">Sin datos de crecimiento disponibles.</div>', unsafe_allow_html=True)
 
@@ -1548,10 +1548,11 @@ PSICO-TRADING SCORE
                             font=dict(color='#94a3b8', size=10),
                             margin=dict(l=5, r=5, t=5, b=0),
                             height=95,
-                            xaxis=dict(type='category', showgrid=False, linecolor='#1e293b', tickfont=dict(color='#94a3b8', size=10)),
-                            yaxis=dict(showgrid=True, gridcolor='#101d36', zeroline=True, zerolinecolor='#334155', zerolinewidth=1.5, linecolor='#1e293b', tickprefix=curr_symbol, tickfont=dict(color='#94a3b8', size=10))
+                            dragmode=False,
+                            xaxis=dict(type='category', showgrid=False, linecolor='#1e293b', tickfont=dict(color='#94a3b8', size=10), fixedrange=True),
+                            yaxis=dict(showgrid=True, gridcolor='#101d36', zeroline=True, zerolinecolor='#334155', zerolinewidth=1.5, linecolor='#1e293b', tickprefix=curr_symbol, tickfont=dict(color='#94a3b8', size=10), fixedrange=True)
                         )
-                        st.plotly_chart(fig_daily, width='stretch', config={'displayModeBar': False})
+                        st.plotly_chart(fig_daily, width='stretch', config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False})
                     else:
                         st.markdown('<div style="text-align: center; color: #64748b; padding: 35px;">Sin datos diarios disponibles.</div>', unsafe_allow_html=True)
 
@@ -1621,7 +1622,7 @@ PSICO-TRADING SCORE
                                 x=0.5, y=0.57, showarrow=False, font=dict(size=10, color="#ffffff")
                             )]
                         )
-                        st.plotly_chart(fig_donut, width='stretch', config={'displayModeBar': False})
+                        st.plotly_chart(fig_donut, width='stretch', config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False})
                     else:
                         st.markdown('<div style="text-align: center; color: #64748b; padding: 60px;">Sin datos de ratio disponibles.</div>', unsafe_allow_html=True)
                     
@@ -1729,7 +1730,7 @@ PSICO-TRADING SCORE
                             
                             obs_html = f'<div style="margin-top: 6px; color: #d200ff; font-size: 13px; font-style: italic;">📝 Nota: {obs_text}</div>' if obs_text else ''
                             
-                            card_html = f'<div class="trade-quantum-card" style="border-left: 4px solid {border_color};"><div style="flex-grow: 1;"><div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;"><span style="color: #00d2ff; font-size: 16px; font-weight: 800; letter-spacing: 0.5px;">💎 {row["asset"]}</span><span style="color: #64748b; font-size: 13px; font-weight: bold;">|</span><span style="color: #e2e8f0; font-size: 14px; font-weight: 600;">{row["market"]}</span><span style="color: #64748b; font-size: 12px; margin-left: 6px;">📅 {date_str}</span></div><div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center;"><span class="trade-badge">Dir: <b style="color:#ffffff;">{row["direction"]}</b></span><span class="trade-badge">Sesión: <b style="color:#ffffff;">{row.get("session", "N/A")}</b></span><span class="trade-badge">Confianza: <b style="color:#ffffff;">{row.get("confidence", "N/A")}</b></span><span class="trade-badge">Op: <b style="color:#ffffff;">{row.get("emotion", "N/A")}</b></span></div>{obs_html}</div><div style="text-align: right; min-width: 140px; margin-left: 15px;"><div style="color: {res_color}; font-size: 20px; font-weight: 800; text-shadow: 0 0 10px {res_color}40;">{sign_pnl}{curr_symbol}{pnl_val:,.2f}</div><div style="color: #94a3b8; font-size: 12.5px; font-weight: 600; margin-top: 2px;">Inv: {curr_symbol}{amt_val:,.2f} | <span style="color: {res_color};">{res_val}</span></div></div></div>'
+                            card_html = f'<div class="trade-quantum-card" style="border-left: 4px solid {border_color};"><div style="flex-grow: 1;"><div style="display: flex; align-items: center; gap: 10px; margin-bottom: 2px;"><span style="color: #00d2ff; font-size: 16px; font-weight: 800; letter-spacing: 0.5px;">💎 {row["asset"]}</span><span style="color: #64748b; font-size: 13px; font-weight: bold;">|</span><span style="color: #e2e8f0; font-size: 14px; font-weight: 600;">{row["market"]}</span><span style="color: #64748b; font-size: 12px; margin-left: 6px;">📅 {date_str}</span></div><div style="flex-wrap: wrap; gap: 8px; margin-top: 6px; align-items: center; display: flex;"><span class="trade-badge">Dir: <b style="color:#ffffff;">{row["direction"]}</b></span><span class="trade-badge">Sesión: <b style="color:#ffffff;">{row.get("session", "N/A")}</b></span><span class="trade-badge">Confianza: <b style="color:#ffffff;">{row.get("confidence", "N/A")}</b></span><span class="trade-badge">Op: <b style="color:#ffffff;">{row.get("emotion", "N/A")}</b></span></div>{obs_html}</div><div style="text-align: right; min-width: 140px; margin-left: 15px;"><div style="color: {res_color}; font-size: 20px; font-weight: 800; text-shadow: 0 0 10px {res_color}40;">{sign_pnl}{curr_symbol}{pnl_val:,.2f}</div><div style="color: #94a3b8; font-size: 12.5px; font-weight: 600; margin-top: 2px;">Inv: {curr_symbol}{amt_val:,.2f} | <span style="color: {res_color};">{res_val}</span></div></div></div>'
                             
                             st.markdown(card_html, unsafe_allow_html=True)
                     else:
