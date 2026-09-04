@@ -144,12 +144,20 @@ else:
     # ==========================================
     # LÓGICA PRINCIPAL Y BASE DE DATOS
     # ==========================================
-    @st.cache_resource
+    @st.cache_resource(ttl=3600)
     def get_db_connection():
-        return psycopg2.connect(st.secrets["DATABASE_URL"])
+        conexion = psycopg2.connect(st.secrets["DATABASE_URL"])
+        conexion.autocommit = True
+        return conexion
 
+    # Obtenemos la conexión
     conn = get_db_connection()
-    conn.autocommit = True
+    
+    # Si la conexión se cerró por inactividad, limpiamos la memoria y reconectamos
+    if conn.closed != 0:
+        st.cache_resource.clear()
+        conn = get_db_connection()
+
     c = conn.cursor()
 
     c.execute('''CREATE TABLE IF NOT EXISTS accounts (id SERIAL PRIMARY KEY, broker VARCHAR(100), account_name VARCHAR(100), initial_balance NUMERIC)''')
