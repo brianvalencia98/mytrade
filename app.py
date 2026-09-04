@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / NEON EXACTO)
+# BLOQUES DE CSS (SIDEBAR CYBERPUNK Y UI)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -38,15 +38,83 @@ CSS_LOGIN = """
 CSS_DASHBOARD = """
 <style>
     [data-testid="stAppViewContainer"] { background-color: #070d19; color: #e2e8f0; }
-    [data-testid="stSidebar"] { background-color: #0b1325; border-right: 1px solid #1e293b; }
     [data-testid="stHeader"] { background-color: transparent; }
     
-    [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
-    [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
+    /* ==========================================
+       SIDEBAR FUTURISTA CYBERPUNK
+       ========================================== */
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #050b14 0%, #0b1325 100%);
+        border-right: 1px solid #1e293b;
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5);
+    }
     
-    /* Paneles Principales estilo Referencia */
+    /* Título del Sidebar con brillo neón */
+    .sidebar-title {
+        color: #00d2ff;
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px rgba(0, 210, 255, 0.4);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Animación de selección en Radio Buttons del Sidebar */
+    [data-testid="stSidebar"] .stRadio > label {
+        color: #94a3b8 !important;
+        font-weight: 600 !important;
+        letter-spacing: 1px;
+    }
+    
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] {
+        gap: 10px;
+    }
+
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
+        background: rgba(17, 26, 46, 0.6);
+        border: 1px solid #1e293b;
+        border-radius: 12px;
+        padding: 12px 15px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover {
+        border-color: #00d2ff;
+        background: rgba(0, 210, 255, 0.08);
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+        transform: translateX(4px);
+    }
+
+    /* Botón de Cerrar Sesión Estilo Neón Pulsante */
+    [data-testid="stSidebar"] .stButton button {
+        background: linear-gradient(135deg, #ff3366, #d22d56) !important;
+        color: #ffffff !important;
+        border: 1px solid #ff3366 !important;
+        border-radius: 12px !important;
+        font-weight: bold !important;
+        letter-spacing: 1px;
+        width: 100% !important;
+        box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    [data-testid="stSidebar"] .stButton button:hover {
+        background: linear-gradient(135deg, #ff1948, #ff3366) !important;
+        box-shadow: 0 0 20px rgba(255, 51, 102, 0.6) !important;
+        transform: translateY(-2px);
+    }
+
+    /* Botones generales del Dashboard */
+    .stForm [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
+    .stForm [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
+
+    /* Paneles Principales */
     .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
-    
     .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
     .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
     .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
@@ -229,11 +297,16 @@ else:
     def get_trades(account_id): return pd.read_sql_query(f"SELECT * FROM trades WHERE account_id = {account_id} ORDER BY date_time ASC", conn)
 
     # ==========================================
-    # BARRA LATERAL
+    # BARRA LATERAL (SIDEBAR FUTURISTA)
     # ==========================================
-    st.sidebar.markdown("<h2 style='color: #00d2ff;'>⚡ Panel de Control</h2>", unsafe_allow_html=True)
-    menu = st.sidebar.radio("Navegación", ["📊 Dashboard Principal", "🏦 Gestionar Cuentas"])
-    st.sidebar.divider()
+    st.sidebar.markdown('<div class="sidebar-title">⚡ Panel Lab</div>', unsafe_allow_html=True)
+    st.sidebar.markdown('<p style="color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px;">Navegación</p>', unsafe_allow_html=True)
+    
+    menu = st.sidebar.radio("", ["📊 Dashboard Principal", "🏦 Gestionar Cuentas"], label_visibility="collapsed")
+    
+    st.sidebar.markdown("<br><br><br>", unsafe_allow_html=True)
+    st.sidebar.markdown("<hr style='border-color: #1e293b;'>", unsafe_allow_html=True)
+    
     if st.sidebar.button("Cerrar Sesión 🔒"):
         del st.session_state["password_correct"]
         st.session_state.pin_input = ""
@@ -315,7 +388,7 @@ else:
                 overall_score = int(sum([score_win, score_pf, score_awal, score_rec, score_dd, score_cons]) / 6)
 
             # ==========================================
-            # 5 PANELES SUPERIORES EXACTOS (CON AVG WIN/LOSS)
+            # 5 PANELES SUPERIORES EXACTOS
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             kpi_cols = st.columns(5)
