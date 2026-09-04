@@ -18,9 +18,7 @@ CSS_LOGIN = """
 <style>
     [data-testid="stAppViewContainer"] { background-color: #070d19; color: #e2e8f0; }
     [data-testid="stHeader"] { background-color: transparent; }
-    
     div[data-testid="column"] { display: flex; justify-content: center; align-items: center; }
-    
     [data-testid="stButton"] button {
         width: 70px !important;
         height: 70px !important;
@@ -45,7 +43,6 @@ CSS_DASHBOARD = """
     [data-testid="stSidebar"] { background-color: #0b1325; border-right: 1px solid #1e293b; }
     [data-testid="stHeader"] { background-color: transparent; }
     
-    /* Tarjetas KPI */
     .kpi-card { background: linear-gradient(145deg, #111a2e, #0b1221); border-radius: 15px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); margin-bottom: 20px;}
     .kpi-title { color: #64748b; font-size: 13px; font-weight: 600; letter-spacing: 1.5px; margin-bottom: 5px;}
     .kpi-value { color: #00d2ff; font-size: 32px; font-weight: 700; margin: 0;}
@@ -54,108 +51,91 @@ CSS_DASHBOARD = """
     
     [data-testid="stButton"] button { background-color: #00d2ff !important; color: #000000 !important; border: none !important; border-radius: 8px !important; font-weight: bold !important; width: 100% !important; }
     [data-testid="stButton"] button:hover { background-color: #00a8cc !important; color: white !important;}
-
-    /* Calendario Avanzado */
-    .cal-container { background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 10px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
-    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .cal-title { color: #ffffff; font-size: 22px; font-weight: bold; }
-    .cal-month { color: #ffffff; font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
-    .cal-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .cal-th { color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;}
-    
-    /* Celdas del calendario */
-    .cal-td { border: 1px solid #10192d; height: 105px; vertical-align: top; padding: 10px; background-color: #080f1e; transition: all 0.2s ease; position: relative; }
-    .cal-td:hover { background-color: #111e38; }
-    
-    /* Celdas con resultados */
-    .cal-td.cal-td-win { border: 1px solid #00d284 !important; border-bottom: 3.5px solid #00ffa3 !important; background-color: rgba(0, 255, 163, 0.08) !important; }
-    .cal-td.cal-td-loss { border: 1px solid #d22d56 !important; border-bottom: 3.5px solid #ff3366 !important; background-color: rgba(255, 51, 102, 0.08) !important; }
-    
-    /* Celda de Totales Semanales */
-    .cal-td-total { border: 1px solid #10192d; height: 105px; vertical-align: middle; text-align: center; background-color: #060b16; }
-    .cal-td-total.cal-total-win { border: 1px solid #00d284 !important; background-color: rgba(0, 255, 163, 0.06) !important; }
-    .cal-td-total.cal-total-loss { border: 1px solid #d22d56 !important; background-color: rgba(255, 51, 102, 0.06) !important; }
-    
-    .cal-day { font-size: 14px; color: #94a3b8; font-weight: bold;}
-    
-    /* Montos dentro de las celdas */
-    .cal-pnl-win { color: #00ffa3; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
-    .cal-pnl-loss { color: #ff3366; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px; }
-    
-    .cal-pnl-win-total { color: #00ffa3; font-weight: bold; font-size: 14px; margin-top: 5px; }
-    .cal-pnl-loss-total { color: #ff3366; font-weight: bold; font-size: 14px; margin-top: 5px; }
-    .cal-label-total { font-size: 10px; color: #64748b; font-weight: bold; letter-spacing: 1px;}
 </style>
 """
 
 # ==========================================
 # GENERADOR DEL CALENDARIO
 # ==========================================
-def render_calendar(df_trades, target_year, target_month):
+def render_calendar(df_trades):
     meses = {1:"ENE", 2:"FEB", 3:"MAR", 4:"ABR", 5:"MAY", 6:"JUN", 7:"JUL", 8:"AGO", 9:"SEP", 10:"OCT", 11:"NOV", 12:"DIC"}
-    month_name = f"{meses[target_month]} {target_year}"
+    now = datetime.now()
+    year = now.year
+    month = now.month
+    month_name = f"{meses[month]} {year}"
     
     daily_pnl = {}
     if not df_trades.empty:
         df_copy = df_trades.copy()
-        df_copy['date_time'] = pd.to_datetime(df_copy['date_time'].astype(str))
+        df_copy['date_time'] = pd.to_datetime(df_copy['date_time'])
         df_copy['pnl'] = pd.to_numeric(df_copy['pnl'], errors='coerce').fillna(0.0)
         
-        # Filtro por año y mes seleccionado
-        mask = (df_copy['date_time'].dt.year == target_year) & (df_copy['date_time'].dt.month == target_month)
-        current_month = df_copy[mask]
-        
+        current_month = df_copy[(df_copy['date_time'].dt.year == year) & (df_copy['date_time'].dt.month == month)]
         if not current_month.empty:
             grouped = current_month.groupby(current_month['date_time'].dt.day)['pnl'].sum()
-            daily_pnl = {int(k): float(v) for k, v in grouped.to_dict().items()}
+            daily_pnl = {int(k): float(v) for k, v in grouped.items()}
 
-    cal = calendar.monthcalendar(target_year, target_month)
+    cal = calendar.monthcalendar(year, month)
     
     html = f"""
-    <div class="cal-container">
-        <div class="cal-header">
-            <div class="cal-title">📅 Calendario</div>
-            <div class="cal-month">{month_name}</div>
+    <div style="background-color: #070d19; padding: 20px; border-radius: 15px; border: 1px solid #1e293b; margin-top: 20px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="color: #ffffff; font-size: 22px; font-weight: bold; display: flex; align-items: center; gap: 10px;">📅 Calendario</div>
+            <div style="color: #ffffff; font-size: 16px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">&lt; &nbsp; {month_name} &nbsp; &gt;</div>
         </div>
-        <table class="cal-table">
+        <table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
             <tr>
-                <th class="cal-th">L</th><th class="cal-th">M</th><th class="cal-th">M</th>
-                <th class="cal-th">J</th><th class="cal-th">V</th><th class="cal-th">S</th>
-                <th class="cal-th">D</th><th class="cal-th">∑</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">L</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">M</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">M</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">J</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">V</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">S</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">D</th>
+                <th style="color: #00d2ff; padding: 12px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 14px;">∑</th>
             </tr>
     """
     for week in cal:
         html += "<tr>"
         week_total = 0.0
-        has_trades_in_week = False
+        has_trades = False
         
         for day in week:
             if day == 0:
-                html += '<td class="cal-td"></td>'
+                html += '<td style="border: 1px solid #10192d; height: 105px; background-color: #080f1e;"></td>'
             else:
-                if day in daily_pnl:
-                    pnl = daily_pnl[day]
-                    has_trades_in_week = True
+                pnl = daily_pnl.get(day, None)
+                td_style = "border: 1px solid #10192d; height: 105px; vertical-align: top; padding: 10px; background-color: #080f1e; position: relative;"
+                pnl_html = ""
+                
+                if pnl is not None:
+                    has_trades = True
                     week_total += pnl
                     if pnl > 0:
-                        html += f'<td class="cal-td cal-td-win"><div class="cal-day">{day}</div><div class="cal-pnl-win">+{pnl:.2f}$</div></td>'
+                        td_style = "border: 1px solid #00d284; border-bottom: 3.5px solid #00ffa3; height: 105px; vertical-align: top; padding: 10px; background-color: rgba(0, 255, 163, 0.08); position: relative;"
+                        pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px;">+{pnl:.2f}$</div>'
                     elif pnl < 0:
-                        html += f'<td class="cal-td cal-td-loss"><div class="cal-day">{day}</div><div class="cal-pnl-loss">{pnl:.2f}$</div></td>'
+                        td_style = "border: 1px solid #d22d56; border-bottom: 3.5px solid #ff3366; height: 105px; vertical-align: top; padding: 10px; background-color: rgba(255, 51, 102, 0.08); position: relative;"
+                        pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px;">{pnl:.2f}$</div>'
                     else:
-                        html += f'<td class="cal-td"><div class="cal-day">{day}</div><div class="cal-pnl-win">0.00$</div></td>'
-                else:
-                    html += f'<td class="cal-td"><div class="cal-day">{day}</div></td>'
+                        pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 13px; position: absolute; bottom: 8px; right: 8px;">0.00$</div>'
+                
+                html += f'<td style="{td_style}"><div style="font-size: 14px; color: #94a3b8; font-weight: bold;">{day}</div>{pnl_html}</td>'
         
-        if has_trades_in_week:
+        total_style = "border: 1px solid #10192d; height: 105px; vertical-align: middle; text-align: center; background-color: #060b16;"
+        total_pnl_html = ""
+        
+        if has_trades:
             if week_total > 0:
-                html += f'<td class="cal-td-total cal-total-win"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">+{week_total:.2f}$</div></td>'
+                total_style = "border: 1px solid #00d284; height: 105px; vertical-align: middle; text-align: center; background-color: rgba(0, 255, 163, 0.06);"
+                total_pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 14px; margin-top: 5px;">+{week_total:.2f}$</div>'
             elif week_total < 0:
-                html += f'<td class="cal-td-total cal-total-loss"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-loss-total">{week_total:.2f}$</div></td>'
+                total_style = "border: 1px solid #d22d56; height: 105px; vertical-align: middle; text-align: center; background-color: rgba(255, 51, 102, 0.06);"
+                total_pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 14px; margin-top: 5px;">{week_total:.2f}$</div>'
             else:
-                html += f'<td class="cal-td-total"><div class="cal-label-total">TOTAL</div><div class="cal-pnl-win-total">0.00$</div></td>'
-        else:
-            html += f'<td class="cal-td-total"><div class="cal-label-total">TOTAL</div></td>'
-            
+                total_pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 14px; margin-top: 5px;">0.00$</div>'
+        
+        html += f'<td style="{total_style}"><div style="font-size: 10px; color: #64748b; font-weight: bold; letter-spacing: 1px;">TOTAL</div>{total_pnl_html}</td>'
         html += "</tr>"
         
     html += "</table></div>"
@@ -236,12 +216,6 @@ else:
     def get_accounts(): return pd.read_sql_query("SELECT * FROM accounts", conn)
     def get_trades(account_id): return pd.read_sql_query(f"SELECT * FROM trades WHERE account_id = {account_id} ORDER BY date_time ASC", conn)
 
-    # Variables de sesión para el mes/año del calendario
-    if "cal_year" not in st.session_state:
-        st.session_state.cal_year = datetime.now().year
-    if "cal_month" not in st.session_state:
-        st.session_state.cal_month = datetime.now().month
-
     # ==========================================
     # BARRA LATERAL
     # ==========================================
@@ -287,7 +261,7 @@ else:
             initial_balance = float(df_accounts[df_accounts['id'] == selected_acc_id]['initial_balance'].values[0])
             df_trades = get_trades(selected_acc_id)
 
-            win_rate, net_profit, wins, losses = 0, 0, 0, 0
+            win_rate, net_profit, wins, losses = 0.0, 0.0, 0, 0
             current_balance = initial_balance
             total_trades = len(df_trades)
             
@@ -296,8 +270,8 @@ else:
                 wins = len(df_trades[df_trades['result'].str.contains("WIN")])
                 losses = len(df_trades[df_trades['result'].str.contains("LOSS")])
                 ties = len(df_trades[df_trades['result'].str.contains("EMPATE")])
-                win_rate = (wins / (total_trades - ties)) * 100 if (total_trades - ties) > 0 else 0
-                net_profit = df_trades['pnl'].sum()
+                win_rate = (wins / (total_trades - ties)) * 100 if (total_trades - ties) > 0 else 0.0
+                net_profit = float(df_trades['pnl'].sum())
                 current_balance = initial_balance + net_profit
 
             # ==========================================
@@ -314,35 +288,15 @@ else:
             with kpi_cols[3]: st.markdown(f'<div class="kpi-card"><div class="kpi-title">TRADES EJECUTADOS</div><div class="kpi-value" style="color: #00d2ff;">{total_trades}</div><div style="color: #94a3b8; font-size: 12px; margin-top:5px;">Volumen total</div></div>', unsafe_allow_html=True)
 
             # ==========================================
-            # CONTROLES Y RENDER DEL CALENDARIO
+            # CALENDARIO DE TRADING
             # ==========================================
-            def prev_month():
-                if st.session_state.cal_month == 1:
-                    st.session_state.cal_month = 12
-                    st.session_state.cal_year -= 1
-                else:
-                    st.session_state.cal_month -= 1
-
-            def next_month():
-                if st.session_state.cal_month == 12:
-                    st.session_state.cal_month = 1
-                    st.session_state.cal_year += 1
-                else:
-                    st.session_state.cal_month += 1
-
-            c_prev, _, c_next = st.columns([0.08, 0.84, 0.08])
-            with c_prev:
-                st.button("◀ Mes", on_click=prev_month, use_container_width=True)
-            with c_next:
-                st.button("Mes ▶", on_click=next_month, use_container_width=True)
-
-            st.markdown(render_calendar(df_trades, st.session_state.cal_year, st.session_state.cal_month), unsafe_allow_html=True)
+            st.markdown(render_calendar(df_trades), unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
 
             # ==========================================
             # REGISTRO DE OPERACIONES
             # ==========================================
-            with st.expander("⚡ REGISTRAR NUEVO TRADE", expanded=False):
+            with st.expander("⚡ REGISTRAR NUEVO TRADE", expanded=True):
                 with st.form("trade_form", clear_on_submit=True):
                     c1, c2, c3, c4 = st.columns(4)
                     with c1:
@@ -350,10 +304,10 @@ else:
                         asset = st.text_input("Activo (Ej. EURUSD)").upper()
                     with c2:
                         direction = st.selectbox("Dirección", ["CALL / BUY 🟢", "PUT / SELL 🔴"])
-                        amount = st.number_input("Inversión ($)", min_value=0.1, value=10.0)
+                        amount = st.number_input("Inversión / Lote ($)", min_value=0.1, value=10.0, step=1.0)
                     with c3:
                         result = st.selectbox("Resultado", ["WIN 🎉", "LOSS ❌", "EMPATE ➖"])
-                        pnl = st.number_input("P/L Neto ($)", value=0.0)
+                        payout_percent = st.number_input("% Retorno (Binarias)", min_value=1, max_value=100, value=85, help="Solo aplica si ganaste en binarias")
                     with c4:
                         date_time = st.date_input("Fecha", datetime.today())
                         time_input = st.time_input("Hora", datetime.now().time())
@@ -362,10 +316,23 @@ else:
                     
                     if guardar_ejecucion and asset:
                         try:
+                            # Cálculo automático de PnL
+                            if "WIN" in result:
+                                if market == "Opciones Binarias":
+                                    pnl_calc = amount * (payout_percent / 100.0)
+                                else:
+                                    pnl_calc = amount
+                            elif "LOSS" in result:
+                                pnl_calc = -amount
+                            else:
+                                pnl_calc = 0.0
+
                             dt_string = f"{date_time} {time_input}"
-                            c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl))
+                            c.execute('''INSERT INTO trades (account_id, date_time, market, asset, direction, amount, result, pnl) 
+                                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''', 
+                                      (selected_acc_id, dt_string, market, asset, direction, amount, result, pnl_calc))
                             conn.commit()
-                            st.success("✅ Trade registrado exitosamente!")
+                            st.success(f"✅ Trade guardado con PnL: {pnl_calc:+.2f}$")
                             time.sleep(0.5)
                             st.rerun()
                         except Exception as e:
