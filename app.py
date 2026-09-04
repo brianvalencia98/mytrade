@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / NEON & SELECTBOX BLOQUEADO)
+# BLOQUES DE CSS (FUTURISTA / NEON AVANZADO)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -50,14 +50,8 @@ CSS_DASHBOARD = """
     [data-testid="stSidebar"] .stButton button { background: linear-gradient(135deg, #ff3366, #d22d56) !important; color: #ffffff !important; border: 1px solid #ff3366 !important; border-radius: 12px !important; font-weight: bold !important; letter-spacing: 1px; width: 100% !important; box-shadow: 0 4px 15px rgba(255, 51, 102, 0.3) !important; transition: all 0.3s ease !important; }
     [data-testid="stSidebar"] .stButton button:hover { background: linear-gradient(135deg, #ff1948, #ff3366) !important; box-shadow: 0 0 20px rgba(255, 51, 102, 0.6) !important; transform: translateY(-2px); }
 
-    /* ==========================================
-       BLOQUEAR ESCRITURA EN SELECTBOX (SOLO MENÚ)
-       ========================================== */
-    [data-testid="stSelectbox"] div[data-baseweb="select"] input {
-        caret-color: transparent !important;
-        pointer-events: none !important;
-    }
-
+    /* Bloquear escritura en Selectbox */
+    [data-testid="stSelectbox"] div[data-baseweb="select"] input { caret-color: transparent !important; pointer-events: none !important; }
     [data-testid="stSelectbox"] > div > div {
         background: linear-gradient(145deg, #0b1325, #070d19) !important;
         border: 1px solid #1e293b !important;
@@ -73,17 +67,28 @@ CSS_DASHBOARD = """
     }
     [data-testid="stSelectbox"] span { color: #00d2ff !important; font-weight: 700 !important; letter-spacing: 0.5px; }
 
-    /* Expander y Formulario Animado */
+    /* ==========================================
+       ESTILO FUTURISTA PARA EL EXPANDER (FORMULARIO)
+       ========================================== */
     [data-testid="stExpander"] {
         background: linear-gradient(145deg, #070d19, #0b1325) !important;
-        border: 1px solid #1e293b !important;
+        border: 1px solid #00d2ff !important;
         border-radius: 16px !important;
-        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4) !important;
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4), 0 0 15px rgba(0, 210, 255, 0.1) !important;
         transition: all 0.3s ease !important;
     }
-    [data-testid="stExpander"]:hover {
+    [data-testid="stExpander"] summary {
+        background: linear-gradient(135deg, #0b1325, #111a2e) !important;
+        border-radius: 12px !important;
+        color: #00d2ff !important;
+        font-weight: bold !important;
+        border: 1px solid #1e293b !important;
+        transition: all 0.3s ease !important;
+    }
+    [data-testid="stExpander"] summary:hover {
         border-color: #00d2ff !important;
-        box-shadow: 0 0 25px rgba(0, 210, 255, 0.25) !important;
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.3) !important;
+        color: #ffffff !important;
     }
 
     .stTextInput input, .stNumberInput input, .stDateInput input, .stTimeInput input {
