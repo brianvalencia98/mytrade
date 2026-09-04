@@ -116,7 +116,6 @@ CSS_DASHBOARD = """
 
     [data-testid="stAppViewContainer"] { background-color: #070d19; color: #e2e8f0; }
     
-    /* Aseguramos que el block-container vuelva a su tamaño normal en el dashboard */
     [data-testid="block-container"] {
         background: transparent !important;
         border: none !important;
@@ -201,36 +200,25 @@ CSS_DASHBOARD = """
         height: 115px;
     }
 
-    .master-panel {
-        background: linear-gradient(145deg, #070d19, #0b1325);
-        border-radius: 18px;
-        border: 1px solid #1e293b;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        margin-bottom: 12px;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Botones de navegación de mes del calendario */
+    div[data-testid="stVerticalBlockBorderWrapper"] div[data-testid="stButton"] > button {
+        background: linear-gradient(135deg, #0b162c, #060d1b) !important;
+        border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
+        color: #00d2ff !important;
+        border-radius: 10px !important;
+        font-size: 13px !important;
+        font-weight: 800 !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        width: 100% !important;
+        padding: 0 !important;
+        transition: all 0.2s ease !important;
     }
-    .master-panel:hover {
-        border-color: rgba(0, 210, 255, 0.35);
-        box-shadow: 0 10px 35px rgba(0, 210, 255, 0.08);
-    }
-    .master-header {
-        background: rgba(11, 19, 37, 0.85);
-        padding: 12px 18px;
-        border-bottom: 1px solid #1e293b;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .master-body {
-        padding: 14px 18px;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+    div[data-testid="stVerticalBlockBorderWrapper"] div[data-testid="stButton"] > button:hover {
+        border-color: #00ffa3 !important;
+        color: #00ffa3 !important;
+        box-shadow: 0 0 12px rgba(0, 255, 163, 0.3) !important;
+        transform: scale(1.05);
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] {
@@ -472,25 +460,121 @@ CSS_DASHBOARD = """
     }
 
     /* ==========================================
+       TABLA DE CALENDARIO MODERNA Y RESPONSIVA
+       ========================================== */
+    .cal-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-top: 6px;
+    }
+    .cal-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        min-width: 330px;
+    }
+    .cal-th {
+        color: #00d2ff;
+        padding: 8px 0;
+        text-align: center;
+        border-bottom: 1px solid #1e293b;
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 0.5px;
+    }
+    .cal-td-empty {
+        border: 1px solid #10192d;
+        height: 64px;
+        background-color: #060b16;
+    }
+    .cal-cell {
+        border: 1px solid #10192d;
+        height: 64px;
+        vertical-align: top;
+        padding: 6px 5px;
+        background-color: #080f1e;
+        position: relative;
+    }
+    .cal-cell-win {
+        border: 1px solid #00d284 !important;
+        border-bottom: 3.5px solid #00ffa3 !important;
+        background-color: rgba(0, 255, 163, 0.08) !important;
+    }
+    .cal-cell-loss {
+        border: 1px solid #d22d56 !important;
+        border-bottom: 3.5px solid #ff3366 !important;
+        background-color: rgba(255, 51, 102, 0.08) !important;
+    }
+    .cal-day-num {
+        font-size: 11.5px;
+        color: #cbd5e1;
+        font-weight: 700;
+        line-height: 1;
+    }
+    .cal-pnl {
+        font-weight: 800;
+        font-size: 10px;
+        position: absolute;
+        bottom: 5px;
+        right: 4px;
+        line-height: 1.1;
+        text-align: right;
+    }
+    .cal-win {
+        color: #00ffa3;
+        text-shadow: 0 0 6px rgba(0, 255, 163, 0.4);
+    }
+    .cal-loss {
+        color: #ff3366;
+        text-shadow: 0 0 6px rgba(255, 51, 102, 0.4);
+    }
+    .cal-tie {
+        color: #94a3b8;
+    }
+    .cal-tot-cell {
+        border: 1px solid #10192d;
+        height: 64px;
+        vertical-align: middle;
+        text-align: center;
+        background-color: #060b16;
+        padding: 4px 2px;
+    }
+
+    /* ==========================================
        ADAPTACIÓN MÓVIL (PANTALLAS <= 768px)
        ========================================== */
     @media (max-width: 768px) {
-        .master-body {
-            overflow-x: auto !important;
-            padding: 8px !important;
+        .cal-wrapper {
+            margin: 0 -4px;
+            padding: 2px 4px;
         }
-        
-        .master-body table {
-            min-width: 320px;
+        .cal-cell, .cal-td-empty, .cal-tot-cell {
+            height: 48px !important;
+            padding: 3px 2px !important;
+        }
+        .cal-th {
+            padding: 5px 0 !important;
+            font-size: 10px !important;
+        }
+        .cal-day-num {
+            font-size: 9.5px !important;
+        }
+        .cal-pnl {
+            font-size: 8px !important;
+            bottom: 2px !important;
+            right: 2px !important;
+        }
+        .cal-sym {
+            display: none !important; /* Oculta símbolo para ahorrar espacio crítico en móvil */
         }
 
         .kpi-card-exact {
             height: auto !important;
-            min-height: 95px !important;
+            min-height: 90px !important;
             padding: 12px 14px !important;
             margin-bottom: 8px !important;
         }
-
         .kpi-card-exact div[style*="font-size: 26px"] {
             font-size: 20px !important;
         }
@@ -500,7 +584,6 @@ CSS_DASHBOARD = """
             align-items: flex-start !important;
             gap: 10px !important;
         }
-
         .trade-quantum-card > div:last-child {
             width: 100% !important;
             text-align: left !important;
@@ -532,14 +615,9 @@ def get_currency_symbol(curr_str):
     return "$"
 
 # ==========================================
-# GENERADOR DEL CALENDARIO AMPLIADO
+# GENERADOR DEL CALENDARIO DINÁMICO Y RESPONSIVO
 # ==========================================
-def render_calendar(df_trades, curr_symbol):
-    meses = {1:"ENE", 2:"FEB", 3:"MAR", 4:"ABR", 5:"MAY", 6:"JUN", 7:"JUL", 8:"AGO", 9:"SEP", 10:"OCT", 11:"NOV", 12:"DIC"}
-    now = datetime.now()
-    year = now.year
-    month = now.month
-    
+def render_calendar(df_trades, curr_symbol, year, month):
     daily_pnl = {}
     if not df_trades.empty:
         df_copy = df_trades.copy()
@@ -552,17 +630,17 @@ def render_calendar(df_trades, curr_symbol):
 
     cal = calendar.monthcalendar(year, month)
     
-    html = f"""<div style="width: 100%; padding-top: 4px;">
-<table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+    html = f"""<div class="cal-wrapper">
+<table class="cal-table">
 <tr>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">L</th>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">M</th>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">M</th>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">J</th>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">V</th>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">S</th>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">D</th>
-<th style="color: #00d2ff; padding: 10px 0; text-align: center; border-bottom: 1px solid #1e293b; font-weight: bold; font-size: 13px;">∑</th>
+<th class="cal-th">L</th>
+<th class="cal-th">M</th>
+<th class="cal-th">M</th>
+<th class="cal-th">J</th>
+<th class="cal-th">V</th>
+<th class="cal-th">S</th>
+<th class="cal-th">D</th>
+<th class="cal-th" style="color:#64748b;">∑</th>
 </tr>"""
     for week in cal:
         html += "<tr>"
@@ -571,40 +649,44 @@ def render_calendar(df_trades, curr_symbol):
         
         for day in week:
             if day == 0:
-                html += '<td style="border: 1px solid #10192d; height: 72px; background-color: #080f1e;"></td>'
+                html += '<td class="cal-td-empty"></td>'
             else:
                 pnl = daily_pnl.get(day, None)
-                td_style = "border: 1px solid #10192d; height: 72px; vertical-align: top; padding: 8px 6px; background-color: #080f1e; position: relative;"
+                cell_class = "cal-cell"
                 pnl_html = ""
                 
                 if pnl is not None:
                     has_trades = True
                     week_total += pnl
+                    
+                    pnl_fmt = f"{pnl:+,.0f}" if ("COP" in curr_symbol or "COL$" in curr_symbol) else f"{pnl:+,.2f}"
+                    
                     if pnl > 0:
-                        td_style = "border: 1px solid #00d284; border-bottom: 3.5px solid #00ffa3; height: 72px; vertical-align: top; padding: 8px 6px; background-color: rgba(0, 255, 163, 0.09); position: relative;"
-                        pnl_html = f'<div style="color: #00ffa3; font-weight: 800; font-size: 11px; position: absolute; bottom: 6px; right: 6px; text-shadow: 0 0 6px rgba(0,255,163,0.4);">+{pnl:,.2f} {curr_symbol}</div>'
+                        cell_class = "cal-cell cal-cell-win"
+                        pnl_html = f'<div class="cal-pnl cal-win">{pnl_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
                     elif pnl < 0:
-                        td_style = "border: 1px solid #d22d56; border-bottom: 3.5px solid #ff3366; height: 72px; vertical-align: top; padding: 8px 6px; background-color: rgba(255, 51, 102, 0.09); position: relative;"
-                        pnl_html = f'<div style="color: #ff3366; font-weight: 800; font-size: 11px; position: absolute; bottom: 6px; right: 6px; text-shadow: 0 0 6px rgba(255,51,102,0.4);">{pnl:,.2f} {curr_symbol}</div>'
+                        cell_class = "cal-cell cal-cell-loss"
+                        pnl_html = f'<div class="cal-pnl cal-loss">{pnl_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
                     else:
-                        pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 10px; position: absolute; bottom: 6px; right: 6px;">0.00 {curr_symbol}</div>'
+                        pnl_html = f'<div class="cal-pnl cal-tie">0.00</div>'
                 
-                html += f'<td style="{td_style}"><div style="font-size: 13px; color: #cbd5e1; font-weight: bold;">{day}</div>{pnl_html}</td>'
+                html += f'<td class="{cell_class}"><div class="cal-day-num">{day}</div>{pnl_html}</td>'
         
-        total_style = "border: 1px solid #10192d; height: 72px; vertical-align: middle; text-align: center; background-color: #060b16;"
+        total_style = "border: 1px solid #10192d; background-color: #060b16;"
         total_pnl_html = ""
         
         if has_trades:
+            tot_fmt = f"{week_total:+,.0f}" if ("COP" in curr_symbol or "COL$" in curr_symbol) else f"{week_total:+,.2f}"
             if week_total > 0:
-                total_style = "border: 1px solid #00d284; height: 72px; vertical-align: middle; text-align: center; background-color: rgba(0, 255, 163, 0.07);"
-                total_pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 12px; margin-top: 2px;">+{week_total:,.2f} {curr_symbol}</div>'
+                total_style = "border: 1px solid #00d284; background-color: rgba(0, 255, 163, 0.07);"
+                total_pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 10.5px; margin-top: 2px;">{tot_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
             elif week_total < 0:
-                total_style = "border: 1px solid #d22d56; height: 72px; vertical-align: middle; text-align: center; background-color: rgba(255, 51, 102, 0.07);"
-                total_pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 12px; margin-top: 2px;">{week_total:,.2f} {curr_symbol}</div>'
+                total_style = "border: 1px solid #d22d56; background-color: rgba(255, 51, 102, 0.07);"
+                total_pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 10.5px; margin-top: 2px;">{tot_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
             else:
-                total_pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 11px; margin-top: 2px;">0.00 {curr_symbol}</div>'
+                total_pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 10px; margin-top: 2px;">0.00</div>'
         
-        html += f'<td style="{total_style}"><div style="font-size: 9px; color: #64748b; font-weight: bold; letter-spacing: 1px;">TOTAL</div>{total_pnl_html}</td>'
+        html += f'<td class="cal-tot-cell" style="{total_style}"><div style="font-size: 8px; color: #64748b; font-weight: bold; letter-spacing: 0.5px;">TOTAL</div>{total_pnl_html}</td>'
         html += "</tr>"
         
     html += "</table></div>"
@@ -1154,17 +1236,40 @@ else:
             col_cal, col_prof = st.columns([1.18, 0.82])
             
             with col_cal:
-                meses_header = {1:"ENE", 2:"FEB", 3:"MAR", 4:"ABR", 5:"MAY", 6:"JUN", 7:"JUL", 8:"AGO", 9:"SEP", 10:"OCT", 11:"NOV", 12:"DIC"}
-                mes_actual_header = f"{meses_header[datetime.now().month]} {datetime.now().year}"
-                st.markdown(f'''<div class="master-panel">
-<div class="master-header">
-<div style="font-size: 15px; font-weight: bold; color: #ffffff; display: flex; align-items: center; gap: 8px;">📅 Calendario de Operaciones</div>
-<div style="color: #00d2ff; font-size: 12px; font-weight: bold; letter-spacing: 1.5px;">{mes_actual_header}</div>
-</div>
-<div class="master-body">
-{render_calendar(df_trades, curr_symbol)}
-</div>
-</div>''', unsafe_allow_html=True)
+                # Inicialización de estado de navegación del mes
+                if "cal_year" not in st.session_state:
+                    st.session_state["cal_year"] = datetime.now().year
+                if "cal_month" not in st.session_state:
+                    st.session_state["cal_month"] = datetime.now().month
+
+                def prev_month():
+                    if st.session_state["cal_month"] == 1:
+                        st.session_state["cal_month"] = 12
+                        st.session_state["cal_year"] -= 1
+                    else:
+                        st.session_state["cal_month"] -= 1
+
+                def next_month():
+                    if st.session_state["cal_month"] == 12:
+                        st.session_state["cal_month"] = 1
+                        st.session_state["cal_year"] += 1
+                    else:
+                        st.session_state["cal_month"] += 1
+
+                with st.container(border=True):
+                    c_title, c_prev, c_lbl, c_next = st.columns([2.2, 0.6, 2.0, 0.6])
+                    with c_title:
+                        st.markdown('<div style="font-size: 14px; font-weight: 800; color: #ffffff; padding-top: 6px; display: flex; align-items: center; gap: 6px;"><span>📅</span> Calendario</div>', unsafe_allow_html=True)
+                    with c_prev:
+                        st.button("◀", on_click=prev_month, key="cal_prev")
+                    with c_lbl:
+                        meses_map = {1:"ENERO", 2:"FEBRERO", 3:"MARZO", 4:"ABRIL", 5:"MAYO", 6:"JUNIO", 7:"JULIO", 8:"AGOSTO", 9:"SEPTIEMBRE", 10:"OCTUBRE", 11:"NOVIEMBRE", 12:"DICIEMBRE"}
+                        m_label = f"{meses_map[st.session_state['cal_month']]} {st.session_state['cal_year']}"
+                        st.markdown(f'<div style="color: #00d2ff; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-align: center; padding-top: 7px; white-space: nowrap;">{m_label}</div>', unsafe_allow_html=True)
+                    with c_next:
+                        st.button("▶", on_click=next_month, key="cal_next")
+                    
+                    st.markdown(render_calendar(df_trades, curr_symbol, st.session_state["cal_year"], st.session_state["cal_month"]), unsafe_allow_html=True)
                 
             with col_prof:
                 with st.container(border=True):
