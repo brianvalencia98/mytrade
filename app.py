@@ -13,7 +13,7 @@ import time
 st.set_page_config(page_title="Trading Lab Pro", page_icon="⚡", layout="wide")
 
 # ==========================================
-# BLOQUES DE CSS (FUTURISTA / PANELES ENCADENADOS PERFECTOS)
+# BLOQUES DE CSS (FUTURISTA / PANELES UNIFICADOS)
 # ==========================================
 CSS_LOGIN = """
 <style>
@@ -89,6 +89,16 @@ CSS_DASHBOARD = """
         color: #ffffff !important;
     }
 
+    /* Contenedores de gráficos con borde nativo estilizado */
+    [data-testid="stContainer"] {
+        background: linear-gradient(145deg, #070d19, #0b1325) !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 18px !important;
+        box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4) !important;
+        padding: 15px !important;
+        margin-top: 15px !important;
+    }
+
     .stTextInput input, .stNumberInput input, .stDateInput input, .stTimeInput input {
         background-color: #050b14 !important;
         border: 1px solid #1e293b !important;
@@ -121,14 +131,14 @@ CSS_DASHBOARD = """
     }
 
     .kpi-card-exact { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-bottom: 20px; position: relative; height: 130px; display: flex; flex-direction: column; justify-content: space-between; }
-    
-    /* Panel Maestro unificado (Perfil, Gráficos, etc.) */
+    .profile-card { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 16px; padding: 20px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); height: 100%;}
+    .profile-title { color: #ffffff; font-size: 20px; font-weight: bold; margin-bottom: 0px;}
+    .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
+
     .master-panel { background: linear-gradient(145deg, #070d19, #0b1325); border-radius: 18px; border: 1px solid #1e293b; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.4); margin-top: 20px; overflow: hidden; display: flex; flex-direction: column; height: 100%; }
     .master-header { background: rgba(11, 19, 37, 0.9); padding: 14px 20px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; }
     .master-body { padding: 15px 20px; flex-grow: 1; }
-
-    .progress-bar-bg { height: 4px; background-color: #1e293b; border-radius: 2px; margin-top: 10px; position: relative; }
-    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #ff3366, #ffb800, #00ffa3); border-radius: 2px; position: absolute; left: 0; top: 0; }
 
     .best-worst-card { background: rgba(11, 19, 37, 0.8); border-radius: 12px; padding: 12px 14px; border: 1px solid #1e293b; margin-top: 10px; }
     .best-card { border-left: 4px solid #00ffa3 !important; }
@@ -648,7 +658,7 @@ else:
                 ''', unsafe_allow_html=True)
 
             # ==========================================
-            # 3 PANELES MAESTROS DE GRÁFICOS (ESTILO REFERENCIA EXACTO)
+            # 3 PANELES MAESTROS DE GRÁFICOS (ESTILO REFERENCIA EXACTO CON CABECERA FINA)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2, col_chart3 = st.columns(3)
@@ -903,6 +913,8 @@ else:
                             res_color = "#00ffa3" if pnl_val > 0 else "#ff3366" if pnl_val < 0 else "#94a3b8"
                             sign_pnl = "+" if pnl_val > 0 else ""
                             obs_text = row.get('observation', '')
+                            amt_val = row['amount']
+                            res_val = row['result']
                             
                             with st.container(border=True):
                                 col_card1, col_card2 = st.columns([3, 1])
@@ -921,7 +933,7 @@ else:
                                         st.markdown(f"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: {obs_text}</div>", unsafe_allow_html=True)
                                 with col_card2:
                                     st.markdown(f"<div style='text-align: right; color: {res_color}; font-size: 16px; font-weight: bold;'>{sign_pnl}${pnl_val:.2f}</div>", unsafe_allow_html=True)
-                                    st.markdown(f"<div style='text-align: right; color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>", unsafe_allow_html=True)
+                                    st.markdown(f"<div style='text-align: right; color: #64748b; font-size: 11px; margin-top: 2px;'>Inv: ${amt_val} | {res_val}</div>", unsafe_allow_html=True)
                     else:
                         st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
