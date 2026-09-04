@@ -67,7 +67,7 @@ CSS_DASHBOARD = """
     }
     [data-testid="stSelectbox"] span { color: #00d2ff !important; font-weight: 700 !important; letter-spacing: 0.5px; }
 
-    /* Estilo futurista para Expanders y Contenedores */
+    /* Estilo futurista para Expanders */
     [data-testid="stExpander"] {
         background: linear-gradient(145deg, #070d19, #0b1325) !important;
         border: 1px solid #00d2ff !important;
@@ -146,24 +146,6 @@ CSS_DASHBOARD = """
     .dot-live { height: 8px; width: 8px; background-color: #00ffa3; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px #00ffa3; animation: pulse 1.5s infinite; }
     .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
-
-    .trade-log-card {
-        background: linear-gradient(145deg, #0b1325, #070d19);
-        border: 1px solid #1e293b;
-        border-radius: 14px;
-        padding: 16px 20px;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    }
-    .trade-log-card:hover {
-        border-color: #00d2ff;
-        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
-        transform: translateY(-2px);
-    }
 </style>
 """
 
@@ -639,7 +621,7 @@ else:
                 ''', unsafe_allow_html=True)
 
             # ==========================================
-            # 3 PANELES MAESTROS INDEPENDIENTES EN 3 COLUMNAS
+            # 3 PANELES MAESTROS EN CONTENEDORES NATIVOS INDEPENDIENTES (3 COLUMNAS)
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
             col_chart1, col_chart2, col_chart3 = st.columns(3)
@@ -649,14 +631,14 @@ else:
                 pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
                 sign_growth = "+" if net_profit >= 0 else ""
                 
-                with st.container():
+                with st.container(border=True):
                     st.markdown(f'''
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
                         <div>
-                            <div style="font-size: 15px; font-weight: bold; color: #ffffff;">📁 Crecimiento Acumulado</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">📁 Crecimiento Acumulado</div>
                             <div style="font-size: 10px; color: #64748b;">P&L Acumulado Diario</div>
                         </div>
-                        <div style="text-align: right; font-size: 15px; font-weight: bold; color: #00ffa3;">
+                        <div style="text-align: right; font-size: 14px; font-weight: bold; color: #00ffa3;">
                             {sign_growth}${net_profit:.2f} <span style="font-size: 10px;">{sign_growth}{pct_growth:.1f}%</span>
                         </div>
                     </div>
@@ -702,11 +684,11 @@ else:
                         worst_day_val = worst_row['pnl']
                         worst_day_date = worst_row['day_only'].strftime('%d de %B de %Y')
 
-                with st.container():
+                with st.container(border=True):
                     st.markdown(f'''
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
                         <div>
-                            <div style="font-size: 15px; font-weight: bold; color: #ffffff;">📊 P&L Diario</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">📊 P&L Diario</div>
                             <div style="font-size: 10px; color: #64748b;">Ganancias y pérdidas por día</div>
                         </div>
                         <div style="text-align: right; font-size: 10px; color: #94a3b8;">
@@ -722,7 +704,7 @@ else:
                             plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
                             font=dict(color='#94a3b8'), margin=dict(l=0, r=0, t=5, b=0),
                             yaxis=dict(gridcolor='#1e293b', title=''), xaxis=dict(gridcolor='#1e293b', title=''),
-                            coloraxis_showscale=False, height=110
+                            coloraxis_showscale=False, height=105
                         )
                         st.plotly_chart(fig_daily, use_container_width=True, config={'displayModeBar': False})
                     else:
@@ -733,7 +715,7 @@ else:
                         st.markdown(f'''
                         <div class="best-worst-card best-card">
                             <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">MEJOR DÍA</div>
-                            <div style="font-size: 14px; font-weight: bold; color: #00ffa3; margin-top: 2px;">+{best_day_val:.2f}$</div>
+                            <div style="font-size: 13px; font-weight: bold; color: #00ffa3; margin-top: 2px;">+{best_day_val:.2f}$</div>
                             <div style="font-size: 8px; color: #94a3b8; margin-top: 1px;">{best_day_date}</div>
                         </div>
                         ''', unsafe_allow_html=True)
@@ -741,18 +723,18 @@ else:
                         st.markdown(f'''
                         <div class="best-worst-card worst-card">
                             <div style="font-size: 9px; font-weight: bold; color: #64748b; letter-spacing: 1px;">PEOR DÍA</div>
-                            <div style="font-size: 14px; font-weight: bold; color: #ff3366; margin-top: 2px;">{worst_day_val:.2f}$</div>
+                            <div style="font-size: 13px; font-weight: bold; color: #ff3366; margin-top: 2px;">{worst_day_val:.2f}$</div>
                             <div style="font-size: 8px; color: #94a3b8; margin-top: 1px;">{worst_day_date}</div>
                         </div>
                         ''', unsafe_allow_html=True)
 
             # 3. Ratio de Impacto P&L (Donut Chart)
             with col_chart3:
-                with st.container():
+                with st.container(border=True):
                     st.markdown('''
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid #1e293b; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
                         <div>
-                            <div style="font-size: 15px; font-weight: bold; color: #ffffff;">🍩 Ratio de Impacto P&L</div>
+                            <div style="font-size: 14px; font-weight: bold; color: #ffffff;">🍩 Ratio de Impacto P&L</div>
                             <div style="font-size: 10px; color: #64748b;">Ganadas vs Pérdidas ($)</div>
                         </div>
                     </div>
@@ -783,7 +765,7 @@ else:
                             paper_bgcolor='rgba(0,0,0,0)',
                             plot_bgcolor='rgba(0,0,0,0)',
                             margin=dict(l=5, r=5, t=5, b=5),
-                            height=185,
+                            height=175,
                             annotations=[dict(
                                 text=f"<b style='color:{net_color}; font-size:13px;'>{sign_net}${net_profit:.2f}</b><br><span style='color:#64748b; font-size:8px;'>NETO</span>",
                                 x=0.5, y=0.5, showarrow=False, font=dict(size=11, color="#ffffff")
@@ -905,7 +887,7 @@ else:
                                         st.markdown(f"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: {obs_text}</div>", unsafe_allow_html=True)
                                 with col_card2:
                                     st.markdown(f"<div style='text-align: right; color: {res_color}; font-size: 16px; font-weight: bold;'>{sign_pnl}${pnl_val:.2f}</div>", unsafe_allow_html=True)
-                                    st.markdown(f"<div style='text-align: right; color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>", unsafe_allow_html=True)
+                                    st.markdown(f"<div style='text-align: right; color: #64748b; font-size: 11px; margin-top: 2px;'>Inv: ${row['amount']} | {row['result']}</div>", unsafe_allow_html=True)
                     else:
                         st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
