@@ -67,7 +67,7 @@ CSS_DASHBOARD = """
     }
     [data-testid="stSelectbox"] span { color: #00d2ff !important; font-weight: 700 !important; letter-spacing: 0.5px; }
 
-    /* Estilo futurista para Expanders (Formularios y Bitácora) */
+    /* Estilo futurista para Expanders */
     [data-testid="stExpander"] {
         background: linear-gradient(145deg, #070d19, #0b1325) !important;
         border: 1px solid #00d2ff !important;
@@ -138,7 +138,7 @@ CSS_DASHBOARD = """
     .dot-closed { height: 8px; width: 8px; background-color: #64748b; border-radius: 50%; display: inline-block; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 12px #00ffa3; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
-    /* Tarjetas animadas para el historial desplegable */
+    /* Tarjetas animadas para el historial detallado */
     .trade-log-card {
         background: linear-gradient(145deg, #0b1325, #070d19);
         border: 1px solid #1e293b;
@@ -791,36 +791,67 @@ else:
             # HISTORIAL DE OPERACIONES EXPANDIBLE Y FUTURISTA
             # ==========================================
             st.markdown("<br>", unsafe_allow_html=True)
-            with st.expander("📋 HISTORIAL DE OPERACIONES (BITÁCORA CUÁNTICA)", expanded=False):
-                st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ REGISTRO DETALLADO DE EJECUCIONES</p>', unsafe_allow_html=True)
+            with st.expander("📋 HISTORIAL DE OPERACIONES Y BITÁCORA CUÁNTICA", expanded=False):
+                st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ FILTRADO TEMPORAL Y REGISTRO DE EJECUCIONES</p>', unsafe_allow_html=True)
                 
                 if total_trades > 0:
-                    for idx, row in df_trades.iterrows():
-                        pnl_val = float(row['pnl'])
-                        res_color = "#00ffa3" if pnl_val > 0 else "#ff3366" if pnl_val < 0 else "#94a3b8"
-                        sign_pnl = "+" if pnl_val > 0 else ""
-                        
-                        st.markdown(f"""
-                        <div class="trade-log-card">
-                            <div>
-                                <span style="color: #00d2ff; font-weight: bold; font-size: 13px;">#{idx+1} &nbsp;|&nbsp; 💎 {row['asset']}</span>
-                                <span style="color: #64748b; font-size: 11px; margin-left: 10px;">📅 {row['date_time']}</span>
-                                <div style="color: #94a3b8; font-size: 11px; margin-top: 3px;">
-                                    Mercado: <b style="color:#e2e8f0">{row['market']}</b> &nbsp;|&nbsp; 
-                                    Dir: <b style="color:#e2e8f0">{row['direction']}</b> &nbsp;|&nbsp; 
-                                    Sesión: <b style="color:#e2e8f0">{row.get('session', 'N/A')}</b> &nbsp;|&nbsp; 
-                                    Confianza: <b style="color:#e2e8f0">{row.get('confidence', 'N/A')}</b>
+                    # Filtro Temporal
+                    f_col1, _ = st.columns([2, 2])
+                    with f_col1:
+                        time_filter = st.selectbox("⏱️ Filtrar Temporalidad", ["Todo el Histórico", "Esta Semana", "Este Mes", "Este Año"])
+                    
+                    df_filtered = df_trades.copy()
+                    df_filtered['date_time'] = pd.to_datetime(df_filtered['date_time'])
+                    now = datetime.now()
+                    
+                    if time_filter == "Esta Semana":
+                        start_of_week = now - timedelta(days=now.weekday())
+                        df_filtered = df_filtered[df_filtered['date_time'] >= pd.to_datetime(start_of_week.date())]
+                    elif time_filter == "Este Mes":
+                        df_filtered = df_filtered[(df_filtered['date_time'].dt.year == now.year) & (df_filtered['date_time'].dt.month == now.month)]
+                    elif time_filter == "Este Año":
+                        df_filtered = df_filtered[df_filtered['date_time'].dt.year == now.year]
+                    
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    
+                    # 1. TABLA ANALÍTICA GENERAL (PRIMERO)
+                    st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 10px;">📊 Tabla Analítica General</div>', unsafe_allow_html=True)
+                    if not df_filtered.empty:
+                        display_df = df_filtered.drop(columns=['id', 'account_id', 'equity', 'peak', 'dd']).copy()
+                        st.dataframe(display_df, use_container_width=True, hide_index=True)
+                    else:
+                        st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">No hay operaciones para la temporalidad seleccionada.</div>', unsafe_allow_html=True)
+                    
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    
+                    # 2. DETALLADO DE TRADES EN TARJETAS (SEGUNDO)
+                    st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 10px;">🔍 Detallado Cuántico de Ejecuciones</div>', unsafe_allow_html=True)
+                    if not df_filtered.empty:
+                        for idx, row in df_filtered.iterrows():
+                            pnl_val = float(row['pnl'])
+                            res_color = "#00ffa3" if pnl_val > 0 else "#ff3366" if pnl_val < 0 else "#94a3b8"
+                            sign_pnl = "+" if pnl_val > 0 else ""
+                            
+                            st.markdown(f"""
+                            <div class="trade-log-card">
+                                <div>
+                                    <span style="color: #00d2ff; font-weight: bold; font-size: 13px;">💎 {row['asset']} &nbsp;|&nbsp; <b style="color:#e2e8f0">{row['market']}</b></span>
+                                    <span style="color: #64748b; font-size: 11px; margin-left: 10px;">📅 {row['date_time']}</span>
+                                    <div style="color: #94a3b8; font-size: 11px; margin-top: 4px;">
+                                        Dir: <b style="color:#e2e8f0">{row['direction']}</b> &nbsp;|&nbsp; 
+                                        Sesión: <b style="color:#e2e8f0">{row.get('session', 'N/A')}</b> &nbsp;|&nbsp; 
+                                        Confianza: <b style="color:#e2e8f0">{row.get('confidence', 'N/A')}</b> &nbsp;|&nbsp; 
+                                        Emoción: <b style="color:#e2e8f0">{row.get('emotion', 'N/A')}</b>
+                                    </div>
+                                    {"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: " + row.get('observation', '') + "</div>" if row.get('observation') else ""}
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="color: {res_color}; font-size: 16px; font-weight: bold;">{sign_pnl}${pnl_val:.2f}</div>
+                                    <div style="color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>
                                 </div>
                             </div>
-                            <div style="text-align: right;">
-                                <div style="color: {res_color}; font-size: 16px; font-weight: bold;">{sign_pnl}${pnl_val:.2f}</div>
-                                <div style="color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>
-                            </div>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    
-                    # Opción para ver la tabla completa tradicional si se desea
-                    if st.checkbox("Mostrar tabla analítica completa"):
-                        st.dataframe(df_trades.drop(columns=['id', 'account_id', 'equity', 'peak', 'dd']), use_container_width=True, hide_index=True)
+                            """, unsafe_allow_html=True)
+                    else:
+                        st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
-                    st.markdown('<div style="text-align: center; color: #64748b; padding: 20px;">No hay operaciones registradas en esta cuenta.</div>', unsafe_allow_html=True)
+                    st.markdown('<div style="text-align: center; color: #64748b; padding: 30px;">No hay operaciones registradas en esta cuenta.</div>', unsafe_allow_html=True)
