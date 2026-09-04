@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import calendar
 import time
+import textwrap
 
 # ==========================================
 # CONFIGURACIÓN DE LA PÁGINA
@@ -795,7 +796,7 @@ else:
                 st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 15px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ FILTRADO TEMPORAL Y REGISTRO DE EJECUCIONES</p>', unsafe_allow_html=True)
                 
                 if total_trades > 0:
-                    # Filtro Temporal (Incluyendo opción Diario)
+                    # Filtro Temporal
                     f_col1, _ = st.columns([2, 2])
                     with f_col1:
                         time_filter = st.selectbox("⏱️ Filtrar Temporalidad", ["Todo el Histórico", "Diario", "Esta Semana", "Este Mes", "Este Año"])
@@ -826,7 +827,7 @@ else:
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
-                    # 2. DETALLADO DE TRADES EN TARJETAS (SEGUNDO)
+                    # 2. DETALLADO DE TRADES EN TARJETAS (SEGUNDO) - Renderizado de forma limpia con textwrap.dedent
                     st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 10px;">🔍 Detallado Cuántico de Ejecuciones</div>', unsafe_allow_html=True)
                     if not df_filtered.empty:
                         for idx, row in df_filtered.iterrows():
@@ -836,7 +837,7 @@ else:
                             obs_text = row.get('observation', '')
                             obs_html = f"<div style='color: #d200ff; font-size: 11px; margin-top: 4px; font-style: italic;'>📝 Nota: {obs_text}</div>" if obs_text else ""
                             
-                            st.markdown(f"""
+                            card_html = textwrap.dedent(f"""
                             <div class="trade-log-card">
                                 <div>
                                     <span style="color: #00d2ff; font-weight: bold; font-size: 13px;">💎 {row['asset']} &nbsp;|&nbsp; <b style="color:#e2e8f0">{row['market']}</b></span>
@@ -854,7 +855,8 @@ else:
                                     <div style="color: #64748b; font-size: 11px; margin-top: 2px;">Inv: ${row['amount']} | {row['result']}</div>
                                 </div>
                             </div>
-                            """, unsafe_allow_html=True)
+                            """)
+                            st.markdown(card_html.strip(), unsafe_allow_html=True)
                     else:
                         st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
