@@ -193,6 +193,26 @@ CSS_DASHBOARD = """
         height: 115px;
     }
 
+    /* Tarjetas simétricas de Gestión de Riesgo */
+    .risk-kpi-card {
+        background: linear-gradient(145deg, #091224, #050b16);
+        border-radius: 14px;
+        padding: 12px 14px;
+        border: 1px solid #1e293b;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100px;
+        box-sizing: border-box;
+        transition: all 0.25s ease;
+    }
+    .risk-kpi-card:hover {
+        border-color: rgba(0, 210, 255, 0.45);
+        box-shadow: 0 4px 22px rgba(0, 210, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
     /* Botones de navegación de mes del calendario */
     div[data-testid="stVerticalBlockBorderWrapper"] div[data-testid="stButton"] > button {
         background: linear-gradient(135deg, #0b162c, #060d1b) !important;
@@ -219,7 +239,7 @@ CSS_DASHBOARD = """
         border: 1px solid #1e293b !important;
         border-radius: 18px !important;
         box-shadow: 0 8px 32px rgba(0,0,0,0.45) !important;
-        padding: 16px 18px 18px 18px !important;
+        padding: 16px 18px 20px 18px !important;
         margin-bottom: 12px !important;
         transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
     }
@@ -357,7 +377,7 @@ CSS_DASHBOARD = """
     div[data-baseweb="select"] input { caret-color: transparent !important; cursor: pointer !important; }
     svg { fill: #00d2ff !important; }
 
-    [data-testid="stNumberInputContainer"] button { background-color: transparent !important; color: #00d2ff !important; border: none !important; }
+    [data-testid="stNumberInputContainer"] button { background-color: transparent !important; color: #00d2ff !border: none !important; }
     [data-testid="stNumberInputContainer"] button:hover { color: #00ffa3 !important; background-color: rgba(0, 255, 163, 0.15) !important; border-radius: 8px; }
 
     div[data-baseweb="popover"], div[data-baseweb="popover"] > div { background-color: transparent !important; }
@@ -450,6 +470,62 @@ CSS_DASHBOARD = """
         color: #00d2ff !important;
         font-weight: bold !important;
         border: 1px solid #1e293b !important;
+    }
+
+    /* ==========================================
+       OVERRIDE STREAMLIT: BOTÓN ACTIVO -> AZUL NEÓN
+       ========================================== */
+    button[kind="primary"], button[data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%) !important;
+        background-color: #00d2ff !important;
+        border: 1px solid #00d2ff !important;
+        box-shadow: 0 0 18px rgba(0, 210, 255, 0.6), 0 4px 15px rgba(0, 210, 255, 0.3) !important;
+        border-radius: 14px !important;
+        color: #ffffff !important;
+        transition: all 0.3s ease !important;
+        min-height: 46px !important;
+    }
+    button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {
+        background: linear-gradient(135deg, #00ffa3 0%, #00d284 100%) !important;
+        border-color: #00ffa3 !important;
+        box-shadow: 0 0 25px rgba(0, 255, 163, 0.6) !important;
+        transform: translateY(-2px) scale(1.02) !important;
+        color: #050a14 !important;
+    }
+    button[kind="primary"] p, button[data-testid="baseButton-primary"] p {
+        color: inherit !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.8px !important;
+        text-shadow: none !important;
+        margin: 0 !important;
+    }
+
+    button[kind="secondary"], button[data-testid="baseButton-secondary"] {
+        border-radius: 14px !important;
+        transition: all 0.3s ease !important;
+        min-height: 46px !important;
+        background: #111a2e !important;
+        background-color: #111a2e !important;
+        border: 1.5px solid #233148 !important;
+        box-shadow: inset 0 2px 8px rgba(0,0,0,0.4) !important;
+    }
+    button[kind="secondary"] p, button[data-testid="baseButton-secondary"] p {
+        color: #64748b !important;
+        font-weight: 700 !important;
+        margin: 0 !important;
+    }
+    button[kind="secondary"]:hover, button[data-testid="baseButton-secondary"]:hover {
+        border-color: #00d2ff !important;
+        color: #00d2ff !important;
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.25) !important;
+        transform: translateY(-1px) !important;
+    }
+    button[kind="secondary"]:hover p, button[data-testid="baseButton-secondary"]:hover p {
+        color: #00d2ff !important;
+    }
+    
+    .pin-display ~ div[data-testid="stHorizontalBlock"] button {
+        min-height: 50px !important;
     }
 
     /* ==========================================
@@ -625,48 +701,6 @@ CSS_DASHBOARD = """
         height: 12px;
         border-radius: 4px;
         display: inline-block;
-    }
-
-    /* ==========================================
-       OVERRIDE GLOBAL STREAMLIT NATIVO
-       Botón Activo (Primary) -> Azul Neón
-       ========================================== */
-    button[kind="primary"], button[data-testid="baseButton-primary"] {
-        background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%) !important;
-        background-color: #00d2ff !important;
-        border: none !important;
-        box-shadow: 0 0 18px rgba(0, 210, 255, 0.5), 0 4px 15px rgba(0, 210, 255, 0.3) !important;
-        border-radius: 12px !important;
-        color: #ffffff !important;
-        transition: all 0.3s ease !important;
-        min-height: 46px !important;
-    }
-    button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {
-        background: linear-gradient(135deg, #00ffa3 0%, #00d284 100%) !important;
-        box-shadow: 0 0 25px rgba(0, 255, 163, 0.6) !important;
-        transform: translateY(-2px) scale(1.02) !important;
-        color: #050a14 !important;
-    }
-    button[kind="primary"] p, button[data-testid="baseButton-primary"] p {
-        color: inherit !important;
-        font-weight: 900 !important;
-        letter-spacing: 1px !important;
-        text-shadow: none !important;
-    }
-
-    /* Estilo robusto para botones Inactivos (Secondary) */
-    button[kind="secondary"], button[data-testid="baseButton-secondary"] {
-        border-radius: 12px !important;
-        transition: all 0.3s ease !important;
-        min-height: 46px !important;
-    }
-    button[kind="secondary"]:hover, button[data-testid="baseButton-secondary"]:hover {
-        border-color: #00d2ff !important;
-        color: #00d2ff !important;
-        box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important;
-    }
-    button[kind="secondary"]:hover p, button[data-testid="baseButton-secondary"]:hover p {
-        color: #00d2ff !important;
     }
 
     /* ==========================================
@@ -1466,10 +1500,26 @@ else:
                 st.markdown('<div style="color: #00d2ff; font-size: 16px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px;">⚡ TERMINAL DE COMANDO CUÁNTICO</div>', unsafe_allow_html=True)
                 st.markdown('<div style="color: #64748b; font-size: 11px; margin-top: -3px;">CENTRO DE MONITOREO Y EJECUCIÓN EN TIEMPO REAL</div>', unsafe_allow_html=True)
             with top_col2:
-                account_options = df_accounts.apply(lambda x: f"🌐 {x['broker']} — {x['account_name']} ({x.get('currency', 'USD ($)')}) [ID:{x['id']}]", axis=1).tolist()
-                selected_account_str = st.selectbox("CUENTA ACTIVA:", account_options, label_visibility="collapsed")
-            
-            selected_acc_id = int(selected_account_str.split("ID:")[1].replace("]", ""))
+                def get_clean_account_label(row):
+                    broker_clean = str(row['broker']).strip().title()
+                    type_clean = str(row['account_name']).strip().capitalize()
+                    raw_curr = str(row.get('currency', 'USD'))
+                    curr_clean = "USD"
+                    for c in ["USD", "COP", "EUR", "MXN"]:
+                        if c in raw_curr:
+                            curr_clean = c
+                            break
+                    return f"{broker_clean} · {type_clean} ({curr_clean})"
+
+                account_ids = df_accounts['id'].tolist()
+                account_labels_map = {row['id']: get_clean_account_label(row) for _, row in df_accounts.iterrows()}
+
+                selected_acc_id = st.selectbox(
+                    "CUENTA ACTIVA:",
+                    options=account_ids,
+                    format_func=lambda x: account_labels_map.get(x, f"Cuenta #{x}"),
+                    label_visibility="collapsed"
+                )
             
             acc_row = df_accounts[df_accounts['id'] == selected_acc_id].iloc[0]
             initial_balance = float(acc_row['initial_balance'])
@@ -1485,6 +1535,14 @@ else:
             overall_score = 0
             total_win_sum = 0.0
             total_loss_sum = 0.0
+
+            # Variables de Gestión de Riesgo
+            expectancy = 0.0
+            sortino_ratio = 0.0
+            calmar_ratio = 0.0
+            pf_clean = 0.0
+            max_loss_streak = 0
+            half_kelly_pct = 0.0
             
             if total_trades > 0:
                 df_trades['pnl'] = pd.to_numeric(df_trades['pnl'], errors='coerce').fillna(0.0)
@@ -1508,8 +1566,8 @@ else:
                 
                 avg_win = df_trades[df_trades['pnl'] > 0]['pnl'].mean()
                 avg_loss = abs(df_trades[df_trades['pnl'] < 0]['pnl'].mean())
-                if pd.isna(avg_win): avg_win = 0
-                if pd.isna(avg_loss) or avg_loss == 0: avg_loss = 1
+                if pd.isna(avg_win): avg_win = 0.0
+                if pd.isna(avg_loss) or avg_loss == 0: avg_loss = 1.0
                 score_awal = min((avg_win / avg_loss / 1.5) * 100, 100)
                 
                 daily_pnl_score = df_trades.groupby(df_trades['date_time'].dt.date)['pnl'].sum()
@@ -1522,6 +1580,47 @@ else:
                 score_dd = max(100 - (max_dd * 500), 0)
                 score_rec = (score_win * 0.7) + (score_pf * 0.3)
                 overall_score = int(sum([score_win, score_pf, score_awal, score_rec, score_dd, score_cons]) / 6)
+
+                # Cálculos Cuantitativos de Riesgo
+                valid_trades_count = wins + losses
+                if valid_trades_count > 0:
+                    w_rate = wins / valid_trades_count
+                    l_rate = losses / valid_trades_count
+                    
+                    expectancy = (w_rate * avg_win) - (l_rate * avg_loss)
+                    
+                    downside_diff = df_trades['pnl'].apply(lambda x: min(0.0, x))
+                    downside_std = (downside_diff**2).mean() ** 0.5
+                    mean_pnl = df_trades['pnl'].mean()
+                    sortino_ratio = (mean_pnl / downside_std) if downside_std > 0 else (4.0 if mean_pnl > 0 else 0.0)
+                    
+                    max_dd_amount = (df_trades['peak'] - df_trades['equity']).max()
+                    calmar_ratio = (net_profit / max_dd_amount) if max_dd_amount > 0 else (net_profit / 1.0 if net_profit > 0 else 0.0)
+                    
+                    win_df = df_trades[df_trades['pnl'] > 0]
+                    if len(win_df) >= 4:
+                        top_5_threshold = win_df['pnl'].quantile(0.95)
+                        clean_win_sum = win_df[win_df['pnl'] < top_5_threshold]['pnl'].sum()
+                    else:
+                        clean_win_sum = total_win_sum
+                    pf_clean = (clean_win_sum / gross_loss) if gross_loss > 0 else (clean_win_sum if clean_win_sum > 0 else 0.0)
+                    
+                    cur_streak = 0
+                    max_streak = 0
+                    for r in df_trades['result']:
+                        if "LOSS" in str(r):
+                            cur_streak += 1
+                            if cur_streak > max_streak:
+                                max_streak = cur_streak
+                        else:
+                            cur_streak = 0
+                    max_loss_streak = max_streak
+                    
+                    if avg_loss > 0 and avg_win > 0:
+                        payoff_ratio = avg_win / avg_loss
+                        kelly = w_rate - (l_rate / payoff_ratio)
+                        half_kelly = kelly * 0.5
+                        half_kelly_pct = max(0.0, min(half_kelly * 100, 25.0))
 
             # ==========================================
             # 5 PANELES SUPERIORES EXACTOS
@@ -1573,6 +1672,66 @@ else:
 </div>''', unsafe_allow_html=True)
 
             # ==========================================
+            # SECCIÓN: MATRIZ CUÁNTICA DE RIESGO (DESPLEGABLE)
+            # ==========================================
+            st.markdown("<div style='margin-top: 14px;'></div>", unsafe_allow_html=True)
+            with st.expander("🛡️ MATRIZ CUÁNTICA DE RIESGO & GESTIÓN DE RUINA", expanded=False):
+                st.markdown('<p style="color: #00d2ff; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 12px; text-shadow: 0 0 10px rgba(0,210,255,0.3);">⚡ AUDITORÍA ESTADÍSTICA Y CONTROL CUANTITATIVO DE RUINA</p>', unsafe_allow_html=True)
+                
+                exp_color = "#00ffa3" if expectancy > 0 else ("#ff3366" if expectancy < 0 else "#94a3b8")
+                exp_sign = "+" if expectancy > 0 else ""
+                sort_color = "#00ffa3" if sortino_ratio >= 1.5 else ("#00d2ff" if sortino_ratio > 0.5 else "#ff3366")
+                calm_color = "#00ffa3" if calmar_ratio >= 2.0 else ("#00d2ff" if calmar_ratio >= 1.0 else "#ff3366")
+                pf_clean_color = "#00ffa3" if pf_clean >= 1.2 else ("#ffb800" if pf_clean >= 1.0 else "#ff3366")
+                streak_color = "#ff3366" if max_loss_streak >= 4 else ("#ffb800" if max_loss_streak == 3 else "#00ffa3")
+                kelly_color = "#00ffa3" if half_kelly_pct > 0 else "#ff3366"
+
+                r_cols = st.columns(6)
+                with r_cols[0]:
+                    st.markdown(f'''<div class="risk-kpi-card">
+<div style="color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">ESPERANZA (EV)</div>
+<div style="color: {exp_color}; font-size: 19px; font-weight: 800; margin: 3px 0;">{exp_sign}{curr_symbol}{expectancy:,.2f}</div>
+<div style="color: #94a3b8; font-size: 10px;">Retorno por trade</div>
+</div>''', unsafe_allow_html=True)
+                    
+                with r_cols[1]:
+                    st.markdown(f'''<div class="risk-kpi-card">
+<div style="color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">RATIO SORTINO</div>
+<div style="color: {sort_color}; font-size: 19px; font-weight: 800; margin: 3px 0;">{sortino_ratio:.2f}</div>
+<div style="color: #94a3b8; font-size: 10px;">Riesgo a la baja</div>
+</div>''', unsafe_allow_html=True)
+
+                with r_cols[2]:
+                    st.markdown(f'''<div class="risk-kpi-card">
+<div style="color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">RATIO CALMAR</div>
+<div style="color: {calm_color}; font-size: 19px; font-weight: 800; margin: 3px 0;">{calmar_ratio:.2f}</div>
+<div style="color: #94a3b8; font-size: 10px;">Beneficio / Max DD</div>
+</div>''', unsafe_allow_html=True)
+
+                with r_cols[3]:
+                    st.markdown(f'''<div class="risk-kpi-card">
+<div style="color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">PF SIN OUTLIERS</div>
+<div style="color: {pf_clean_color}; font-size: 19px; font-weight: 800; margin: 3px 0;">{pf_clean:.2f}</div>
+<div style="color: #94a3b8; font-size: 10px;">Sin top 5% ganadas</div>
+</div>''', unsafe_allow_html=True)
+
+                with r_cols[4]:
+                    st.markdown(f'''<div class="risk-kpi-card">
+<div style="color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">RACHA MÁX. LOSS</div>
+<div style="color: {streak_color}; font-size: 19px; font-weight: 800; margin: 3px 0;">{max_loss_streak} <span style="font-size:11px; color: #94a3b8;">trades</span></div>
+<div style="color: #94a3b8; font-size: 10px;">Peor racha seguida</div>
+</div>''', unsafe_allow_html=True)
+
+                with r_cols[5]:
+                    st.markdown(f'''<div class="risk-kpi-card">
+<div style="color: #64748b; font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;">HALF-KELLY SUG.</div>
+<div style="color: {kelly_color}; font-size: 19px; font-weight: 800; margin: 3px 0;">{half_kelly_pct:.1f}%</div>
+<div style="color: #94a3b8; font-size: 10px;">Riesgo / posición</div>
+</div>''', unsafe_allow_html=True)
+                
+                st.markdown("<div style='margin-bottom: 2px;'></div>", unsafe_allow_html=True)
+
+            # ==========================================
             # SECCIÓN 1: CALENDARIO Y PERFIL
             # ==========================================
             st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
@@ -1599,7 +1758,6 @@ else:
                         st.session_state["cal_month"] += 1
 
                 with st.container(border=True):
-                    st.markdown('<div id="cal-marker" style="display:none;"></div>', unsafe_allow_html=True)
                     c_title, c_prev, c_lbl, c_next = st.columns([2.2, 0.6, 2.0, 0.6])
                     with c_title:
                         st.markdown('<div style="font-size: 14px; font-weight: 800; color: #ffffff; padding-top: 6px; display: flex; align-items: center; gap: 6px;"><span>📅</span> Calendario</div>', unsafe_allow_html=True)
@@ -1690,20 +1848,18 @@ else:
                     st.session_state["top_trades_mode"] = "winners"
 
                 is_win_mode = (st.session_state["top_trades_mode"] == "winners")
+                btn_win_type = "primary" if is_win_mode else "secondary"
+                btn_loss_type = "primary" if not is_win_mode else "secondary"
 
                 with st.container(border=True):
                     st.markdown('<div style="font-size: 19px; font-weight: 800; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>🏆</span> Top Trades</div>', unsafe_allow_html=True)
                     
                     t_col1, t_col2 = st.columns(2)
                     with t_col1:
-                        # Usamos 'primary' si está seleccionado
-                        btn_win_type = "primary" if is_win_mode else "secondary"
                         if st.button("Top Winners", key="btn_top_win", use_container_width=True, type=btn_win_type):
                             st.session_state["top_trades_mode"] = "winners"
                             st.rerun()
                     with t_col2:
-                        # Usamos 'primary' si está seleccionado
-                        btn_loss_type = "primary" if not is_win_mode else "secondary"
                         if st.button("Top Losers", key="btn_top_loss", use_container_width=True, type=btn_loss_type):
                             st.session_state["top_trades_mode"] = "losers"
                             st.rerun()
@@ -1711,72 +1867,8 @@ else:
                     st.markdown('<div style="border-top: 1px solid rgba(255, 255, 255, 0.12); margin: 16px 0 8px 0;"></div>', unsafe_allow_html=True)
                     st.markdown(render_top_trades_list(df_trades, curr_symbol, st.session_state["top_trades_mode"]), unsafe_allow_html=True)
 
-            # ESTILOS GLOBALES INCORPORADOS AQUÍ PARA ASEGURAR QUE SE LEEN CORRECTAMENTE AL FINAL
-            st.markdown("""
-            <style>
-            /* ==========================================
-               OVERRIDE GLOBAL STREAMLIT NATIVO
-               Botón Activo (Primary) -> Azul Neón
-               ========================================== */
-            button[kind="primary"], button[data-testid="baseButton-primary"] {
-                background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%) !important;
-                background-color: #00d2ff !important;
-                border: 1px solid #00d2ff !important;
-                box-shadow: 0 0 18px rgba(0, 210, 255, 0.5), 0 4px 15px rgba(0, 210, 255, 0.3) !important;
-                border-radius: 14px !important;
-                color: #ffffff !important;
-                transition: all 0.3s ease !important;
-                min-height: 46px !important;
-            }
-            button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {
-                background: linear-gradient(135deg, #00ffa3 0%, #00d284 100%) !important;
-                border-color: #00ffa3 !important;
-                box-shadow: 0 0 25px rgba(0, 255, 163, 0.6) !important;
-                transform: translateY(-2px) scale(1.02) !important;
-                color: #050a14 !important;
-            }
-            button[kind="primary"] p, button[data-testid="baseButton-primary"] p {
-                color: inherit !important;
-                font-weight: 900 !important;
-                letter-spacing: 1px !important;
-                text-shadow: none !important;
-                margin: 0 !important;
-            }
-
-            /* Estilo robusto para botones Inactivos (Secondary) en general */
-            button[kind="secondary"], button[data-testid="baseButton-secondary"] {
-                border-radius: 14px !important;
-                transition: all 0.3s ease !important;
-                min-height: 46px !important;
-                background: #111a2e !important;
-                background-color: #111a2e !important;
-                border: 1.5px solid #233148 !important;
-                box-shadow: inset 0 2px 8px rgba(0,0,0,0.4) !important;
-            }
-            button[kind="secondary"] p, button[data-testid="baseButton-secondary"] p {
-                color: #64748b !important;
-                font-weight: 700 !important;
-                margin: 0 !important;
-            }
-            button[kind="secondary"]:hover, button[data-testid="baseButton-secondary"]:hover {
-                border-color: #00d2ff !important;
-                color: #00d2ff !important;
-                box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important;
-                transform: translateY(-1px) !important;
-            }
-            button[kind="secondary"]:hover p, button[data-testid="baseButton-secondary"]:hover p {
-                color: #00d2ff !important;
-            }
-            
-            /* Arreglo especial para que los botones numéricos del PIN no se deformen con la nueva altura */
-            .pin-display ~ div[data-testid="stHorizontalBlock"] button {
-                min-height: 50px !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
             # ==========================================
-            # SECCIÓN 2: 4 PANELES DE ESTADO
+            # SECCIÓN 2: 4 PANELES DE ESTADO (LIMPIO Y SIN DESBORDAMIENTOS)
             # ==========================================
             st.markdown("<div style='margin-top: 8px;'></div>", unsafe_allow_html=True)
             s_col1, s_col2, s_col3, s_col4 = st.columns(4)
@@ -1838,10 +1930,24 @@ PSICO-TRADING SCORE
 </div>''', unsafe_allow_html=True)
 
             with s_col3:
-                utc_hour = datetime.now(timezone.utc).hour
-                tokyo_active = 0 <= utc_hour < 9
-                london_active = 8 <= utc_hour < 16
-                ny_active = 13 <= utc_hour < 22
+                # CONTROL DE HORARIO: CIERRE VIERNES 17:00 NY -> APERTURA DOMINGO 17:00 NY
+                now_utc = datetime.now(timezone.utc)
+                now_ny = now_utc.astimezone(timezone(timedelta(hours=-4)))
+                ny_weekday = now_ny.weekday() # 4=Viernes, 5=Sábado, 6=Domingo
+                ny_hour = now_ny.hour
+
+                is_market_closed_weekend = False
+                if ny_weekday == 4 and ny_hour >= 17:
+                    is_market_closed_weekend = True
+                elif ny_weekday == 5:
+                    is_market_closed_weekend = True
+                elif ny_weekday == 6 and ny_hour < 17:
+                    is_market_closed_weekend = True
+
+                utc_hour = now_utc.hour
+                tokyo_active = (0 <= utc_hour < 9) and not is_market_closed_weekend
+                london_active = (8 <= utc_hour < 16) and not is_market_closed_weekend
+                ny_active = (13 <= utc_hour < 22) and not is_market_closed_weekend
 
                 def build_session_row(name, is_active):
                     cls = "active" if is_active else ""
@@ -1855,7 +1961,7 @@ PSICO-TRADING SCORE
 <span>SESIONES DE TRADING</span>
 <span>🌐</span>
 </div>
-<div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding: 2px 0;">
+<div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding: 6px 0;">
 {build_session_row("Londres", london_active)}
 {build_session_row("New York", ny_active)}
 {build_session_row("Tokio", tokyo_active)}
