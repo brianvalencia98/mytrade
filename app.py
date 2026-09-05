@@ -17,7 +17,6 @@ st.set_page_config(page_title="MYTRADES", page_icon="⚡", layout="wide")
 # ==========================================
 CSS_LOGIN = """
 <style>
-    /* Ocultar interfaz nativa de Streamlit (Header y Sidebar) en el login */
     header, [data-testid="stHeader"], [data-testid="collapsedControl"] { display: none !important; }
 
     @keyframes pulse-glow {
@@ -37,7 +36,6 @@ CSS_LOGIN = """
         color: #e2e8f0 !important; 
     }
 
-    /* Convertimos el contenedor central principal en la tarjeta de login */
     [data-testid="block-container"] {
         background: linear-gradient(145deg, #070d19, #0b1325) !important;
         border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
@@ -182,11 +180,6 @@ CSS_DASHBOARD = """
         box-shadow: 0 4px 20px rgba(255, 51, 102, 0.4) !important; 
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; 
     }
-    [data-testid="stSidebar"] .stButton button:hover { 
-        background: linear-gradient(135deg, #ff1948, #cc2952) !important; 
-        box-shadow: 0 0 28px rgba(255, 51, 102, 0.8) !important; 
-        transform: translateY(-3px) scale(1.02); 
-    }
 
     .kpi-card-exact {
         background: linear-gradient(145deg, #070d19, #0b1325);
@@ -200,7 +193,7 @@ CSS_DASHBOARD = """
         height: 115px;
     }
 
-    /* Botones de navegación de mes del calendario numérico */
+    /* Botones de navegación de mes del calendario */
     div[data-testid="stVerticalBlockBorderWrapper"] div[data-testid="stButton"] > button {
         background: linear-gradient(135deg, #0b162c, #060d1b) !important;
         border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
@@ -486,9 +479,12 @@ CSS_DASHBOARD = """
         padding: 22px 20px 18px 20px;
         box-shadow: 0 10px 35px rgba(0, 0, 0, 0.55);
         margin-bottom: 12px;
+        min-height: 380px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     
-    /* VISTA: THIS MONTH */
     .hm-weekdays {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -528,7 +524,6 @@ CSS_DASHBOARD = """
         height: 48px;
     }
     
-    /* VISTA: THIS WEEK */
     .hm-week-grid {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -553,38 +548,37 @@ CSS_DASHBOARD = """
         height: 64px;
     }
 
-    /* VISTA: THIS YEAR */
     .hm-year-container {
         display: flex;
         flex-direction: column;
-        gap: 14px;
-        max-height: 410px;
+        gap: 10px;
+        max-height: 250px;
         overflow-y: auto;
         padding-right: 6px;
-        margin-bottom: 20px;
+        margin-bottom: 14px;
     }
     .hm-year-container::-webkit-scrollbar { width: 5px; }
     .hm-year-container::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
     .hm-year-month-row {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
     }
     .hm-year-month-label {
         color: #cbd5e1;
-        font-size: 12px;
+        font-size: 11.5px;
         font-weight: 800;
         letter-spacing: 0.5px;
     }
     .hm-year-mini-grid {
         display: grid;
         grid-template-columns: repeat(16, 1fr);
-        gap: 5px;
+        gap: 4.5px;
         max-width: 100%;
     }
     .hm-mini-box {
-        height: 15px;
-        border-radius: 3.5px;
+        height: 13px;
+        border-radius: 3px;
         transition: transform 0.15s ease;
         cursor: pointer;
     }
@@ -593,26 +587,22 @@ CSS_DASHBOARD = """
         z-index: 2;
     }
 
-    /* VISTA: ALL TIME */
     .hm-no-data-box {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 180px;
+        height: 200px;
         color: #94a3b8;
         font-size: 17px;
         font-weight: 600;
         letter-spacing: 0.5px;
-        margin-bottom: 20px;
     }
 
-    /* RESALTADO DEL DÍA ACTUAL EN PÚRPURA / VIOLETA */
     .hm-cell-today {
         border: 2.5px solid #8b5cf6 !important;
         box-shadow: 0 0 16px rgba(139, 92, 246, 0.75) !important;
     }
 
-    /* LEYENDA */
     .hm-legend {
         display: flex;
         flex-wrap: wrap;
@@ -638,6 +628,48 @@ CSS_DASHBOARD = """
     }
 
     /* ==========================================
+       OVERRIDE GLOBAL STREAMLIT NATIVO
+       Botón Activo (Primary) -> Azul Neón
+       ========================================== */
+    button[kind="primary"], button[data-testid="baseButton-primary"] {
+        background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%) !important;
+        background-color: #00d2ff !important;
+        border: none !important;
+        box-shadow: 0 0 18px rgba(0, 210, 255, 0.5), 0 4px 15px rgba(0, 210, 255, 0.3) !important;
+        border-radius: 12px !important;
+        color: #ffffff !important;
+        transition: all 0.3s ease !important;
+        min-height: 46px !important;
+    }
+    button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {
+        background: linear-gradient(135deg, #00ffa3 0%, #00d284 100%) !important;
+        box-shadow: 0 0 25px rgba(0, 255, 163, 0.6) !important;
+        transform: translateY(-2px) scale(1.02) !important;
+        color: #050a14 !important;
+    }
+    button[kind="primary"] p, button[data-testid="baseButton-primary"] p {
+        color: inherit !important;
+        font-weight: 900 !important;
+        letter-spacing: 1px !important;
+        text-shadow: none !important;
+    }
+
+    /* Estilo robusto para botones Inactivos (Secondary) */
+    button[kind="secondary"], button[data-testid="baseButton-secondary"] {
+        border-radius: 12px !important;
+        transition: all 0.3s ease !important;
+        min-height: 46px !important;
+    }
+    button[kind="secondary"]:hover, button[data-testid="baseButton-secondary"]:hover {
+        border-color: #00d2ff !important;
+        color: #00d2ff !important;
+        box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important;
+    }
+    button[kind="secondary"]:hover p, button[data-testid="baseButton-secondary"]:hover p {
+        color: #00d2ff !important;
+    }
+
+    /* ==========================================
        ADAPTACIÓN MÓVIL (PANTALLAS <= 768px)
        ========================================== */
     @media (max-width: 768px) {
@@ -648,7 +680,7 @@ CSS_DASHBOARD = """
         .cal-pnl { font-size: 8px !important; bottom: 2px !important; right: 2px !important; }
         .cal-sym { display: none !important; }
 
-        .hm-card { padding: 16px 12px; }
+        .hm-card { padding: 16px 12px; min-height: auto !important; }
         .hm-grid, .hm-weekdays { gap: 4px !important; }
         .hm-cell, .hm-empty { height: 38px !important; font-size: 11px !important; border-radius: 8px !important; }
         .hm-weekday { font-size: 10px !important; }
@@ -656,7 +688,7 @@ CSS_DASHBOARD = """
         .hm-week-grid { gap: 6px !important; }
         .hm-week-cell, .hm-week-empty { height: 48px !important; font-size: 12px !important; border-radius: 10px !important; }
         
-        .hm-year-mini-grid { gap: 3.5px !important; }
+        .hm-year-mini-grid { gap: 3px !important; }
         .hm-mini-box { height: 11px !important; border-radius: 2px !important; }
 
         .hm-legend { gap: 8px 12px !important; font-size: 10px !important; }
@@ -775,10 +807,9 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
     year = now.year
     month = now.month
     today_day = now.day
-    today_weekday = now.weekday() # 0 = Lunes, 6 = Domingo
+    today_weekday = now.weekday()
     
     daily_pnl_by_date = {}
-    period_stats = {"net_pnl": 0.0, "green_days": 0, "red_days": 0, "total_trades": 0}
     
     threshold = 50000.0 if ("COP" in curr_symbol or "COL$" in curr_symbol) else 25.0
     if initial_balance > 0:
@@ -790,28 +821,8 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
         df_copy['pnl'] = pd.to_numeric(df_copy['pnl'], errors='coerce').fillna(0.0)
         df_copy['date_only'] = df_copy['date_time'].dt.date
         
-        # Filtro para estadísticas del panel lateral
-        if time_filter == "This Week":
-            start_of_week = now.date() - timedelta(days=now.weekday())
-            df_period = df_copy[df_copy['date_only'] >= start_of_week]
-        elif time_filter == "This Month":
-            df_period = df_copy[(df_copy['date_time'].dt.year == year) & (df_copy['date_time'].dt.month == month)]
-        elif time_filter == "This Year":
-            df_period = df_copy[df_copy['date_time'].dt.year == year]
-        else: # All Time
-            df_period = df_copy
-            
-        period_stats["total_trades"] = len(df_period)
-        period_stats["net_pnl"] = float(df_period['pnl'].sum()) if not df_period.empty else 0.0
-        
-        # Mapeo global fecha -> pnl
         grouped_global = df_copy.groupby('date_only')['pnl'].sum()
         daily_pnl_by_date = {k: float(v) for k, v in grouped_global.items()}
-        
-        if not df_period.empty:
-            grouped_period = df_period.groupby('date_only')['pnl'].sum()
-            period_stats["green_days"] = len([v for v in grouped_period.values if v > 0])
-            period_stats["red_days"] = len([v for v in grouped_period.values if v < 0])
 
     def get_color_details(pnl_val):
         if pnl_val is None:
@@ -829,7 +840,6 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
 
     content_html = ""
 
-    # 1. TEMPORALIDAD: THIS WEEK (Lunes a Viernes arriba, Sábado y Domingo abajo)
     if time_filter == "This Week":
         start_of_week = now.date() - timedelta(days=now.weekday())
         week_days_info = [
@@ -843,14 +853,12 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
         ]
         
         grid_html = '<div class="hm-week-grid">'
-        # Fila 1: Mon a Fri (5 items)
         for label, d_date, idx in week_days_info[:5]:
             pnl_val = daily_pnl_by_date.get(d_date, None)
             bg, text_color, tip = get_color_details(pnl_val)
             today_cls = " hm-cell-today" if idx == today_weekday else ""
             grid_html += f'<div class="hm-week-cell{today_cls}" style="background-color:{bg}; color:{text_color};" title="{label} ({d_date}): {tip}">{label}</div>'
         
-        # Fila 2: Sat y Sun (2 items) + 3 espacios vacíos
         for label, d_date, idx in week_days_info[5:]:
             pnl_val = daily_pnl_by_date.get(d_date, None)
             bg, text_color, tip = get_color_details(pnl_val)
@@ -863,7 +871,6 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
         grid_html += '</div>'
         content_html = grid_html
 
-    # 2. TEMPORALIDAD: THIS MONTH (Calendario completo del mes actual)
     elif time_filter == "This Month":
         cal = calendar.monthcalendar(year, month)
         grid_html = '''<div class="hm-weekdays">
@@ -883,7 +890,6 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
         grid_html += '</div>'
         content_html = grid_html
 
-    # 3. TEMPORALIDAD: THIS YEAR (Filas de meses con bloques de días)
     elif time_filter == "This Year":
         months_short = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
         year_html = '<div class="hm-year-container">'
@@ -904,7 +910,6 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
         year_html += '</div>'
         content_html = year_html
 
-    # 4. TEMPORALIDAD: ALL TIME (Si no hay datos, muestra exactamente "No trading data available")
     else:
         if df_trades.empty:
             content_html = '<div class="hm-no-data-box">No trading data available</div>'
@@ -914,7 +919,7 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
             all_html = '<div class="hm-year-container">'
             
             for y in years_present:
-                all_html += f'<div style="color:#00d2ff; font-weight:800; font-size:13px; margin: 4px 0 6px 0;">{y}</div>'
+                all_html += f'<div style="color:#00d2ff; font-weight:800; font-size:12px; margin: 2px 0 4px 0;">{y}</div>'
                 for m_idx, m_name in enumerate(months_short, start=1):
                     num_days = calendar.monthrange(y, m_idx)[1]
                     all_html += f'<div class="hm-year-month-row"><div class="hm-year-month-label">{m_name}</div><div class="hm-year-mini-grid">'
@@ -929,9 +934,8 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
             all_html += '</div>'
             content_html = all_html
 
-    # Estructura del Card con la leyenda
     full_html = f"""<div class="hm-card">
-{content_html}
+<div>{content_html}</div>
 <div class="hm-legend">
 <div class="hm-leg-item"><span class="hm-dot" style="background:#00e676;"></span> Profitable</div>
 <div class="hm-leg-item"><span class="hm-dot" style="background:#0d9488;"></span> Small Profit</div>
@@ -941,7 +945,63 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
 <div class="hm-leg-item"><span class="hm-dot" style="background:#1e2533;"></span> No Trade</div>
 </div>
 </div>"""
-    return full_html, period_stats
+    return full_html
+
+# ==========================================
+# GENERADOR DEL MÓDULO TOP TRADES
+# ==========================================
+def render_top_trades_list(df_trades, curr_symbol, mode):
+    if df_trades.empty:
+        return '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 45px 0;">No trading data available</div>'
+    
+    df_copy = df_trades.copy()
+    df_copy['pnl'] = pd.to_numeric(df_copy['pnl'], errors='coerce').fillna(0.0)
+    df_copy['date_time'] = pd.to_datetime(df_copy['date_time'])
+    
+    if mode == "winners":
+        df_filtered = df_copy[df_copy['pnl'] > 0].sort_values(by='pnl', ascending=False).head(3)
+        badge_bg = "rgba(0, 255, 163, 0.12)"
+        badge_color = "#00ffa3"
+        badge_border = "rgba(0, 255, 163, 0.4)"
+    else:
+        df_filtered = df_copy[df_copy['pnl'] < 0].sort_values(by='pnl', ascending=True).head(3)
+        badge_bg = "rgba(255, 51, 102, 0.12)"
+        badge_color = "#ff3366"
+        badge_border = "rgba(255, 51, 102, 0.4)"
+        
+    if df_filtered.empty:
+        cat_name = "ganadoras" if mode == "winners" else "perdedoras"
+        return f'<div style="color: #64748b; font-size: 13.5px; text-align: center; padding: 45px 0;">No hay operaciones {cat_name} registradas.</div>'
+        
+    items_html = []
+    for rank, (_, row) in enumerate(df_filtered.iterrows(), start=1):
+        pnl_val = abs(float(row['pnl']))
+        sign = "" if mode == "winners" else "-"
+        fmt_amt = f"{sign}{curr_symbol}{pnl_val:,.0f}" if ("COP" in curr_symbol or "COL$" in curr_symbol) else f"{sign}{curr_symbol}{pnl_val:,.2f}"
+        dt_str = row['date_time'].strftime('%b %d, %Y')
+        asset_str = row.get('asset', '')
+        asset_display = f" · <span style='color:#00d2ff;'>💎 {asset_str}</span>" if asset_str else ""
+        
+        item_code = f"""
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 6px; border-bottom: 1px solid rgba(30, 41, 59, 0.45);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: {badge_bg}; border: 1.5px solid {badge_border}; color: {badge_color}; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 10px {badge_bg};">
+                    #{rank}
+                </div>
+                <div>
+                    <div style="color: #ffffff; font-size: 20px; font-weight: 800; line-height: 1.2;">
+                        {fmt_amt}
+                    </div>
+                    <div style="color: #94a3b8; font-size: 12.5px; font-weight: 500; margin-top: 2px;">
+                        {dt_str}{asset_display}
+                    </div>
+                </div>
+            </div>
+        </div>
+        """
+        items_html.append(item_code)
+        
+    return "".join(items_html)
 
 # ==========================================
 # GENERADOR DE TABLA ANALÍTICA ULTRA ESTILIZADA
@@ -1539,6 +1599,7 @@ else:
                         st.session_state["cal_month"] += 1
 
                 with st.container(border=True):
+                    st.markdown('<div id="cal-marker" style="display:none;"></div>', unsafe_allow_html=True)
                     c_title, c_prev, c_lbl, c_next = st.columns([2.2, 0.6, 2.0, 0.6])
                     with c_title:
                         st.markdown('<div style="font-size: 14px; font-weight: 800; color: #ffffff; padding-top: 6px; display: flex; align-items: center; gap: 6px;"><span>📅</span> Calendario</div>', unsafe_allow_html=True)
@@ -1609,56 +1670,110 @@ else:
 </div>''', unsafe_allow_html=True)
 
             # ==========================================
-            # SECCIÓN: TRADING HEATMAP CON INTERACTIVIDAD TOTAL
+            # SECCIÓN: TRADING HEATMAP & TOP TRADES
             # ==========================================
             st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
-            col_hm_main, col_hm_stats = st.columns([1.25, 0.75])
+            col_hm_main, col_top_trades = st.columns([1.18, 0.82])
             
             with col_hm_main:
                 h_col_t, h_col_s = st.columns([1.55, 1.45])
                 with h_col_t:
                     st.markdown('<div style="font-size: 19px; font-weight: 800; color: #ffffff; padding-top: 5px; display: flex; align-items: center; gap: 8px;"><span>🔥</span> Trading Heatmap</div>', unsafe_allow_html=True)
                 with h_col_s:
-                    # Selector con las opciones exactas
                     hm_filter = st.selectbox("TEMPORALIDAD HEATMAP:", ["This Month", "This Week", "This Year", "All Time"], label_visibility="collapsed", key="hm_view_filter")
                 
-                hm_html, p_stats = render_trading_heatmap(df_trades, curr_symbol, hm_filter, initial_balance)
+                hm_html = render_trading_heatmap(df_trades, curr_symbol, hm_filter, initial_balance)
                 st.markdown(hm_html, unsafe_allow_html=True)
 
-            with col_hm_stats:
+            with col_top_trades:
+                if "top_trades_mode" not in st.session_state:
+                    st.session_state["top_trades_mode"] = "winners"
+
+                is_win_mode = (st.session_state["top_trades_mode"] == "winners")
+
                 with st.container(border=True):
-                    st.markdown(f'''<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 8px; margin-bottom: 12px;">
-<div>
-<div style="font-size: 13px; font-weight: 800; color: #ffffff;">⚡ Resumen del Periodo</div>
-<div style="font-size: 10px; color: #64748b; text-transform: uppercase;">Filtro: {hm_filter}</div>
-</div>
-<span style="font-size: 16px;">📊</span>
-</div>''', unsafe_allow_html=True)
+                    st.markdown('<div style="font-size: 19px; font-weight: 800; color: #ffffff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;"><span>🏆</span> Top Trades</div>', unsafe_allow_html=True)
                     
-                    hm_net = p_stats["net_pnl"]
-                    hm_sign = "+" if hm_net >= 0 else ""
-                    hm_color = "#00ffa3" if hm_net >= 0 else "#ff3366"
+                    t_col1, t_col2 = st.columns(2)
+                    with t_col1:
+                        # Usamos 'primary' si está seleccionado
+                        btn_win_type = "primary" if is_win_mode else "secondary"
+                        if st.button("Top Winners", key="btn_top_win", use_container_width=True, type=btn_win_type):
+                            st.session_state["top_trades_mode"] = "winners"
+                            st.rerun()
+                    with t_col2:
+                        # Usamos 'primary' si está seleccionado
+                        btn_loss_type = "primary" if not is_win_mode else "secondary"
+                        if st.button("Top Losers", key="btn_top_loss", use_container_width=True, type=btn_loss_type):
+                            st.session_state["top_trades_mode"] = "losers"
+                            st.rerun()
                     
-                    st.markdown(f'''<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 12px 14px; margin-bottom: 10px;">
-<div style="font-size: 10px; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">P&L Neto ({hm_filter})</div>
-<div style="font-size: 22px; font-weight: 800; color: {hm_color}; margin-top: 2px;">{hm_sign}{curr_symbol}{hm_net:,.2f}</div>
-</div>''', unsafe_allow_html=True)
+                    st.markdown('<div style="border-top: 1px solid rgba(255, 255, 255, 0.12); margin: 16px 0 8px 0;"></div>', unsafe_allow_html=True)
+                    st.markdown(render_top_trades_list(df_trades, curr_symbol, st.session_state["top_trades_mode"]), unsafe_allow_html=True)
 
-                    st.markdown(f'''<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
-<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px;">
-<div style="font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase;">Días Ganadores</div>
-<div style="font-size: 18px; font-weight: 800; color: #00ffa3; margin-top: 2px;">🟢 {p_stats["green_days"]}D</div>
-</div>
-<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px;">
-<div style="font-size: 9px; color: #64748b; font-weight: 700; text-transform: uppercase;">Días Perdedores</div>
-<div style="font-size: 18px; font-weight: 800; color: #ff3366; margin-top: 2px;">🔴 {p_stats["red_days"]}D</div>
-</div>
-</div>''', unsafe_allow_html=True)
+            # ESTILOS GLOBALES INCORPORADOS AQUÍ PARA ASEGURAR QUE SE LEEN CORRECTAMENTE AL FINAL
+            st.markdown("""
+            <style>
+            /* ==========================================
+               OVERRIDE GLOBAL STREAMLIT NATIVO
+               Botón Activo (Primary) -> Azul Neón
+               ========================================== */
+            button[kind="primary"], button[data-testid="baseButton-primary"] {
+                background: linear-gradient(135deg, #00d2ff 0%, #0072ff 100%) !important;
+                background-color: #00d2ff !important;
+                border: 1px solid #00d2ff !important;
+                box-shadow: 0 0 18px rgba(0, 210, 255, 0.5), 0 4px 15px rgba(0, 210, 255, 0.3) !important;
+                border-radius: 14px !important;
+                color: #ffffff !important;
+                transition: all 0.3s ease !important;
+                min-height: 46px !important;
+            }
+            button[kind="primary"]:hover, button[data-testid="baseButton-primary"]:hover {
+                background: linear-gradient(135deg, #00ffa3 0%, #00d284 100%) !important;
+                border-color: #00ffa3 !important;
+                box-shadow: 0 0 25px rgba(0, 255, 163, 0.6) !important;
+                transform: translateY(-2px) scale(1.02) !important;
+                color: #050a14 !important;
+            }
+            button[kind="primary"] p, button[data-testid="baseButton-primary"] p {
+                color: inherit !important;
+                font-weight: 900 !important;
+                letter-spacing: 1px !important;
+                text-shadow: none !important;
+                margin: 0 !important;
+            }
 
-                    st.markdown(f'''<div style="background: rgba(11, 19, 37, 0.6); border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px;">
-<div style="font-size: 9.5px; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Trades Ejecutados en Periodo</div>
-<div style="font-size: 17px; font-weight: 800; color: #00d2ff; margin-top: 2px;">{p_stats["total_trades"]} operaciones</div>
-</div>''', unsafe_allow_html=True)
+            /* Estilo robusto para botones Inactivos (Secondary) en general */
+            button[kind="secondary"], button[data-testid="baseButton-secondary"] {
+                border-radius: 14px !important;
+                transition: all 0.3s ease !important;
+                min-height: 46px !important;
+                background: #111a2e !important;
+                background-color: #111a2e !important;
+                border: 1.5px solid #233148 !important;
+                box-shadow: inset 0 2px 8px rgba(0,0,0,0.4) !important;
+            }
+            button[kind="secondary"] p, button[data-testid="baseButton-secondary"] p {
+                color: #64748b !important;
+                font-weight: 700 !important;
+                margin: 0 !important;
+            }
+            button[kind="secondary"]:hover, button[data-testid="baseButton-secondary"]:hover {
+                border-color: #00d2ff !important;
+                color: #00d2ff !important;
+                box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important;
+                transform: translateY(-1px) !important;
+            }
+            button[kind="secondary"]:hover p, button[data-testid="baseButton-secondary"]:hover p {
+                color: #00d2ff !important;
+            }
+            
+            /* Arreglo especial para que los botones numéricos del PIN no se deformen con la nueva altura */
+            .pin-display ~ div[data-testid="stHorizontalBlock"] button {
+                min-height: 50px !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
 
             # ==========================================
             # SECCIÓN 2: 4 PANELES DE ESTADO
@@ -1850,7 +1965,7 @@ PSICO-TRADING SCORE
                             if not df_negative.empty:
                                 worst_row = df_negative.loc[df_negative['pnl'].idxmin()]
                                 worst_day_val = worst_row['pnl']
-                                worst_day_date = driver_worst_date = worst_row['day_date'].strftime('%d %b, %Y')
+                                worst_day_date = worst_row['day_date'].strftime('%d %b, %Y')
                             else:
                                 worst_day_val = 0.0
                                 worst_day_date = "Sin pérdidas"
