@@ -83,20 +83,10 @@ CSS_LOGIN = """
         box-shadow: 0 0 12px #00ffa3, 0 0 20px rgba(0, 255, 163, 0.6); transform: scale(1.15);
     }
 
-    /* Estilos acotados exclusivamente al teclado PIN de Login */
-    [data-testid="block-container"]:has(.login-status-capsule) div[data-testid="stHorizontalBlock"] { 
-        justify-content: center !important; 
-        gap: 8px !important; 
-        margin-bottom: 4px !important; 
-    }
-    [data-testid="block-container"]:has(.login-status-capsule) div[data-testid="stColumn"] { 
-        flex: 0 0 50px !important; 
-        min-width: 50px !important; 
-        max-width: 50px !important; 
-        display: flex !important; 
-        justify-content: center !important; 
-    }
-    [data-testid="block-container"]:has(.login-status-capsule) div[data-testid="stColumn"] button {
+    div[data-testid="stHorizontalBlock"] { justify-content: center !important; gap: 8px !important; margin-bottom: 4px !important; }
+    div[data-testid="stColumn"] { flex: 0 0 50px !important; min-width: 50px !important; max-width: 50px !important; display: flex !important; justify-content: center !important; }
+    
+    div[data-testid="stColumn"] button {
         width: 50px !important; height: 50px !important; border-radius: 50% !important;
         background: linear-gradient(145deg, #0b1325, #050a14) !important;
         border: 1.5px solid rgba(0, 210, 255, 0.3) !important;
@@ -105,7 +95,8 @@ CSS_LOGIN = """
         display: flex !important; align-items: center !important; justify-content: center !important;
         padding: 0 !important; margin: 0 !important;
     }
-    [data-testid="block-container"]:has(.login-status-capsule) div[data-testid="stColumn"] button:hover {
+    
+    div[data-testid="stColumn"] button:hover {
         border-color: #00ffa3 !important; color: #00ffa3 !important;
         background: rgba(0, 255, 163, 0.12) !important;
         box-shadow: 0 0 18px rgba(0, 255, 163, 0.4) !important; transform: translateY(-2px) scale(1.04);
@@ -223,41 +214,58 @@ CSS_DASHBOARD = """
     }
 
     /* ==========================================
-       BARRA DE NAVEGACIÓN Y FLECHAS DEL CALENDARIO (UNIFICADA)
+       ENCABEZADO Y NAVEGACIÓN DEL CALENDARIO
        ========================================== */
-    .cal-title-header {
+    .cal-title-text {
         font-size: 14px;
         font-weight: 800;
         color: #ffffff;
         display: flex;
         align-items: center;
         gap: 6px;
-        margin-bottom: 6px;
+        white-space: nowrap;
     }
 
-    div[data-testid="stHorizontalBlock"]:has(.cal-nav-hook) {
-        display: flex !important;
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 8px !important;
-        margin: 0 auto 8px auto !important;
-        width: 100% !important;
+    .cal-month-text {
+        color: #00d2ff;
+        font-size: 12.5px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-align: center;
+        white-space: nowrap;
+        line-height: 32px;
     }
 
-    div[data-testid="stHorizontalBlock"]:has(.cal-nav-hook) > div[data-testid="stColumn"] {
-        flex: 0 0 auto !important;
-        width: auto !important;
-        min-width: 0 !important;
-        max-width: none !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
+    /* Reglas Desktop para el navegador del calendario */
+    @media (min-width: 769px) {
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(1) {
+            flex: 1 1 auto !important;
+            width: auto !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(2) {
+            flex: 0 0 36px !important;
+            width: 36px !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(3) {
+            flex: 0 0 145px !important;
+            width: 145px !important;
+            text-align: center !important;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(4) {
+            flex: 0 0 36px !important;
+            width: 36px !important;
+        }
     }
 
-    div[data-testid="stHorizontalBlock"]:has(.cal-nav-hook) button {
+    /* Botones de navegación del calendario (anulación de tamaño global) */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stButton"] > button {
         background: linear-gradient(135deg, #0b162c, #060d1b) !important;
         border: 1.5px solid rgba(0, 210, 255, 0.35) !important;
         color: #00d2ff !important;
@@ -271,33 +279,22 @@ CSS_DASHBOARD = """
         min-width: 36px !important;
         max-width: 36px !important;
         padding: 0 !important;
-        margin: 0 !important;
+        margin: 0 auto !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
         transition: all 0.2s ease !important;
     }
-    div[data-testid="stHorizontalBlock"]:has(.cal-nav-hook) button:hover {
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stButton"] > button:hover {
         border-color: #00ffa3 !important;
         color: #00ffa3 !important;
-        box-shadow: 0 0 12px rgba(0, 255, 163, 0.3) !important;
+        box-shadow: 0 0 12px rgba(0, 255, 163, 0.4) !important;
         transform: scale(1.05) !important;
     }
-    div[data-testid="stHorizontalBlock"]:has(.cal-nav-hook) button p {
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stButton"] > button p {
         margin: 0 !important;
         font-size: 13px !important;
-    }
-
-    .cal-month-text {
-        color: #00d2ff !important;
-        font-size: 12.5px !important;
-        font-weight: 800 !important;
-        letter-spacing: 1px !important;
-        text-align: center !important;
-        white-space: nowrap !important;
-        padding: 0 8px !important;
-        line-height: 32px !important;
     }
 
     div[data-testid="stVerticalBlockBorderWrapper"] {
@@ -305,7 +302,7 @@ CSS_DASHBOARD = """
         border: 1px solid #1e293b !important;
         border-radius: 18px !important;
         box-shadow: 0 8px 32px rgba(0,0,0,0.45) !important;
-        padding: 16px 18px 20px 18px !important;
+        padding: 16px 18px 18px 18px !important;
         margin-bottom: 12px !important;
         transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
     }
@@ -589,6 +586,10 @@ CSS_DASHBOARD = """
     button[kind="secondary"]:hover p, button[data-testid="baseButton-secondary"]:hover p {
         color: #00d2ff !important;
     }
+    
+    .pin-display ~ div[data-testid="stHorizontalBlock"] button {
+        min-height: 50px !important;
+    }
 
     /* ==========================================
        TABLA DE CALENDARIO NUMÉRICO
@@ -769,6 +770,50 @@ CSS_DASHBOARD = """
        ADAPTACIÓN MÓVIL (PANTALLAS <= 768px)
        ========================================== */
     @media (max-width: 768px) {
+        /* En móviles, mantener [ ◀ ] [MES AÑO] [ ▶ ] juntos y en una fila perfecta */
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 6px !important;
+        }
+        
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(1) {
+            flex: 1 0 100% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin-bottom: 8px !important;
+            display: flex !important;
+            justify-content: flex-start !important;
+        }
+
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(2) {
+            flex: 0 0 36px !important;
+            width: 36px !important;
+            max-width: 36px !important;
+            display: flex !important;
+            justify-content: center !important;
+        }
+
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(3) {
+            flex: 1 1 auto !important;
+            width: auto !important;
+            max-width: 190px !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(4) {
+            flex: 0 0 36px !important;
+            width: 36px !important;
+            max-width: 36px !important;
+            display: flex !important;
+            justify-content: center !important;
+        }
+
         .cal-wrapper { margin: 0 -4px; padding: 2px 4px; }
         .cal-cell, .cal-td-empty, .cal-tot-cell { height: 48px !important; padding: 3px 2px !important; }
         .cal-th { padding: 5px 0 !important; font-size: 10px !important; }
@@ -1794,7 +1839,7 @@ else:
                 st.markdown("<div style='margin-bottom: 2px;'></div>", unsafe_allow_html=True)
 
             # ==========================================
-            # SECCIÓN 1: CALENDARIO Y PERFIL (OPTIMIZADO MÓVIL)
+            # SECCIÓN 1: CALENDARIO Y PERFIL
             # ==========================================
             st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
             col_cal, col_prof = st.columns([1.18, 0.82])
@@ -1820,13 +1865,11 @@ else:
                         st.session_state["cal_month"] += 1
 
                 with st.container(border=True):
-                    # 1. Título superior fijo e independiente
-                    st.markdown('<div class="cal-title-header"><span>📅</span> Calendario</div>', unsafe_allow_html=True)
-                    
-                    # 2. Fila de controles centrada: [ ◀ ] [ MES AÑO ] [ ▶ ]
-                    c_prev, c_lbl, c_next = st.columns([1, 2.5, 1])
+                    st.markdown('<div id="cal-nav-bar" style="display:none;"></div>', unsafe_allow_html=True)
+                    c_title, c_prev, c_lbl, c_next = st.columns([1.8, 0.5, 2.0, 0.5])
+                    with c_title:
+                        st.markdown('<div class="cal-title-text"><span>📅</span> Calendario</div>', unsafe_allow_html=True)
                     with c_prev:
-                        st.markdown('<div class="cal-nav-hook" style="display:none;"></div>', unsafe_allow_html=True)
                         st.button("◀", on_click=prev_month, key="cal_prev")
                     with c_lbl:
                         meses_map = {1:"ENERO", 2:"FEBRERO", 3:"MARZO", 4:"ABRIL", 5:"MAYO", 6:"JUNIO", 7:"JULIO", 8:"AGOSTO", 9:"SEPTIEMBRE", 10:"OCTUBRE", 11:"NOVIEMBRE", 12:"DICIEMBRE"}
@@ -1835,7 +1878,6 @@ else:
                     with c_next:
                         st.button("▶", on_click=next_month, key="cal_next")
                     
-                    # 3. Cuadrícula del calendario mensual
                     st.markdown(render_calendar(df_trades, curr_symbol, st.session_state["cal_year"], st.session_state["cal_month"]), unsafe_allow_html=True)
                 
             with col_prof:
@@ -1996,6 +2038,7 @@ PSICO-TRADING SCORE
 </div>''', unsafe_allow_html=True)
 
             with s_col3:
+                # CONTROL DE HORARIO: CIERRE VIERNES 17:00 NY -> APERTURA DOMINGO 17:00 NY
                 now_utc = datetime.now(timezone.utc)
                 now_ny = now_utc.astimezone(timezone(timedelta(hours=-4)))
                 ny_weekday = now_ny.weekday() # 4=Viernes, 5=Sábado, 6=Domingo
