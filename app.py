@@ -1923,10 +1923,10 @@ else:
                         paper_bgcolor='rgba(0,0,0,0)', 
                         plot_bgcolor='rgba(0,0,0,0)',
                         margin=dict(l=65, r=65, t=18, b=18), 
-                        height=280
+                        height=280,
+                        dragmode=False
                     )
                     st.plotly_chart(fig_radar, width='stretch', config={'displayModeBar': False, 'scrollZoom': False})
-
                     st.markdown(f'''<div style="padding-top: 6px; margin-bottom: 4px;">
 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
 <div style="color: #94a3b8; font-size: 11.5px; font-weight: 600;">Puntuación de Trading</div>
