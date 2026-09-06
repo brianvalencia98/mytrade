@@ -944,7 +944,9 @@ def render_calendar(df_trades, curr_symbol, year, month):
 # GENERADOR DEL TRADING HEATMAP CON TEMPORALIDADES EXACTAS
 # ==========================================
 def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance):
-    now = datetime.now()
+    local_tz = timezone(timedelta(hours=-5))
+    now = datetime.now(local_tz)
+    now_date = now.date()
     year = now.year
     month = now.month
     today_day = now.day
@@ -982,7 +984,7 @@ def render_trading_heatmap(df_trades, curr_symbol, time_filter, initial_balance)
     content_html = ""
 
     if time_filter == "This Week":
-        start_of_week = now.date() - timedelta(days=now.weekday())
+        start_of_week = now_date - timedelta(days=today_weekday)
         week_days_info = [
             ("Mon", start_of_week + timedelta(days=0), 0),
             ("Tue", start_of_week + timedelta(days=1), 1),
@@ -2318,10 +2320,8 @@ PSICO-TRADING SCORE
                         emotion = st.selectbox("🧠 Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
                         payout_percent = st.number_input("📊 % Retorno (Binarias)", min_value=1, max_value=100, value=85)
                     with c4:
-             # Definir la zona horaria local (Colombia UTC-5)
                         local_tz = timezone(timedelta(hours=-5))
                         local_now = datetime.now(local_tz)
-        
                         date_time = st.date_input("📅 Fecha", local_now.date())
                         time_input = st.time_input("⏰ Hora", local_now.time())
                         observation = st.text_input("📝 Observaciones / Notas")
@@ -2405,4 +2405,3 @@ PSICO-TRADING SCORE
                         st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
                     st.markdown('<div style="text-align: center; color: #64748b; padding: 30px;">No hay operaciones registradas en esta cuenta.</div>', unsafe_allow_html=True)
-                    
