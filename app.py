@@ -2357,7 +2357,7 @@ PSICO-TRADING SCORE
                             st.error(f"Error guardando en la BD: {e}")
 
             # ==========================================
-            # HISTORIAL DE OPERACIONES
+            # HISTORIAL DE OPERACIONES Y ELIMINACIÓN DE TRADES
             # ==========================================
             st.markdown("<div style='margin-top: 15px;'></div>", unsafe_allow_html=True)
             with st.expander("📋 HISTORIAL DE OPERACIONES Y BITÁCORA CUÁNTICA", expanded=False):
@@ -2389,6 +2389,29 @@ PSICO-TRADING SCORE
                     st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 12px;">📊 Tabla Analítica General</div>', unsafe_allow_html=True)
                     st.markdown(render_analytics_table(df_filtered, curr_symbol), unsafe_allow_html=True)
                     
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    
+                    # SECCIÓN PARA ELIMINAR UN TRADE EQUIVOCADO
+                    st.markdown('<div style="color: #ff3366; font-size: 15px; font-weight: bold; margin-bottom: 8px;">🗑️ Eliminar Trade por Error</div>', unsafe_allow_html=True)
+                    with st.form("delete_trade_form"):
+                        trade_options = df_trades.apply(lambda x: f"ID #{x['id']} — 💎 {x['asset']} ({pd.to_datetime(x['date_time']).strftime('%Y-%m-%d %H:%M')}) — PnL: {x['pnl']:+,.2f}", axis=1).tolist()
+                        selected_trade_to_del = st.selectbox("Selecciona el trade que deseas eliminar:", trade_options)
+                        confirm_trade_del = st.checkbox("⚠️ Confirmo que deseo eliminar este registro de trade definitivamente.")
+                        submit_trade_del = st.form_submit_button("🗑️ ELIMINAR TRADE SELECCIONADO")
+                        
+                        if submit_trade_del:
+                            if confirm_trade_del:
+                                trade_id_to_del = int(selected_trade_to_del.split("ID #")[1].split(" —")[0])
+                                active_conn = get_active_connection()
+                                with active_conn.cursor() as cur:
+                                    cur.execute("DELETE FROM trades WHERE id = %s", (trade_id_to_del,))
+                                    active_conn.commit()
+                                st.success("✅ Trade eliminado exitosamente de la base de datos.")
+                                time.sleep(0.5)
+                                st.rerun()
+                            else:
+                                st.warning("⚠️ Debes marcar la casilla de confirmación para proceder con la eliminación.")
+
                     st.markdown("<br>", unsafe_allow_html=True)
                     
                     st.markdown('<div style="color: #ffffff; font-size: 16px; font-weight: bold; margin-bottom: 12px;">🔍 Detallado Cuántico de Ejecuciones</div>', unsafe_allow_html=True)
