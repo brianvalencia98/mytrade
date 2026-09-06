@@ -1909,14 +1909,13 @@ else:
                     ))
                     fig_radar.update_layout(
                         polar=dict(
-                            radialaxis=dict(visible=False, range=[0, 105], fixedrange=True), 
+                            radialaxis=dict(visible=False, range=[0, 105]), 
                             angularaxis=dict(
                                 color='#94a3b8', 
                                 gridcolor='#1e293b', 
                                 linecolor='#1e293b', 
                                 gridwidth=1,
-                                tickfont=dict(size=11, color='#cbd5e1', family='sans-serif'),
-                                fixedrange=True
+                                tickfont=dict(size=11, color='#cbd5e1', family='sans-serif')
                             ), 
                             bgcolor='rgba(0,0,0,0)'
                         ),
