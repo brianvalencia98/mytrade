@@ -2088,9 +2088,12 @@ PSICO-TRADING SCORE
 </div>''', unsafe_allow_html=True)
 
             with s_col3:
-                # CONTROL DE HORARIO: CIERRE VIERNES 17:00 NY -> APERTURA DOMINGO 17:00 NY
-                now_utc = datetime.now(timezone.utc)
-                now_ny = now_utc.astimezone(timezone(timedelta(hours=-4)))
+                # CONTROL DE HORARIO: HORA LOCAL (COLOMBIA UTC-5)
+                local_tz_sess = timezone(timedelta(hours=-5))
+                now_local = datetime.now(local_tz_sess)
+                local_hour = now_local.hour
+                
+                now_ny = now_local.astimezone(timezone(timedelta(hours=-4)))
                 ny_weekday = now_ny.weekday() # 4=Viernes, 5=Sábado, 6=Domingo
                 ny_hour = now_ny.hour
 
@@ -2102,10 +2105,9 @@ PSICO-TRADING SCORE
                 elif ny_weekday == 6 and ny_hour < 17:
                     is_market_closed_weekend = True
 
-                utc_hour = now_utc.hour
-                tokyo_active = (0 <= utc_hour < 9) and not is_market_closed_weekend
-                london_active = (8 <= utc_hour < 16) and not is_market_closed_weekend
-                ny_active = (13 <= utc_hour < 22) and not is_market_closed_weekend
+                tokyo_active = ((local_hour >= 19) or (local_hour < 4)) and not is_market_closed_weekend
+                london_active = (3 <= local_hour < 11) and not is_market_closed_weekend
+                ny_active = (8 <= local_hour < 17) and not is_market_closed_weekend
 
                 def build_session_row(name, is_active):
                     cls = "active" if is_active else ""
