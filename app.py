@@ -1927,6 +1927,7 @@ else:
                         dragmode=False
                     )
                     st.plotly_chart(fig_radar, width='stretch', config={'displayModeBar': False, 'scrollZoom': False})
+
                     st.markdown(f'''<div style="padding-top: 6px; margin-bottom: 4px;">
 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
 <div style="color: #94a3b8; font-size: 11.5px; font-weight: 600;">Puntuación de Trading</div>
@@ -2321,7 +2322,7 @@ PSICO-TRADING SCORE
                         confidence = st.selectbox("🎯 Nivel de Confianza", ["Alto 🔥", "Medio ⚡", "Bajo ⚠️"])
                     with c3:
                         result = st.selectbox("🏆 Resultado", ["WIN 🎉", "LOSS ❌", "EMPATE ➖"])
-                        emotion = st.selectbox("🧠 Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
+                        emotion = st.selectbox("🧠 Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Dudoso 🧐", "Inseguro 😟", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
                         payout_percent = st.number_input("📊 % Retorno (Binarias)", min_value=1, max_value=100, value=85)
                     with c4:
                         local_tz = timezone(timedelta(hours=-5))
