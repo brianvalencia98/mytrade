@@ -1460,7 +1460,20 @@ else:
         total_accs = len(df_accounts)
         
         cap_summary_html = "$0.00"
+        current_cap_summary_html = "$0.00"
         if not df_accounts.empty:
+            active_conn = get_active_connection()
+            df_all_trades = pd.read_sql_query("SELECT account_id, pnl FROM trades", active_conn)
+            if not df_all_trades.empty:
+                df_all_trades['pnl'] = pd.to_numeric(df_all_trades['pnl'], errors='coerce').fillna(0.0)
+                trades_sum = df_all_trades.groupby('account_id')['pnl'].sum().reset_index()
+                df_acc_calc = df_accounts.merge(trades_sum, left_on='id', right_on='account_id', how='left')
+                df_acc_calc['pnl'] = df_acc_calc['pnl'].fillna(0.0)
+                df_acc_calc['current_balance'] = df_acc_calc['initial_balance'] + df_acc_calc['pnl']
+            else:
+                df_acc_calc = df_accounts.copy()
+                df_acc_calc['current_balance'] = df_acc_calc['initial_balance']
+
             if 'currency' in df_accounts.columns:
                 grouped_curr = df_accounts.groupby('currency')['initial_balance'].sum()
                 parts = []
@@ -1468,11 +1481,19 @@ else:
                     sym = get_currency_symbol(curr_val)
                     parts.append(f"{sym}{sum_val:,.2f}")
                 cap_summary_html = " &nbsp;|&nbsp; ".join(parts)
+
+                grouped_curr_curr = df_acc_calc.groupby('currency')['current_balance'].sum()
+                current_parts = []
+                for curr_val, sum_val in grouped_curr_curr.items():
+                    sym = get_currency_symbol(curr_val)
+                    current_parts.append(f"{sym}{sum_val:,.2f}")
+                current_cap_summary_html = " &nbsp;|&nbsp; ".join(current_parts)
             else:
                 total_cap = float(df_accounts['initial_balance'].sum())
                 cap_summary_html = f"${total_cap:,.2f}"
+                total_curr_cap = float(df_acc_calc['current_balance'].sum())
+                current_cap_summary_html = f"${total_curr_cap:,.2f}"
 
-        # CÁLCULO DEL BRÓKER PRINCIPAL BASADO EN LA FRECUENCIA REAL DE TRADES
         top_broker = "N/A"
         if not df_accounts.empty:
             active_conn = get_active_connection()
@@ -1490,7 +1511,7 @@ else:
             else:
                 top_broker = df_accounts['broker'].mode()[0]
         
-        acc_kpis = st.columns(3)
+        acc_kpis = st.columns(4)
         with acc_kpis[0]:
             st.markdown(f'''<div class="kpi-card-exact">
 <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">CUENTAS REGISTRADAS</div>
@@ -1500,13 +1521,19 @@ else:
         with acc_kpis[1]:
             st.markdown(f'''<div class="kpi-card-exact">
 <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">CAPITAL INICIAL TOTAL</div>
-<div style="color: #00ffa3; font-size: 18px; font-weight: 700; margin: 0; text-shadow:0 0 10px rgba(0,255,163,0.3);">{cap_summary_html}</div>
+<div style="color: #00ffa3; font-size: 16px; font-weight: 700; margin: 0; text-shadow:0 0 10px rgba(0,255,163,0.3);">{cap_summary_html}</div>
 <div style="color: #94a3b8; font-size: 11px;">Fondos por moneda</div>
 </div>''', unsafe_allow_html=True)
         with acc_kpis[2]:
             st.markdown(f'''<div class="kpi-card-exact">
+<div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">CAPITAL ACTUAL TOTAL</div>
+<div style="color: #00d2ff; font-size: 16px; font-weight: 700; margin: 0; text-shadow:0 0 10px rgba(0,210,255,0.3);">{current_cap_summary_html}</div>
+<div style="color: #94a3b8; font-size: 11px;">En tiempo real</div>
+</div>''', unsafe_allow_html=True)
+        with acc_kpis[3]:
+            st.markdown(f'''<div class="kpi-card-exact">
 <div style="color: #64748b; font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;">BRÓKER PRINCIPAL</div>
-<div style="color: #ffffff; font-size: 24px; font-weight: 700; margin: 0;">{top_broker}</div>
+<div style="color: #ffffff; font-size: 22px; font-weight: 700; margin: 0;">{top_broker}</div>
 <div style="color: #94a3b8; font-size: 11px;">Mayor frecuencia</div>
 </div>''', unsafe_allow_html=True)
 
