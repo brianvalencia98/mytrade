@@ -1472,7 +1472,23 @@ else:
                 total_cap = float(df_accounts['initial_balance'].sum())
                 cap_summary_html = f"${total_cap:,.2f}"
 
-        top_broker = df_accounts['broker'].mode()[0] if not df_accounts.empty else "N/A"
+        # CÁLCULO DEL BRÓKER PRINCIPAL BASADO EN LA FRECUENCIA REAL DE TRADES
+        top_broker = "N/A"
+        if not df_accounts.empty:
+            active_conn = get_active_connection()
+            query_top_broker = """
+                SELECT a.broker, COUNT(t.id) as trade_count
+                FROM accounts a
+                LEFT JOIN trades t ON a.id = t.account_id
+                GROUP BY a.broker
+                ORDER BY trade_count DESC, a.broker ASC
+                LIMIT 1;
+            """
+            df_top_broker = pd.read_sql_query(query_top_broker, active_conn)
+            if not df_top_broker.empty and df_top_broker.iloc[0]['trade_count'] > 0:
+                top_broker = df_top_broker.iloc[0]['broker']
+            else:
+                top_broker = df_accounts['broker'].mode()[0]
         
         acc_kpis = st.columns(3)
         with acc_kpis[0]:
