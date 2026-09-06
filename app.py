@@ -2318,8 +2318,12 @@ PSICO-TRADING SCORE
                         emotion = st.selectbox("🧠 Estado Emocional", ["Neutral 😐", "Confiado 😎", "Enfocado 🎯", "Ansioso 😰", "Frustrado 😤", "Eufórico 🤩"])
                         payout_percent = st.number_input("📊 % Retorno (Binarias)", min_value=1, max_value=100, value=85)
                     with c4:
-                        date_time = st.date_input("📅 Fecha", datetime.today())
-                        time_input = st.time_input("⏰ Hora", datetime.now().time())
+             # Definir la zona horaria local (Colombia UTC-5)
+                        local_tz = timezone(timedelta(hours=-5))
+                        local_now = datetime.now(local_tz)
+        
+                        date_time = st.date_input("📅 Fecha", local_now.date())
+                        time_input = st.time_input("⏰ Hora", local_now.time())
                         observation = st.text_input("📝 Observaciones / Notas")
                     
                     st.markdown("<br>", unsafe_allow_html=True)
@@ -2401,3 +2405,4 @@ PSICO-TRADING SCORE
                         st.markdown('<div style="color: #64748b; padding: 15px; text-align: center;">Sin registros detallados para mostrar.</div>', unsafe_allow_html=True)
                 else:
                     st.markdown('<div style="text-align: center; color: #64748b; padding: 30px;">No hay operaciones registradas en esta cuenta.</div>', unsafe_allow_html=True)
+                    
