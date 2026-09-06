@@ -1847,10 +1847,12 @@ else:
             col_cal, col_prof = st.columns([1.18, 0.82])
             
             with col_cal:
+                local_tz_cal = timezone(timedelta(hours=-5))
+                local_now_cal = datetime.now(local_tz_cal)
                 if "cal_year" not in st.session_state:
-                    st.session_state["cal_year"] = datetime.now().year
+                    st.session_state["cal_year"] = local_now_cal.year
                 if "cal_month" not in st.session_state:
-                    st.session_state["cal_month"] = datetime.now().month
+                    st.session_state["cal_month"] = local_now_cal.month
 
                 def prev_month():
                     if st.session_state["cal_month"] == 1:
@@ -1987,8 +1989,9 @@ else:
                 emoji_res = "😐"
                 label_res = "Neutral"
                 if not df_trades.empty and 'emotion' in df_trades.columns:
-                    seven_days_ago = datetime.now() - timedelta(days=7)
-                    recent_trades = df_trades[df_trades['date_time'] >= seven_days_ago]
+                    local_tz_s = timezone(timedelta(hours=-5))
+                    seven_days_ago = datetime.now(local_tz_s) - timedelta(days=7)
+                    recent_trades = df_trades[df_trades['date_time'] >= seven_days_ago.replace(tzinfo=None)]
                     if not recent_trades.empty and 'emotion' in recent_trades.columns:
                         top_emotion = recent_trades['emotion'].mode()
                         if not top_emotion.empty:
@@ -2015,8 +2018,9 @@ PROMEDIO 7 DÍAS
                 conf_label = "Alto 🔥"
                 conf_color = "#00ffa3"
                 if not df_trades.empty and 'confidence' in df_trades.columns:
-                    seven_days_ago = datetime.now() - timedelta(days=7)
-                    recent_trades = df_trades[df_trades['date_time'] >= seven_days_ago]
+                    local_tz_s2 = timezone(timedelta(hours=-5))
+                    seven_days_ago2 = datetime.now(local_tz_s2) - timedelta(days=7)
+                    recent_trades = df_trades[df_trades['date_time'] >= seven_days_ago2.replace(tzinfo=None)]
                     if not recent_trades.empty:
                         top_conf = recent_trades['confidence'].mode()
                         if not top_conf.empty:
@@ -2365,17 +2369,19 @@ PSICO-TRADING SCORE
                     
                     df_filtered = df_trades.copy()
                     df_filtered['date_time'] = pd.to_datetime(df_filtered['date_time'])
-                    now = datetime.now()
+                    local_tz_f = timezone(timedelta(hours=-5))
+                    now_f = datetime.now(local_tz_f)
+                    now_date_f = now_f.date()
                     
                     if time_filter == "Diario":
-                        df_filtered = df_filtered[df_filtered['date_time'].dt.date == now.date()]
+                        df_filtered = df_filtered[df_filtered['date_time'].dt.date == now_date_f]
                     elif time_filter == "Esta Semana":
-                        start_of_week = now - timedelta(days=now.weekday())
-                        df_filtered = df_filtered[df_filtered['date_time'] >= pd.to_datetime(start_of_week.date())]
+                        start_of_week = now_date_f - timedelta(days=now_f.weekday())
+                        df_filtered = df_filtered[df_filtered['date_time'] >= pd.to_datetime(start_of_week)]
                     elif time_filter == "Este Mes":
-                        df_filtered = df_filtered[(df_filtered['date_time'].dt.year == now.year) & (df_filtered['date_time'].dt.month == now.month)]
+                        df_filtered = df_filtered[(df_filtered['date_time'].dt.year == now_f.year) & (df_filtered['date_time'].dt.month == now_f.month)]
                     elif time_filter == "Este Año":
-                        df_filtered = df_filtered[df_filtered['date_time'].dt.year == now.year]
+                        df_filtered = df_filtered[df_filtered['date_time'].dt.year == now_f.year]
                     
                     st.markdown("<br>", unsafe_allow_html=True)
                     
