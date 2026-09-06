@@ -1909,13 +1909,14 @@ else:
                     ))
                     fig_radar.update_layout(
                         polar=dict(
-                            radialaxis=dict(visible=False, range=[0, 105]), 
+                            radialaxis=dict(visible=False, range=[0, 105], fixedrange=True), 
                             angularaxis=dict(
                                 color='#94a3b8', 
                                 gridcolor='#1e293b', 
                                 linecolor='#1e293b', 
                                 gridwidth=1,
-                                tickfont=dict(size=11, color='#cbd5e1', family='sans-serif')
+                                tickfont=dict(size=11, color='#cbd5e1', family='sans-serif'),
+                                fixedrange=True
                             ), 
                             bgcolor='rgba(0,0,0,0)'
                         ),
@@ -1925,7 +1926,7 @@ else:
                         margin=dict(l=65, r=65, t=18, b=18), 
                         height=280
                     )
-                    st.plotly_chart(fig_radar, width='stretch', config={'displayModeBar': False})
+                    st.plotly_chart(fig_radar, width='stretch', config={'displayModeBar': False, 'scrollZoom': False})
 
                     st.markdown(f'''<div style="padding-top: 6px; margin-bottom: 4px;">
 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
