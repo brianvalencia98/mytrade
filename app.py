@@ -1892,7 +1892,7 @@ else:
 <div style="color: #00d2ff; font-size: 14px;">🎯</div>
 </div>''', unsafe_allow_html=True)
 
-                    categories = ['Win %', 'Profit Factor', 'Avg Win/Loss', 'Recovery', 'Drawdown', 'Consistency']
+                    categories = ['% de Acierto', 'Factor de Beneficio', 'Prom. Ganada/Pérdida', 'Recuperación', 'Drawdown', 'Consistencia']
                     values = [score_win, score_pf, score_awal, score_rec, score_dd, score_cons]
                     values_loop = values + [values[0]]
                     categories_loop = categories + [categories[0]]
@@ -1927,7 +1927,7 @@ else:
 
                     st.markdown(f'''<div style="padding-top: 6px; margin-bottom: 4px;">
 <div style="display: flex; justify-content: space-between; align-items: flex-end;">
-<div style="color: #94a3b8; font-size: 11.5px; font-weight: 600;">Trading Score</div>
+<div style="color: #94a3b8; font-size: 11.5px; font-weight: 600;">Puntuación de Trading</div>
 <div><span style="color: #00ffa3; font-size: 21px; font-weight: 800; text-shadow: 0 0 10px rgba(0,255,163,0.3);">{overall_score}</span><span style="color: #64748b; font-size: 11px; font-weight: 700;"> / 100</span></div>
 </div>
 <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: {overall_score}%;"></div></div>
