@@ -239,7 +239,7 @@ CSS_DASHBOARD = """
     }
 
     [data-testid="stSidebar"] [data-testid="stElementContainer"]:has(.sidebar-footer-anchor) {
-        margin-top: auto !important;
+        margin-top: clamp(72px, 11vh, 120px) !important;
     }
     .sidebar-footer-anchor { height: 0; }
     .sidebar-divider {
