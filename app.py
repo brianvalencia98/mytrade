@@ -106,13 +106,36 @@ CSS_LOGIN = """
 
 CSS_DASHBOARD = """
 <style>
+    :root {
+        color-scheme: dark;
+        --mt-bg: #060b14;
+        --mt-surface: #09111f;
+        --mt-surface-soft: #0b1525;
+        --mt-border: rgba(148, 163, 184, 0.14);
+        --mt-border-strong: rgba(0, 210, 255, 0.30);
+        --mt-text: #e8eef7;
+        --mt-muted: #8492a7;
+        --mt-subtle: #526078;
+        --mt-accent: #20cfee;
+        --mt-success: #24d99b;
+        --mt-danger: #f45b7a;
+        --mt-radius: 14px;
+        --mt-shadow: 0 12px 34px rgba(0, 0, 0, 0.22);
+    }
+
     @keyframes float-icon {
         0% { transform: translateY(0px); }
         50% { transform: translateY(-4px); }
         100% { transform: translateY(0px); }
     }
 
-    [data-testid="stAppViewContainer"] { background-color: #070d19; color: #e2e8f0; }
+    [data-testid="stAppViewContainer"] {
+        background:
+            radial-gradient(circle at 88% 0%, rgba(0, 210, 255, 0.055), transparent 26rem),
+            linear-gradient(180deg, #070d17 0%, var(--mt-bg) 100%) !important;
+        color: var(--mt-text);
+        font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
     
     [data-testid="block-container"] {
         background: transparent !important;
@@ -120,7 +143,7 @@ CSS_DASHBOARD = """
         box-shadow: none !important;
         animation: none !important;
         max-width: none !important;
-        padding: 4rem 1rem 10rem !important;
+        padding: 3.5rem clamp(1rem, 2.2vw, 2.25rem) 6rem !important;
         margin: auto !important;
         display: block !important;
     }
@@ -134,9 +157,9 @@ CSS_DASHBOARD = """
     }
     [data-testid="stSidebarUserContent"] {
         padding: 2rem 1.15rem 1.25rem !important;
+        box-sizing: border-box;
     }
     [data-testid="stSidebarUserContent"] > div:first-child {
-        min-height: calc(100vh - 3.25rem);
         display: flex;
         flex-direction: column;
     }
@@ -588,7 +611,10 @@ CSS_DASHBOARD = """
         text-shadow: 0 0 8px rgba(0, 210, 255, 0.25) !important;
     }
     div[data-baseweb="select"] input { caret-color: transparent !important; cursor: pointer !important; }
-    svg { fill: #00d2ff !important; }
+    div[data-baseweb="select"] svg,
+    [data-testid="stDateInput"] svg,
+    [data-testid="stTimeInput"] svg,
+    [data-testid="stNumberInput"] svg { fill: #7f91aa !important; }
 
     [data-testid="stNumberInputContainer"] button { background-color: transparent !important; color: #00d2ff !important; border: none !important; }
     [data-testid="stNumberInputContainer"] button:hover { color: #00ffa3 !important; background-color: rgba(0, 255, 163, 0.15) !important; border-radius: 8px; }
@@ -917,9 +943,297 @@ CSS_DASHBOARD = """
     }
 
     /* ==========================================
+       REFINAMIENTO VISUAL GENERAL
+       ========================================== */
+    [data-testid="stAppViewContainer"] * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(132, 146, 167, 0.45) transparent;
+    }
+    [data-testid="stAppViewContainer"] *::-webkit-scrollbar {
+        width: 7px;
+        height: 7px;
+    }
+    [data-testid="stAppViewContainer"] *::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    [data-testid="stAppViewContainer"] *::-webkit-scrollbar-thumb {
+        background: rgba(132, 146, 167, 0.38);
+        border-radius: 999px;
+    }
+    [data-testid="stAppViewContainer"] *::-webkit-scrollbar-thumb:hover {
+        background: rgba(132, 146, 167, 0.62);
+    }
+
+    .page-heading {
+        position: relative;
+        margin: 0 0 22px;
+        padding: 2px 0 2px 16px;
+    }
+    .page-heading-compact {
+        margin-bottom: 0;
+    }
+    .page-heading::before {
+        content: "";
+        position: absolute;
+        inset: 3px auto 3px 0;
+        width: 3px;
+        border-radius: 4px;
+        background: linear-gradient(180deg, #5ee7ff, #008fb3);
+        box-shadow: 0 0 14px rgba(0, 210, 255, 0.22);
+    }
+    .page-title {
+        color: var(--mt-text);
+        font-size: 18px;
+        font-weight: 780;
+        line-height: 1.25;
+        letter-spacing: 0.9px;
+        text-transform: uppercase;
+    }
+    .page-subtitle {
+        color: var(--mt-muted);
+        font-size: 10.5px;
+        font-weight: 600;
+        line-height: 1.4;
+        letter-spacing: 0.85px;
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+
+    [data-testid="stWidgetLabel"] p,
+    [data-testid="stMarkdownContainer"] label p {
+        color: #a9b5c7 !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.1px !important;
+    }
+
+    .kpi-card-exact,
+    .risk-kpi-card,
+    .status-panel-card {
+        background: linear-gradient(145deg, rgba(11, 21, 37, 0.94), rgba(7, 14, 26, 0.96)) !important;
+        border-color: var(--mt-border) !important;
+        box-shadow: var(--mt-shadow) !important;
+    }
+    .kpi-card-exact {
+        position: relative;
+        overflow: hidden;
+        border-radius: var(--mt-radius);
+        padding: 15px 17px;
+        transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .kpi-card-exact::after {
+        content: "";
+        position: absolute;
+        inset: 0 18px auto;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(94, 231, 255, 0.24), transparent);
+    }
+    .kpi-card-exact:hover,
+    .risk-kpi-card:hover,
+    .status-panel-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(0, 210, 255, 0.26) !important;
+        box-shadow: 0 15px 38px rgba(0, 0, 0, 0.26) !important;
+    }
+
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background: linear-gradient(145deg, rgba(10, 19, 34, 0.90), rgba(7, 14, 26, 0.94)) !important;
+        border: 1px solid var(--mt-border) !important;
+        border-radius: 16px !important;
+        box-shadow: var(--mt-shadow) !important;
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"]:hover {
+        border-color: rgba(148, 163, 184, 0.22) !important;
+        box-shadow: 0 14px 38px rgba(0, 0, 0, 0.25) !important;
+    }
+    [data-testid="stForm"] {
+        background: rgba(5, 11, 21, 0.22) !important;
+        border-color: rgba(148, 163, 184, 0.11) !important;
+        border-radius: 13px !important;
+    }
+
+    div[data-baseweb="input"],
+    div[data-baseweb="base-input"],
+    div[data-baseweb="select"],
+    div[data-baseweb="select"] > div,
+    div[data-testid="stTextInput"] > div > div,
+    div[data-testid="stNumberInput"] > div > div,
+    div[data-testid="stDateInput"] > div > div,
+    div[data-testid="stTimeInput"] > div > div,
+    div[data-testid="stSelectbox"] > div > div,
+    [data-testid="stTextArea"] textarea {
+        background: rgba(8, 18, 33, 0.90) !important;
+        border: 1px solid rgba(148, 163, 184, 0.18) !important;
+        border-radius: 11px !important;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.24) !important;
+    }
+    div[data-baseweb="base-input"]:focus-within,
+    div[data-baseweb="select"] > div:hover,
+    div[data-baseweb="select"] > div:focus-within,
+    div[data-testid="stTextInput"] > div > div:focus-within,
+    div[data-testid="stNumberInput"] > div > div:focus-within,
+    div[data-testid="stDateInput"] > div > div:focus-within,
+    div[data-testid="stTimeInput"] > div > div:focus-within,
+    div[data-testid="stSelectbox"] > div > div:focus-within,
+    [data-testid="stTextArea"] textarea:focus {
+        border-color: rgba(0, 210, 255, 0.58) !important;
+        box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.18) !important;
+    }
+    input,
+    textarea,
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div {
+        color: #dce7f5 !important;
+        font-weight: 650 !important;
+        text-shadow: none !important;
+    }
+    div[data-baseweb="select"] svg,
+    [data-testid="stDateInput"] svg,
+    [data-testid="stTimeInput"] svg,
+    [data-testid="stNumberInput"] svg {
+        fill: #7f91aa !important;
+    }
+    div[data-baseweb="select"] {
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .stForm [data-testid="stFormSubmitButton"] button,
+    button[kind="primary"],
+    button[data-testid="baseButton-primary"] {
+        min-height: 44px !important;
+        background: linear-gradient(135deg, #08b9dd, #087fae) !important;
+        color: #f8fcff !important;
+        border: 1px solid rgba(94, 231, 255, 0.38) !important;
+        border-radius: 11px !important;
+        box-shadow: 0 8px 22px rgba(0, 151, 190, 0.18) !important;
+        letter-spacing: 0.7px !important;
+    }
+    .stForm [data-testid="stFormSubmitButton"] button:hover,
+    button[kind="primary"]:hover,
+    button[data-testid="baseButton-primary"]:hover {
+        background: linear-gradient(135deg, #18c8e8, #0896c3) !important;
+        color: #ffffff !important;
+        border-color: rgba(94, 231, 255, 0.62) !important;
+        box-shadow: 0 10px 26px rgba(0, 177, 216, 0.22) !important;
+        transform: translateY(-1px) !important;
+    }
+    button[kind="secondary"],
+    button[data-testid="baseButton-secondary"] {
+        min-height: 44px !important;
+        background: rgba(13, 24, 42, 0.82) !important;
+        border: 1px solid rgba(148, 163, 184, 0.18) !important;
+        border-radius: 11px !important;
+        box-shadow: none !important;
+    }
+    button[kind="secondary"] p,
+    button[data-testid="baseButton-secondary"] p {
+        color: #9eacc0 !important;
+    }
+    button[kind="secondary"]:hover,
+    button[data-testid="baseButton-secondary"]:hover {
+        background: rgba(18, 34, 57, 0.96) !important;
+        border-color: rgba(0, 210, 255, 0.34) !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18) !important;
+        transform: translateY(-1px) !important;
+    }
+    .st-key-delete_account_form [data-testid="stFormSubmitButton"] button,
+    .st-key-reset_all_data_form [data-testid="stFormSubmitButton"] button,
+    .st-key-delete_trade_form [data-testid="stFormSubmitButton"] button {
+        background: rgba(244, 91, 122, 0.10) !important;
+        color: #f89ab0 !important;
+        border-color: rgba(244, 91, 122, 0.34) !important;
+        box-shadow: none !important;
+    }
+    .st-key-delete_account_form [data-testid="stFormSubmitButton"] button:hover,
+    .st-key-reset_all_data_form [data-testid="stFormSubmitButton"] button:hover,
+    .st-key-delete_trade_form [data-testid="stFormSubmitButton"] button:hover {
+        background: rgba(244, 91, 122, 0.17) !important;
+        color: #ffffff !important;
+        border-color: rgba(244, 91, 122, 0.58) !important;
+        box-shadow: 0 8px 22px rgba(244, 91, 122, 0.10) !important;
+    }
+
+    [data-testid="stExpander"] {
+        background: linear-gradient(145deg, rgba(10, 19, 34, 0.94), rgba(7, 14, 26, 0.96)) !important;
+        border: 1px solid var(--mt-border) !important;
+        border-radius: 14px !important;
+        box-shadow: var(--mt-shadow) !important;
+        overflow: hidden;
+    }
+    [data-testid="stExpander"] summary {
+        background: rgba(12, 23, 40, 0.68) !important;
+        color: #c5d2e3 !important;
+        border: none !important;
+        border-radius: 0 !important;
+    }
+    [data-testid="stExpander"] summary:hover {
+        background: rgba(16, 31, 52, 0.86) !important;
+    }
+
+    .quantum-table-wrapper {
+        background: linear-gradient(145deg, rgba(10, 19, 34, 0.94), rgba(7, 14, 26, 0.96));
+        border-color: var(--mt-border);
+        border-radius: 14px;
+        box-shadow: var(--mt-shadow);
+    }
+    .quantum-table th {
+        background: rgba(13, 25, 43, 0.88);
+        color: #7fdff2;
+        border-bottom-color: rgba(148, 163, 184, 0.14);
+        letter-spacing: 1.05px;
+    }
+    .quantum-table td {
+        border-bottom-color: rgba(148, 163, 184, 0.09);
+    }
+    .quantum-table tbody tr:hover {
+        background: rgba(0, 210, 255, 0.045);
+    }
+    .trade-quantum-card,
+    .best-worst-card,
+    .hm-card {
+        background: linear-gradient(145deg, rgba(10, 19, 34, 0.92), rgba(7, 14, 26, 0.95)) !important;
+        border-color: var(--mt-border) !important;
+        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.20) !important;
+    }
+    .trade-quantum-card:hover {
+        border-color: rgba(0, 210, 255, 0.28) !important;
+        box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24) !important;
+    }
+
+    [data-testid="stAlert"] {
+        background: rgba(11, 21, 37, 0.90) !important;
+        border: 1px solid rgba(148, 163, 184, 0.16) !important;
+        border-radius: 12px !important;
+    }
+    [data-testid="stCheckbox"] label {
+        color: #a9b5c7 !important;
+    }
+
+    /* ==========================================
        ADAPTACIÓN MÓVIL (PANTALLAS <= 768px)
        ========================================== */
     @media (max-width: 768px) {
+        [data-testid="block-container"] {
+            padding: 3rem 0.8rem 4rem !important;
+        }
+        .page-heading {
+            margin-bottom: 16px;
+            padding-left: 13px;
+        }
+        .page-heading-compact {
+            margin-bottom: 6px;
+        }
+        .page-title {
+            font-size: 15px;
+            letter-spacing: 0.65px;
+        }
+        .page-subtitle {
+            font-size: 9.5px;
+            letter-spacing: 0.55px;
+        }
+
         /* En móviles, mantener [ ◀ ] [MES AÑO] [ ▶ ] juntos y en una fila perfecta */
         div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] {
             display: flex !important;
@@ -1621,9 +1935,9 @@ else:
         st.rerun()
 
     if menu == "accounts":
-        st.markdown('''<div style="margin-top: 5px; margin-bottom: 20px;">
-<div style="color: #00d2ff; font-size: 18px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">🏦 BÓVEDA Y GESTIÓN DE CUENTAS</div>
-<div style="color: #64748b; font-size: 12px; margin-top: -2px;">ADMINISTRACIÓN DE PORTAFOLIOS, BRÓKERS Y CAPITAL ASIGNADO</div>
+        st.markdown('''<div class="page-heading">
+<div class="page-title">Bóveda y gestión de cuentas</div>
+<div class="page-subtitle">Administración de portafolios, brókers y capital asignado</div>
 </div>''', unsafe_allow_html=True)
         
         df_accounts = get_accounts()
@@ -1819,8 +2133,10 @@ else:
         else:
             top_col1, top_col2 = st.columns([1.8, 1.2])
             with top_col1:
-                st.markdown('<div style="color: #00d2ff; font-size: 16px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; margin-top: 5px;">⚡ TERMINAL DE COMANDO CUÁNTICO</div>', unsafe_allow_html=True)
-                st.markdown('<div style="color: #64748b; font-size: 11px; margin-top: -3px;">CENTRO DE MONITOREO Y EJECUCIÓN EN TIEMPO REAL</div>', unsafe_allow_html=True)
+                st.markdown('''<div class="page-heading page-heading-compact">
+<div class="page-title">Terminal de comando cuántico</div>
+<div class="page-subtitle">Centro de monitoreo y ejecución en tiempo real</div>
+</div>''', unsafe_allow_html=True)
             with top_col2:
                 def get_clean_account_label(row):
                     broker_clean = str(row['broker']).strip().title()
