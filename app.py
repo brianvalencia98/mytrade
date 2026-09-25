@@ -778,11 +778,12 @@ CSS_DASHBOARD = """
     .cal-cell-win { border: 1px solid #00d284 !important; border-bottom: 3.5px solid #00ffa3 !important; background-color: rgba(0, 255, 163, 0.08) !important; }
     .cal-cell-loss { border: 1px solid #d22d56 !important; border-bottom: 3.5px solid #ff3366 !important; background-color: rgba(255, 51, 102, 0.08) !important; }
     .cal-day-num { font-size: 11.5px; color: #cbd5e1; font-weight: 700; line-height: 1; }
-    .cal-pnl { font-weight: 800; font-size: 10px; position: absolute; bottom: 5px; right: 4px; line-height: 1.1; text-align: right; }
+    .cal-pnl { font-weight: 800; font-size: 12px; position: absolute; bottom: 5px; right: 5px; line-height: 1.1; text-align: right; }
     .cal-win { color: #00ffa3; text-shadow: 0 0 6px rgba(0, 255, 163, 0.4); }
     .cal-loss { color: #ff3366; text-shadow: 0 0 6px rgba(255, 51, 102, 0.4); }
     .cal-tie { color: #94a3b8; }
     .cal-tot-cell { border: 1px solid #10192d; height: 64px; vertical-align: middle; text-align: center; background-color: #060b16; padding: 4px 2px; }
+    .cal-total-pnl { font-size: 12px; margin-top: 3px; line-height: 1.15; }
 
     /* ==========================================
        ESTILOS PARA EL TRADING HEATMAP DINÁMICO
@@ -1290,7 +1291,8 @@ CSS_DASHBOARD = """
         .cal-cell, .cal-td-empty, .cal-tot-cell { height: 48px !important; padding: 3px 2px !important; }
         .cal-th { padding: 5px 0 !important; font-size: 10px !important; }
         .cal-day-num { font-size: 9.5px !important; }
-        .cal-pnl { font-size: 8px !important; bottom: 2px !important; right: 2px !important; }
+        .cal-pnl { font-size: 9px !important; bottom: 2px !important; right: 2px !important; }
+        .cal-total-pnl { font-size: 9px !important; }
         .cal-sym { display: none !important; }
 
         .hm-card { padding: 16px 12px; min-height: auto !important; }
@@ -1399,12 +1401,12 @@ def render_calendar(df_trades, curr_symbol, year, month):
             tot_fmt = f"{week_total:+,.0f}" if ("COP" in curr_symbol or "COL$" in curr_symbol) else f"{week_total:+,.2f}"
             if week_total > 0:
                 total_style = "border: 1px solid #00d284; background-color: rgba(0, 255, 163, 0.07);"
-                total_pnl_html = f'<div style="color: #00ffa3; font-weight: bold; font-size: 10.5px; margin-top: 2px;">{tot_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
+                total_pnl_html = f'<div class="cal-total-pnl" style="color: #00ffa3; font-weight: bold;">{tot_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
             elif week_total < 0:
                 total_style = "border: 1px solid #d22d56; background-color: rgba(255, 51, 102, 0.07);"
-                total_pnl_html = f'<div style="color: #ff3366; font-weight: bold; font-size: 10.5px; margin-top: 2px;">{tot_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
+                total_pnl_html = f'<div class="cal-total-pnl" style="color: #ff3366; font-weight: bold;">{tot_fmt}<span class="cal-sym"> {curr_symbol}</span></div>'
             else:
-                total_pnl_html = f'<div style="color: #94a3b8; font-weight: bold; font-size: 10px; margin-top: 2px;">0.00</div>'
+                total_pnl_html = f'<div class="cal-total-pnl" style="color: #94a3b8; font-weight: bold;">0.00</div>'
         
         html += f'<td class="cal-tot-cell" style="{total_style}"><div style="font-size: 8px; color: #64748b; font-weight: bold; letter-spacing: 0.5px;">TOTAL</div>{total_pnl_html}</td>'
         html += "</tr>"
