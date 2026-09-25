@@ -2492,7 +2492,7 @@ PSICO-TRADING SCORE
                         observation = st.text_input("📝 Observaciones / Notas")
                     
                     st.markdown("<br>", unsafe_allow_html=True)
-                    guardar_ejecucion = st.form_submit_button("🚀 EJECUTAR Y REGISTRAR TRADE")
+                    guardar_ejecucion = st.form_submit_button("REGISTRAR TRADE")
                     
                     if guardar_ejecucion and asset:
                         try:
