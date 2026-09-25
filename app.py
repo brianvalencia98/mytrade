@@ -972,6 +972,11 @@ CSS_DASHBOARD = """
     .page-heading-compact {
         margin-bottom: 0;
     }
+    .st-key-active_account_selector {
+        width: 100%;
+        max-width: 420px;
+        margin-left: auto;
+    }
     .page-heading::before {
         content: "";
         position: absolute;
@@ -1224,6 +1229,10 @@ CSS_DASHBOARD = """
         }
         .page-heading-compact {
             margin-bottom: 6px;
+        }
+        .st-key-active_account_selector {
+            max-width: none;
+            margin-left: 0;
         }
         .page-title {
             font-size: 15px;
@@ -2155,7 +2164,8 @@ else:
                     "CUENTA ACTIVA:",
                     options=account_ids,
                     format_func=lambda x: account_labels_map.get(x, f"Cuenta #{x}"),
-                    label_visibility="collapsed"
+                    label_visibility="collapsed",
+                    key="active_account_selector"
                 )
             
             acc_row = df_accounts[df_accounts['id'] == selected_acc_id].iloc[0]
