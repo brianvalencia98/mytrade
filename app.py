@@ -198,15 +198,41 @@ CSS_DASHBOARD = """
         min-height: 48px;
         display: flex !important;
         align-items: center;
+        gap: 10px;
         background: transparent !important;
         border: 1px solid transparent !important;
         border-radius: 11px !important;
-        padding: 0 14px !important;
+        padding: 0 12px !important;
         overflow: hidden;
         transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important;
     }
-    [data-testid="stSidebar"] .stRadio label[data-baseweb="radio"] > div:first-child {
+    [data-testid="stSidebar"] .stRadio input[type="radio"],
+    [data-testid="stSidebar"] .stRadio label > div:has(input[type="radio"]) {
         display: none !important;
+    }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label::before {
+        width: 28px;
+        height: 28px;
+        flex: 0 0 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        border: 1px solid rgba(125, 147, 177, 0.18);
+        border-radius: 9px;
+        background: linear-gradient(145deg, rgba(125, 147, 177, 0.10), rgba(125, 147, 177, 0.025));
+        color: #718096;
+        font-family: "Segoe UI Symbol", sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1;
+        transition: all 0.2s ease;
+    }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:nth-of-type(1)::before {
+        content: "◈";
+    }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:nth-of-type(2)::before {
+        content: "▣";
     }
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label p {
         color: #a8b3c5 !important;
@@ -221,18 +247,17 @@ CSS_DASHBOARD = """
         transform: translateX(2px);
     }
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:has(input:checked) {
-        background: linear-gradient(90deg, rgba(0, 210, 255, 0.14), rgba(0, 210, 255, 0.045)) !important;
+        background:
+            linear-gradient(90deg, #00d2ff 0 3px, transparent 3px),
+            linear-gradient(90deg, rgba(0, 210, 255, 0.14), rgba(0, 210, 255, 0.045)) !important;
         border-color: rgba(0, 210, 255, 0.28) !important;
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 8px 24px rgba(0, 0, 0, 0.15);
     }
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:has(input:checked)::before {
-        content: "";
-        position: absolute;
-        inset: 10px auto 10px 0;
-        width: 3px;
-        border-radius: 0 4px 4px 0;
-        background: #00d2ff;
-        box-shadow: 0 0 10px rgba(0, 210, 255, 0.65);
+        color: #5ee7ff;
+        border-color: rgba(0, 210, 255, 0.38);
+        background: linear-gradient(145deg, rgba(0, 210, 255, 0.24), rgba(0, 210, 255, 0.07));
+        box-shadow: 0 0 16px rgba(0, 210, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:has(input:checked) p {
         color: #f8fafc !important;
@@ -1544,8 +1569,8 @@ else:
 ''', unsafe_allow_html=True)
     
     menu_labels = {
-        "dashboard": "▦  Vista general",
-        "accounts": "◫  Gestión de cuentas",
+        "dashboard": "Vista general",
+        "accounts": "Gestión de cuentas",
     }
     menu = st.sidebar.radio(
         "Navegación Principal",
