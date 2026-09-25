@@ -126,59 +126,154 @@ CSS_DASHBOARD = """
     }
     
     [data-testid="stSidebar"] { 
-        background: linear-gradient(180deg, #030712 0%, #070d1d 50%, #0b1329 100%) !important; 
-        border-right: 1px solid rgba(0, 210, 255, 0.25); 
-        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.85); 
+        background:
+            radial-gradient(circle at 8% 4%, rgba(0, 210, 255, 0.10), transparent 25%),
+            linear-gradient(180deg, #050a15 0%, #071020 100%) !important;
+        border-right: 1px solid rgba(148, 163, 184, 0.12);
+        box-shadow: 12px 0 40px rgba(0, 0, 0, 0.45);
+    }
+    [data-testid="stSidebarUserContent"] {
+        padding: 2rem 1.15rem 1.25rem !important;
+    }
+    [data-testid="stSidebarUserContent"] > div:first-child {
+        min-height: calc(100vh - 3.25rem);
+        display: flex;
+        flex-direction: column;
     }
     [data-testid="stHeader"] { background-color: transparent; }
-    
-    .sidebar-title { 
-        color: #00d2ff; 
-        font-size: 21px; 
-        font-weight: 900; 
-        letter-spacing: 2.5px; 
-        text-transform: uppercase; 
-        text-shadow: 0 0 15px rgba(0, 210, 255, 0.6); 
-        margin-bottom: 25px; 
-        display: flex; 
-        align-items: center; 
-        gap: 10px; 
-        animation: float-icon 4s ease-in-out infinite;
+
+    .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 2px 2px 24px;
+        margin-bottom: 19px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .sidebar-brand-mark {
+        width: 40px;
+        height: 40px;
+        flex: 0 0 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0, 210, 255, 0.32);
+        border-radius: 12px;
+        background: linear-gradient(145deg, rgba(0, 210, 255, 0.16), rgba(0, 210, 255, 0.03));
+        color: #35dcff;
+        font-size: 20px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 8px 24px rgba(0, 210, 255, 0.10);
+    }
+    .sidebar-title {
+        color: #f8fafc;
+        font-size: 17px;
+        line-height: 1.15;
+        font-weight: 800;
+        letter-spacing: 1.7px;
+        text-transform: uppercase;
+    }
+    .sidebar-subtitle {
+        color: #64748b;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 1.35px;
+        text-transform: uppercase;
+        margin-top: 4px;
+    }
+    .sidebar-section-label {
+        color: #64748b;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1.8px;
+        line-height: 1;
+        text-transform: uppercase;
+        margin: 0 4px 11px;
     }
 
-    [data-testid="stSidebar"] .stRadio > label { 
-        color: #94a3b8 !important; 
-        font-weight: 700 !important; 
-        letter-spacing: 1.2px; 
-        font-size: 11px;
+    [data-testid="stSidebar"] .stRadio > label { display: none !important; }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] { gap: 7px; }
+
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label {
+        position: relative;
+        min-height: 48px;
+        display: flex !important;
+        align-items: center;
+        background: transparent !important;
+        border: 1px solid transparent !important;
+        border-radius: 11px !important;
+        padding: 0 14px !important;
+        overflow: hidden;
+        transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important;
     }
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] { gap: 12px; }
-    
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label { 
-        background: linear-gradient(135deg, rgba(11, 19, 37, 0.8) 0%, rgba(5, 11, 25, 0.95) 100%) !important; 
-        border: 1px solid rgba(30, 41, 59, 0.9) !important; 
-        border-radius: 14px !important; 
-        padding: 14px 18px !important; 
-        transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important; 
+    [data-testid="stSidebar"] .stRadio label[data-baseweb="radio"] > div:first-child {
+        display: none !important;
     }
-    
-    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover { 
-        border-color: #00d2ff !important; 
-        background: linear-gradient(135deg, rgba(0, 210, 255, 0.15) 0%, rgba(11, 19, 37, 0.95) 100%) !important; 
-        box-shadow: 0 0 22px rgba(0, 210, 255, 0.35) !important; 
-        transform: translateX(6px) scale(1.02); 
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label p {
+        color: #a8b3c5 !important;
+        font-size: 12.5px !important;
+        font-weight: 650 !important;
+        letter-spacing: 0 !important;
+        transition: color 0.2s ease !important;
+    }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:hover {
+        background: rgba(148, 163, 184, 0.06) !important;
+        border-color: rgba(148, 163, 184, 0.12) !important;
+        transform: translateX(2px);
+    }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:has(input:checked) {
+        background: linear-gradient(90deg, rgba(0, 210, 255, 0.14), rgba(0, 210, 255, 0.045)) !important;
+        border-color: rgba(0, 210, 255, 0.28) !important;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:has(input:checked)::before {
+        content: "";
+        position: absolute;
+        inset: 10px auto 10px 0;
+        width: 3px;
+        border-radius: 0 4px 4px 0;
+        background: #00d2ff;
+        box-shadow: 0 0 10px rgba(0, 210, 255, 0.65);
+    }
+    [data-testid="stSidebar"] .stRadio div[role="radiogroup"] label:has(input:checked) p {
+        color: #f8fafc !important;
     }
 
-    [data-testid="stSidebar"] .stButton button { 
-        background: linear-gradient(135deg, #ff3366, #991b33) !important; 
-        color: #ffffff !important; 
-        border: 1px solid #ff3366 !important; 
-        border-radius: 14px !important; 
-        font-weight: 900 !important; 
-        letter-spacing: 1.5px; 
-        width: 100% !important; 
-        box-shadow: 0 4px 20px rgba(255, 51, 102, 0.4) !important; 
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; 
+    [data-testid="stSidebar"] [data-testid="stElementContainer"]:has(.sidebar-footer-anchor) {
+        margin-top: auto !important;
+    }
+    .sidebar-footer-anchor { height: 0; }
+    .sidebar-divider {
+        height: 1px;
+        margin: 20px 0 14px;
+        background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.20), transparent);
+    }
+    .sidebar-session-label {
+        color: #475569;
+        font-size: 8.5px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        margin: 0 3px 9px;
+    }
+    [data-testid="stSidebar"] .stButton button {
+        min-height: 42px !important;
+        background: rgba(255, 51, 102, 0.055) !important;
+        color: #fda4b9 !important;
+        border: 1px solid rgba(255, 51, 102, 0.24) !important;
+        border-radius: 10px !important;
+        font-size: 11px !important;
+        font-weight: 750 !important;
+        letter-spacing: 0.55px !important;
+        width: 100% !important;
+        box-shadow: none !important;
+        transition: all 0.2s ease !important;
+    }
+    [data-testid="stSidebar"] .stButton button:hover {
+        background: rgba(255, 51, 102, 0.11) !important;
+        color: #ffffff !important;
+        border-color: rgba(255, 51, 102, 0.52) !important;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 22px rgba(255, 51, 102, 0.10) !important;
     }
 
     .kpi-card-exact {
@@ -1435,22 +1530,42 @@ else:
         return df
 
     # ==========================================
-    # BARRA LATERAL (SIDEBAR ANIMADA Y FUTURISTA)
+    # BARRA LATERAL (SIDEBAR)
     # ==========================================
-    st.sidebar.markdown('<div class="sidebar-title">⚡ MYTRADES</div>', unsafe_allow_html=True)
-    st.sidebar.markdown('<p style="color: #64748b; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px;">Navegación</p>', unsafe_allow_html=True)
+    st.sidebar.markdown('''
+<div class="sidebar-brand">
+    <div class="sidebar-brand-mark">&#9889;&#65038;</div>
+    <div>
+        <div class="sidebar-title">MyTrades</div>
+        <div class="sidebar-subtitle">Trading Journal</div>
+    </div>
+</div>
+<div class="sidebar-section-label">Menú principal</div>
+''', unsafe_allow_html=True)
     
-    menu = st.sidebar.radio("Navegación Principal", ["📊 Dashboard Principal", "🏦 Gestionar Cuentas"], label_visibility="collapsed")
+    menu_labels = {
+        "dashboard": "▦  Vista general",
+        "accounts": "◫  Gestión de cuentas",
+    }
+    menu = st.sidebar.radio(
+        "Navegación Principal",
+        list(menu_labels),
+        format_func=menu_labels.get,
+        label_visibility="collapsed",
+    )
     
-    st.sidebar.markdown("<br><br><br>", unsafe_allow_html=True)
-    st.sidebar.markdown("<hr style='border-color: #1e293b;'>", unsafe_allow_html=True)
+    st.sidebar.markdown('''
+<div class="sidebar-footer-anchor"></div>
+<div class="sidebar-divider"></div>
+<div class="sidebar-session-label">Sesión</div>
+''', unsafe_allow_html=True)
     
-    if st.sidebar.button("Cerrar Sesión 🔒"):
+    if st.sidebar.button("↪  Cerrar sesión"):
         del st.session_state["password_correct"]
         st.session_state.pin_input = ""
         st.rerun()
 
-    if menu == "🏦 Gestionar Cuentas":
+    if menu == "accounts":
         st.markdown('''<div style="margin-top: 5px; margin-bottom: 20px;">
 <div style="color: #00d2ff; font-size: 18px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">🏦 BÓVEDA Y GESTIÓN DE CUENTAS</div>
 <div style="color: #64748b; font-size: 12px; margin-top: -2px;">ADMINISTRACIÓN DE PORTAFOLIOS, BRÓKERS Y CAPITAL ASIGNADO</div>
@@ -1642,7 +1757,7 @@ else:
                     else:
                         st.warning("⚠️ Debes marcar la casilla de confirmación para autorizar el borrado total de la plataforma.")
 
-    elif menu == "📊 Dashboard Principal":
+    elif menu == "dashboard":
         df_accounts = get_accounts()
         if df_accounts.empty:
             st.warning("⚠️ Crea una cuenta en el menú lateral para iniciar.")
