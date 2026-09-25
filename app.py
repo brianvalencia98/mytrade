@@ -140,7 +140,37 @@ CSS_DASHBOARD = """
         display: flex;
         flex-direction: column;
     }
-    [data-testid="stHeader"] { background-color: transparent; }
+    [data-testid="stHeader"] {
+        display: block !important;
+        background-color: transparent;
+    }
+
+    /* Controles nativos para contraer y volver a abrir el menú */
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="stExpandSidebarButton"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button,
+    [data-testid="stExpandSidebarButton"] button {
+        width: 34px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        padding: 0 !important;
+        color: #8da2bd !important;
+        background: rgba(7, 16, 32, 0.88) !important;
+        border: 1px solid rgba(148, 163, 184, 0.18) !important;
+        border-radius: 10px !important;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22) !important;
+        transition: color 0.2s ease, border-color 0.2s ease, background-color 0.2s ease !important;
+    }
+    [data-testid="stSidebarCollapseButton"] button:hover,
+    [data-testid="stExpandSidebarButton"] button:hover {
+        color: #5ee7ff !important;
+        background: rgba(0, 210, 255, 0.10) !important;
+        border-color: rgba(0, 210, 255, 0.38) !important;
+    }
 
     .sidebar-brand {
         display: flex;
@@ -280,7 +310,7 @@ CSS_DASHBOARD = """
         text-transform: uppercase;
         margin: 0 3px 9px;
     }
-    [data-testid="stSidebar"] .stButton button {
+    [data-testid="stSidebar"] .st-key-sidebar_logout button {
         min-height: 42px !important;
         background: rgba(255, 51, 102, 0.055) !important;
         color: #fda4b9 !important;
@@ -293,7 +323,7 @@ CSS_DASHBOARD = """
         box-shadow: none !important;
         transition: all 0.2s ease !important;
     }
-    [data-testid="stSidebar"] .stButton button:hover {
+    [data-testid="stSidebar"] .st-key-sidebar_logout button:hover {
         background: rgba(255, 51, 102, 0.11) !important;
         color: #ffffff !important;
         border-color: rgba(255, 51, 102, 0.52) !important;
@@ -1585,7 +1615,7 @@ else:
 <div class="sidebar-session-label">Sesión</div>
 ''', unsafe_allow_html=True)
     
-    if st.sidebar.button("↪  Cerrar sesión"):
+    if st.sidebar.button("↪  Cerrar sesión", key="sidebar_logout"):
         del st.session_state["password_correct"]
         st.session_state.pin_input = ""
         st.rerun()
