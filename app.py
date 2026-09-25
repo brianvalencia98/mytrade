@@ -1211,17 +1211,6 @@ CSS_DASHBOARD = """
         color: #a9b5c7 !important;
     }
 
-    /* Los tres paneles analíticos inferiores comparten la misma altura */
-    .bottom-chart-panel-marker {
-        display: none;
-    }
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(.bottom-chart-panel-marker) {
-        height: 350px !important;
-        min-height: 350px !important;
-        box-sizing: border-box;
-        overflow: hidden;
-    }
-
     /* ==========================================
        ADAPTACIÓN MÓVIL (PANTALLAS <= 768px)
        ========================================== */
@@ -1244,12 +1233,6 @@ CSS_DASHBOARD = """
             font-size: 9.5px;
             letter-spacing: 0.55px;
         }
-        div[data-testid="stVerticalBlockBorderWrapper"]:has(.bottom-chart-panel-marker) {
-            height: auto !important;
-            min-height: 0 !important;
-            overflow: visible;
-        }
-
         /* En móviles, mantener [ ◀ ] [MES AÑO] [ ▶ ] juntos y en una fila perfecta */
         div[data-testid="stVerticalBlockBorderWrapper"]:has(#cal-nav-bar) div[data-testid="stHorizontalBlock"] {
             display: flex !important;
@@ -2663,7 +2646,7 @@ PSICO-TRADING SCORE
                     pct_growth = (net_profit / initial_balance * 100) if initial_balance > 0 else 0.0
                     sign_growth = "+" if net_profit >= 0 else ""
                     
-                    st.markdown(f'''<span class="bottom-chart-panel-marker"></span><div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
+                    st.markdown(f'''<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 12px;">
 <div>
 <div style="font-size: 14px; font-weight: bold; color: #ffffff; display: flex; align-items: center; gap: 6px;">📁 Crecimiento Acumulado</div>
 <div style="font-size: 10px; color: #64748b;">Curva de Capital Cuántica</div>
@@ -2738,7 +2721,7 @@ PSICO-TRADING SCORE
                                 worst_day_val = 0.0
                                 worst_day_date = "Sin pérdidas"
 
-                    st.markdown(f'''<span class="bottom-chart-panel-marker"></span><div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 10px;">
+                    st.markdown(f'''<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 10px;">
 <div>
 <div style="font-size: 14px; font-weight: bold; color: #ffffff; display: flex; align-items: center; gap: 6px;">📊 P&L Diario</div>
 <div style="font-size: 10px; color: #64748b;">Rendimiento Cuántico Diario</div>
@@ -2796,7 +2779,7 @@ PSICO-TRADING SCORE
 
             with col_chart3:
                 with st.container(border=True):
-                    st.markdown('''<span class="bottom-chart-panel-marker"></span><div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 6px;">
+                    st.markdown('''<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 6px;">
 <div>
 <div style="font-size: 14px; font-weight: bold; color: #ffffff; display: flex; align-items: center; gap: 6px;">🍩 Ratio de Impacto P&L</div>
 <div style="font-size: 10px; color: #64748b;">Ganadas vs Pérdidas</div>
