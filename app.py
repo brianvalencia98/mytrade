@@ -2885,7 +2885,7 @@ PSICO-TRADING SCORE
                             texttemplate='<b>%{percent}</b>',
                             textposition='inside',
                             insidetextorientation='horizontal',
-                            textfont=dict(color='#f8fafc', size=11, family='Segoe UI, sans-serif'),
+                            textfont=dict(color='#06111f', size=12, family='Segoe UI, sans-serif'),
                             hovertemplate="<b>%{customdata[0]}</b><br>Impacto bruto: <b>%{customdata[1]}</b><br>Participación: <b>%{percent}</b><br>Operaciones: <b>%{customdata[2]}</b><extra></extra>",
                             domain=dict(x=[0.08, 0.92], y=[0.22, 0.98])
                         )])
@@ -2898,7 +2898,7 @@ PSICO-TRADING SCORE
                                 y=0.08,
                                 xanchor="center",
                                 x=0.5,
-                                font=dict(color="#aebace", size=10),
+                                font=dict(color="#dce7f5", size=12, family='Segoe UI, sans-serif'),
                                 itemclick=False,
                                 itemdoubleclick=False
                             ),
