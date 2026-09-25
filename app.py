@@ -1208,6 +1208,57 @@ CSS_DASHBOARD = """
         box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24) !important;
     }
 
+    .chart-panel-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 10px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+    }
+    .chart-panel-title-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+    .chart-panel-icon {
+        width: 29px;
+        height: 29px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(0, 210, 255, 0.25);
+        border-radius: 9px;
+        color: #61def4;
+        background: rgba(0, 210, 255, 0.07);
+        font-size: 14px;
+    }
+    .chart-panel-title {
+        color: #edf4fc;
+        font-size: 14px;
+        font-weight: 750;
+        line-height: 1.2;
+    }
+    .chart-panel-subtitle {
+        color: #6f7e94;
+        font-size: 9.5px;
+        font-weight: 550;
+        margin-top: 3px;
+    }
+    .chart-panel-status {
+        flex: 0 0 auto;
+        padding: 4px 8px;
+        border: 1px solid rgba(36, 217, 155, 0.22);
+        border-radius: 999px;
+        color: #69dfb5;
+        background: rgba(36, 217, 155, 0.06);
+        font-size: 8px;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+    }
+
     [data-testid="stAlert"] {
         background: rgba(11, 21, 37, 0.90) !important;
         border: 1px solid rgba(148, 163, 184, 0.16) !important;
@@ -2791,51 +2842,101 @@ PSICO-TRADING SCORE
 
             with col_chart3:
                 with st.container(border=True):
-                    st.markdown('''<div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #1e293b; margin-bottom: 6px;">
+                    st.markdown('''<div class="chart-panel-heading">
+<div class="chart-panel-title-row">
+<span class="chart-panel-icon">◔</span>
 <div>
-<div style="font-size: 14px; font-weight: bold; color: #ffffff; display: flex; align-items: center; gap: 6px;">🍩 Ratio de Impacto P&L</div>
-<div style="font-size: 10px; color: #64748b;">Ganadas vs Pérdidas</div>
+<div class="chart-panel-title">Impacto del P&amp;L</div>
+<div class="chart-panel-subtitle">Distribución de ganancias y pérdidas brutas</div>
 </div>
+</div>
+<span class="chart-panel-status">Interactivo</span>
 </div>''', unsafe_allow_html=True)
 
                     if total_trades > 0:
                         gross_win = float(df_trades[df_trades['pnl'] > 0]['pnl'].sum())
                         gross_loss = float(abs(df_trades[df_trades['pnl'] < 0]['pnl'].sum()))
 
-                        labels = ['Ganadas', 'Pérdidas']
                         values = [gross_win, gross_loss]
-                        colors = ['#00ffa3', '#ff3366']
+                        colors = ['#19dca0', '#f05275']
 
-                        net_color = "#00ffa3" if net_profit >= 0 else "#ff3366"
-                        sign_net = "+" if net_profit >= 0 else ""
+                        is_cop = "COP" in curr_symbol or "COL$" in curr_symbol
+                        gross_win_display = f"{curr_symbol}{gross_win:,.0f}" if is_cop else f"{curr_symbol}{gross_win:,.2f}"
+                        gross_loss_display = f"{curr_symbol}{gross_loss:,.0f}" if is_cop else f"{curr_symbol}{gross_loss:,.2f}"
+                        labels = [f"Ganadas · {gross_win_display}", f"Pérdidas · {gross_loss_display}"]
+                        customdata = [["Ganadas", gross_win_display, wins], ["Pérdidas", gross_loss_display, losses]]
+
+                        net_color = "#19dca0" if net_profit >= 0 else "#f05275"
+                        net_sign = "+" if net_profit > 0 else ("−" if net_profit < 0 else "")
+                        net_amount = f"{abs(net_profit):,.0f}" if is_cop else f"{abs(net_profit):,.2f}"
+                        net_display = f"{net_sign}{curr_symbol}{net_amount}"
 
                         fig_donut = go.Figure(data=[go.Pie(
                             labels=labels,
                             values=values,
-                            hole=0.68,
+                            customdata=customdata,
+                            hole=0.72,
                             sort=False,
                             direction='clockwise',
-                            marker=dict(colors=colors, line=dict(color='#070d19', width=2.5)),
-                            textinfo='percent',
-                            textposition='outside',
-                            textfont=dict(color='#cbd5e1', size=11, family='sans-serif'),
-                            hovertemplate=f"<b>%{{label}}</b><br>Monto: <b>{curr_symbol}%{{value:,.2f}}</b><br>Ratio: <b>%{{percent}}</b><extra></extra>",
-                            domain=dict(x=[0.05, 0.95], y=[0.16, 0.98])
+                            rotation=90,
+                            pull=[0.012, 0.012],
+                            marker=dict(colors=colors, line=dict(color='#07101d', width=3)),
+                            textinfo='none',
+                            texttemplate='<b>%{percent}</b>',
+                            textposition='inside',
+                            insidetextorientation='horizontal',
+                            textfont=dict(color='#f8fafc', size=11, family='Segoe UI, sans-serif'),
+                            hovertemplate="<b>%{customdata[0]}</b><br>Impacto bruto: <b>%{customdata[1]}</b><br>Participación: <b>%{percent}</b><br>Operaciones: <b>%{customdata[2]}</b><extra></extra>",
+                            domain=dict(x=[0.08, 0.92], y=[0.22, 0.98])
                         )])
 
                         fig_donut.update_layout(
                             showlegend=True,
-                            legend=dict(orientation="h", yanchor="top", y=-0.02, xanchor="center", x=0.5, font=dict(color="#cbd5e1", size=11)),
+                            legend=dict(
+                                orientation="h",
+                                yanchor="top",
+                                y=0.08,
+                                xanchor="center",
+                                x=0.5,
+                                font=dict(color="#aebace", size=10),
+                                itemclick=False,
+                                itemdoubleclick=False
+                            ),
                             paper_bgcolor='rgba(0,0,0,0)',
                             plot_bgcolor='rgba(0,0,0,0)',
-                            margin=dict(l=30, r=30, t=10, b=30),
-                            height=210,
-                            annotations=[dict(
-                                text=f"<b style='color:{net_color}; font-size:10px; text-shadow:0 0 6px rgba(0,255,163,0.3);'>{sign_net}{curr_symbol}{net_profit:,.2f}</b><br><span style='color:#64748b; font-size:8px; font-weight:700; letter-spacing:1px;'>NETO</span>",
-                                x=0.5, y=0.57, showarrow=False, font=dict(size=10, color="#ffffff")
-                            )]
+                            margin=dict(l=18, r=18, t=5, b=8),
+                            height=230,
+                            hoverlabel=dict(
+                                bgcolor='#0b1627',
+                                bordercolor='rgba(94,231,255,0.35)',
+                                font=dict(color='#e8eef7', size=11, family='Segoe UI, sans-serif')
+                            ),
+                            uniformtext=dict(minsize=10, mode='hide'),
+                            transition=dict(duration=400, easing='cubic-in-out'),
+                            uirevision='pnl-impact-donut',
+                            annotations=[
+                                dict(
+                                    text=f"<b>{net_display}</b>",
+                                    x=0.5, y=0.64, showarrow=False,
+                                    font=dict(size=13, color=net_color, family='Segoe UI, sans-serif')
+                                ),
+                                dict(
+                                    text="P&amp;L NETO",
+                                    x=0.5, y=0.52, showarrow=False,
+                                    font=dict(size=8, color='#68788f', family='Segoe UI, sans-serif')
+                                )
+                            ]
                         )
-                        st.plotly_chart(fig_donut, width='stretch', config={'displayModeBar': False, 'staticPlot': False, 'scrollZoom': False})
+                        st.plotly_chart(
+                            fig_donut,
+                            width='stretch',
+                            config={
+                                'displayModeBar': False,
+                                'staticPlot': False,
+                                'scrollZoom': False,
+                                'responsive': True
+                            }
+                        )
                     else:
                         st.markdown('<div style="text-align: center; color: #64748b; padding: 60px;">Sin datos de ratio disponibles.</div>', unsafe_allow_html=True)
                     
